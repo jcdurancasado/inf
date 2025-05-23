@@ -1,90 +1,224 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Datos de Transacción</title>
-    <style>
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-            margin-top: 20px;
-        }
-        .box {
-            border: 2px solid #000;
-            padding: 15px;
-            width: 250px;
-            text-align: left;
-            background-color: #f9f9f9;
-            border-radius: 5px;
-        }
-        .box p {
-            margin: 5px 0;
-        }
-        .box p span {
-            font-weight: bold;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Julio C. Durán Casado</title>
+  <link rel="icon" href="https://jcdurancasado.github.io/inf/images/tu-favicon.png" type="image/png">
+  <meta property="og:title" content="Julio C. Durán Casado">
+  <meta property="og:description" content="Técnico en Redes, Ciberseguridad y Soporte Informático">
+  <meta property="og:image" content="https://jcdurancasado.github.io/inf/images/mi-foto.jpeg">
+  <meta property="og:url" content="https://jcdurancasado.github.io/inf/">
+  <meta property="og:type" content="website">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f9;
+      margin: 0;
+      padding: 0;
+      background-image: url('images/futuristica.jpg');
+      background-size: cover;
+      background-position: center;
+    }
+    .container {
+      max-width: 900px;
+      margin: 20px auto;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      padding: 20px 30px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 32px;
+      color: #0b3954;
+      margin-bottom: 10px;
+    }
+    h2 {
+      color: #ffffff;
+      background-color: #0b3954;
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 20px;
+      text-align: center;
+    }
+    .photo {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .photo img {
+      border-radius: 50%;
+      border: 2px solid #0b3954;
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+    }
+    .cuadros-transferencia {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-top: 15px;
+    }
+    .cuadro {
+      background-color: #f9f9f9;
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 6px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      font-size: 14px;
+      line-height: 1.3;
+      text-align: center;
+    }
+    .cuadro h3 {
+      font-size: 16px;
+      margin-top: 6px;
+      color: #0b3954;
+      margin-bottom: 6px;
+    }
+    .cuadro p {
+      margin: 3px 0;
+      text-align: left;
+    }
+    .logo-transferencia {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+      margin: 0 auto 5px auto;
+      display: block;
+    }
+  </style>
 </head>
 <body>
-    <h2 style="text-align: center;">Datos de Transacción</h2>
-    <div class="container">
-        <div class="box">
-            <h3>BanReservas</h3>
-            <p><span>Nombre:</span> Julio Cesar Durán Casado</p>
-            <p><span>Tipo de Cuenta:</span> Ahorro</p>
-            <p><span>Cuenta 1:</span> 9600338479</p>
-	    <p><span>Cuenta 2:</span> 9606708892</p>
-            <p><span>Correo:</span> jcdurancasado@gmail.com</p>
-        </div>
-        <div class="box">
-            <h3>Banco Popular</h3>
-            <p><span>Nombre:</span> Julio Cesar Durán Casado</p>
-            <p><span>Tipo de Cuenta:</span> Corriente</p>
-            <p><span>Cuenta:</span> 828282707</p>
-            <p><span>Correo:</span> jcdurancasado@gmail.com</p>
-        </div>
-        <div class="box">
-            <h3>BHD León</h3>
-            <p><span>Nombre:</span> Julio Cesar Durán Casado</p>
-            <p><span>Tipo de Cuenta:</span> Ahorro</p>
-            <p><span>Cuenta:</span> 32546900013</p>
-            <p><span>Correo:</span> jcdurancasado@gmail.com</p>
-        </div>
-	<div class="box">
-            <h3>Qik Banco Digital</h3>
-            <p><span>Nombre:</span> Julio Cesar Durán Casado</p>
-            <p><span>Tipo de Cuenta:</span> Ahorro</p>
-            <p><span>Cuenta:</span> 1002377515</p>
-            <p><span>Correo:</span> jcdurancasado@gmail.com</p>
-        </div>
-	<div class="box">
-            <h3>MIO BanReservas</h3>
-            <p><span>Nombre:</span> Julio Cesar Durán Casado</p>
-            <p><span>Tipo de Cuenta:</span> Ahorro</p>
-            <p><span>Cuenta:</span> 4271931898</p>
-            <p><span>Correo:</span> jcdurancasado@gmail.com</p>
-        </div>
-	<div class="box">
-            <h3>APAP</h3>
-            <p><span>Nombre:</span> Julio Cesar Durán Casado</p>
-            <p><span>Tipo de Cuenta:</span> Ahorro</p>
-            <p><span>Cuenta 1:</span> 1031470824</p>
-	    <p><span>Cuenta 2:</span> 1031470832</p>
-            <p><span>Correo:</span> jcdurancasado@gmail.com</p>
-        </div>
-	<div class="box">
-            <h3>Lead Bank</h3>
-            <p><span>Nombre:</span> Julio César Duran Casado</p>
-	    <p><span>Moneda:</span> USD</p>
-            <p><span>Tipo de Cuenta:</span> Corriente</p>
-            <p><span>Cuenta:</span> 219506786484</p>
-	    <p><span>Direccion del Banco:</span> 1801 Main St., Kansas City, MO 64108</p>
-	    <p><span>Dirección del beneficiario:</span> 8 The Green, Ste A, Dover, DE 19901, USA</p>
-	    <p><span>Enrutamiento:</span> 101019644</p>
-        </div>
+  <div class="container">
+    <div class="photo">
+      <img src="images/tu-imagen.png" alt="Foto">
     </div>
+    <h1>Julio C. Durán Casado</h1>
+    <p style="text-align: center; font-size: 22px; font-weight: bold; color: #0b3954; margin: 0;">
+      Técnico en Redes, Ciberseguridad y Soporte Informático
+    </p>
+    <p style="font-size: 14px; font-family: 'Courier New', Courier, monospace; text-align: center; color: #333;">
+      "La sociedad es un sistema, y todo sistema puede ser corrompido."
+    </p>
+
+    <h2>Transferencias Nacionales</h2>
+    <div class="cuadros-transferencia">
+      <div class="cuadro">
+        <img src="images/banreservas_icon.png" alt="BanReservas" class="logo-transferencia">
+        <h3>BanReservas</h3>
+        <p><strong>Nombre:</strong> Julio Cesar Durán Casado</p>
+        <p><strong>Tipo:</strong> Cuenta de Ahorro</p>
+        <p><strong>Cuenta:</strong> 9600338479</p>
+	<p><strong>Correo:</strong> jcdurancasado@gmail.com</p>
+      </div>
+      <div class="cuadro">
+        <img src="images/banreservas_icon.png" alt="BanReservas" class="logo-transferencia">
+        <h3>BanReservas</h3>
+        <p><strong>Nombre:</strong> Julio Cesar Durán Casado</p>
+        <p><strong>Tipo:</strong> Cuenta de Ahorro</p>
+        <p><strong>Cuenta:</strong> 9606708892</p>
+	<p><strong>Correo:</strong> jcdurancasado@gmail.com</p>
+      </div>
+      <div class="cuadro">
+        <img src="images/popular_icon.png" alt="Popular" class="logo-transferencia">
+        <h3>Banco Popular</h3>
+        <p><strong>Nombre:</strong> Julio Cesar Durán Casado</p>
+        <p><strong>Tipo:</strong> Cuenta Corriente</p>
+        <p><strong>Cuenta:</strong> 828282707</p>
+	<p><strong>Correo:</strong> jcdurancasado@gmail.com</p>
+      </div>
+    </div>
+    <div class="cuadros-transferencia">
+      <div class="cuadro">
+        <img src="images/bhd_icon.png" alt="BHDLeon" class="logo-transferencia">
+        <h3>Banco BHD Leon</h3>
+        <p><strong>Nombre:</strong> Julio Cesar Durán Casado</p>
+        <p><strong>Tipo:</strong> Cuenta de Ahorro</p>
+        <p><strong>Cuenta:</strong> 32546900013</p>
+	<p><strong>Correo:</strong> jcdurancasado@gmail.com</p>
+      </div>
+      <div class="cuadro">
+        <img src="images/qik_icon.png" alt="Qik" class="logo-transferencia">
+        <h3>Qik</h3>
+        <p><strong>Nombre:</strong> Julio Cesar Durán Casado</p>
+        <p><strong>Tipo:</strong> Cuenta de Ahorro</p>
+        <p><strong>Cuenta:</strong> 1002377515</p>
+	<p><strong>Correo:</strong> jcdurancasado@gmail.com</p>
+      </div>
+      <div class="cuadro">
+        <img src="images/mio_icon.png" alt="Mio" class="logo-transferencia">
+        <h3>MIO BanReservas</h3>
+        <p><strong>Nombre:</strong> Julio Cesar Durán Casado</p>
+        <p><strong>Tipo:</strong> Cuenta Corriente</p>
+        <p><strong>Cuenta:</strong> 4271931898</p>
+	<p><strong>Correo:</strong> jcdurancasado@gmail.com</p>
+      </div>
+    </div>
+
+    <div class="cuadros-transferencia">
+      <div class="cuadro">
+        <img src="images/apap_icon.png" alt="APAP" class="logo-transferencia">
+        <h3>Asociación Popular</h3>
+        <p><strong>Nombre:</strong> Julio Cesar Durán Casado</p>
+        <p><strong>Tipo:</strong> Cuenta de Ahorro</p>
+        <p><strong>Cuenta:</strong> 1031470824</p>
+	<p><strong>Correo:</strong> jcdurancasado@gmail.com</p>
+      </div>
+      <div class="cuadro">
+        <img src="images/apap_icon.png" alt="APAP" class="logo-transferencia">
+        <h3>Asociación Popular</h3>
+        <p><strong>Nombre:</strong> Julio Cesar Durán Casado</p>
+        <p><strong>Tipo:</strong> Cuenta de Ahorro</p>
+        <p><strong>Cuenta:</strong> 1031470832</p>
+	<p><strong>Correo:</strong> jcdurancasado@gmail.com</p>
+      </div>
+      <div class="cuadro">
+
+      </div>
+    </div>
+
+    <h2>Pagos Digitales</h2>
+    <div class="cuadros-transferencia">
+      <div class="cuadro">
+        <img src="images/paypal_icon.png" alt="PayPal" class="logo-transferencia">
+        <h3>PayPal</h3>
+        <p><strong>Email:</strong> jcdurancasado@gmail.com</p>
+      </div>
+      <div class="cuadro">
+        <img src="images/airtm_icon.png" alt="Airtm" class="logo-transferencia">
+        <h3>Airtm</h3>
+        <p><strong>Nombre:</strong> Julio Cesar Durán Casado</p>
+        <p><strong>Banco:</strong> BanReservas</p>
+      </div>
+      <div class="cuadro">
+        <img src="images/wise_icon.png" alt="Wise" class="logo-transferencia">
+        <h3>Wise</h3>
+        <p><strong>IBAN:</strong> DE89 3704 0044 0532 0130 00</p>
+        <p><strong>BIC:</strong> COBADEFFXXX</p>
+      </div>
+    </div>
+    <div class="cuadros-transferencia">
+      <div class="cuadro">
+        <img src="images/remitly_icon.png" alt="Remitly" class="logo-transferencia">
+        <h3>Remitly</h3>
+        <p><strong>Nombre:</strong> Julio Cesar Durán Casado</p>
+        <p><strong>Banco:</strong> BanReservas</p>
+      </div>
+    </div>
+    <h2>Transferencias Internacionales</h2>
+    <div class="cuadros-transferencia">
+      <div class="cuadro">
+        <img src="images/leadbank_icon.png" alt="Lead" class="logo-transferencia">
+        <h3>Lead Bank</h3>
+	<p><strong>Nombre:</strong> Julio César Duran Casado</p>
+        <p><strong>Cuenta:</strong> 219506786484</p>
+	<p><strong>Moneda:</strong> USD</p>
+        <p><strong>Dirección del Banco:</strong> 1801 Main St., Kansas City, MO 64108</p>
+	<p><strong>Dirección del Beneficiario:</strong> 8 The Green, Ste A, Dover, DE 19901, USA</p>
+	<p><strong>Numero de Enrutamiento:</strong> 101019644</p>
+	<p><strong>Email:</strong> jcdurancasado@gmail.com</p>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

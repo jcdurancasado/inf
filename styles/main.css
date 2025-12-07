@@ -79,4 +79,13 @@ body {
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
+/* Ajustes SOLO para pantallas de teléfono */
+@media (max-width: 600px) {
+  .links a {
+    font-size: 0.85rem;   /* texto más pequeño */
+    padding: 8px;         /* menos alto */
+    border-radius: 10px;  /* esquinas más compactas */
+    max-width: 90%;       /* más estrechos en móvil */
+  }
+}
 

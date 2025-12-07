@@ -53,7 +53,8 @@ body {
 }
 
 .footer {
-  margin-top: 20px;
+  margin-top: 10px;
+  font-size: 0.75rem;
   color: #777;
 }
 
@@ -97,8 +98,111 @@ body {
   }
 }
 
-.btn.github {
-  display: none;
+/* Estilo general del formulario */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+form label {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+form input, form textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: Arial, sans-serif;
+  font-size: 0.95rem;
+  transition: border-color 0.3s;
+}
+
+form input:focus, form textarea:focus {
+  border-color: #0077b5;
+  outline: none;
+}
+
+/* Botón */
+form .btn {
+  background: #0077b5;
+  color: #fff;
+  font-weight: bold;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+form .btn:hover {
+  background: #005582;
+}
+
+/* Aviso profesional */
+.aviso {
+  margin-top: 15px;
+  font-size: 0.8rem;
+  color: #555;
+  font-style: italic;
+  text-align: center;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;   /* fuerza alineación a la izquierda */
+}
+
+form label {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+  text-align: left;   /* asegura que el texto del label quede a la izquierda */
+}
+
+form input, form textarea {
+  text-align: left;   /* el texto dentro de los campos también alineado a la izquierda */
+  }
+
+  /* Ajustes SOLO para la página de contacto */
+body.contact .card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;   /* centra todo dentro del cuadro blanco */
+  padding: 19px;
+  max-width: 560px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+body.contact form {
+  width: 100%;
+  max-width: 450px;      /* crea margen interno uniforme */
+  margin: 0 auto;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+body.contact form input,
+body.contact form textarea {
+  width: 100%;
+  padding: 8px;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+body.contact form .btn {
+  margin-top: 10px;
+  padding: 10px;
+  font-size: 0.9rem;
+  border-radius: 6px;
 }
 
 /* Ajuste SOLO para contacto: que los labels estén más cerca de sus campos */
@@ -116,7 +220,3 @@ body.contact form {
 body.contact form label {
   margin-bottom: 2px; /* el label queda pegado al cuadro */
 }
-
-
-
-

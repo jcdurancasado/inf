@@ -101,6 +101,22 @@ body {
   display: none;
 }
 
+/* Ajuste SOLO para contacto: que los labels estén más cerca de sus campos */
+body.contact form label {
+  margin-bottom: 0px; /* más pegado al input */
+}
+
+/* Espaciado uniforme SOLO en contacto */
+body.contact form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px; /* espacio entre cada bloque label+input */
+}
+
+body.contact form label {
+  margin-bottom: 2px; /* el label queda pegado al cuadro */
+}
+
 
 
 

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gracias - Julio C. Durán Casado</title>
+  <link rel="stylesheet" href="styles/main.css" />
+</head>
+<body>
+  <main class="page">
+    <section class="card">
+      <h1>¡Gracias!</h1>
+      <p>
+        Tu mensaje ha sido enviado correctamente.  
+        Me pondré en contacto contigo si lo considero oportuno.
+      </p>
+      <a class="btn" href="index.html">Volver al inicio</a>
+
+      <footer class="footer">
+        <small>© <span id="year"></span> odasacnarudcj</small>
+      </footer>
+    </section>
+  </main>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Script de fondos dinámicos (igual que en index/contact)
+    const fondos = [
+      'assets/fondo1.png',
+      'assets/fondo2.png',
+      'assets/fondo3.png',
+      'assets/fondo4.png',
+      'assets/fondo5.png',
+      'assets/fondo6.png',
+      'assets/fondo7.png',
+      'assets/fondo8.png',
+      'assets/fondo9.png',
+      'assets/fondo10.png'
+    ];
+
+    let index = 0;
+    function cambiarFondo() {
+      document.body.style.backgroundImage = `url('${fondos[index]}')`;
+      index = (index + 1) % fondos.length;
+    }
+    cambiarFondo();
+    setInterval(cambiarFondo, 10000);
+  </script>
+</body>
+</html>

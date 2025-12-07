@@ -89,3 +89,11 @@ body {
   }
 }
 
+/* Ajustes SOLO para pantallas de teléfono */
+@media (max-width: 600px) {
+  .card {
+    max-width: 90%;   /* ocupa menos ancho en móvil */
+    padding: 20px;    /* menos espacio interno */
+  }
+}
+

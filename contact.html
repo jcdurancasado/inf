@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contacto - Julio C. Durán Casado</title>
+  <link rel="stylesheet" href="styles/main.css" />
+</head>
+<body class="contact">
+  <main class="page">
+    <section class="card">
+      <h1>Contacto</h1>
+<form action="https://formsubmit.co/jcdurancasado@gmail.com" method="POST">
+  <label for="nombre">Nombre:</label>
+  <input type="text" id="nombre" name="nombre" required>
+
+  <label for="telefono">Teléfono:</label>
+  <input type="tel" id="telefono" name="telefono" placeholder="Ej: +1 809 123 4567">
+
+  <label for="correo">Correo:</label>
+  <input type="email" id="correo" name="correo" value="@" required>
+
+  <label for="mensaje">Mensaje:</label>
+  <textarea id="mensaje" name="mensaje" rows="5" required>
+Hola Julio C. Durán Casado, espero que estés muy bien.
+
+Me gustaría poder ponerme en contacto contigo y que me compartas tu número de teléfono. También me encantaría conversar un poco contigo sobre tus proyectos y experiencia.
+  </textarea>
+
+  <!-- Configuración oculta -->
+  <input type="hidden" name="_next" value="https://odasacnarudcj.github.io/inf/gracias.html">
+  <input type="hidden" name="_captcha" value="false">
+
+  <button type="submit" class="btn">Enviar</button>
+</form>
+
+
+<p class="aviso">
+  <strong>Aviso:</strong> El envío de este formulario no garantiza una respuesta.  
+  Me reservo el derecho de atender o no las solicitudes recibidas,  
+  según mi disponibilidad y criterio profesional.
+</p>
+
+      <footer class="footer">
+        <small>© <span id="year"></span> odasacnarudcj</small>
+      </footer>
+    </section>
+  </main>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Script de fondos dinámicos
+    const fondos = [
+      'assets/fondo1.png',
+      'assets/fondo2.png',
+      'assets/fondo3.png',
+      'assets/fondo4.png',
+      'assets/fondo5.png',
+      'assets/fondo6.png',
+      'assets/fondo7.png',
+      'assets/fondo8.png',
+      'assets/fondo9.png',
+      'assets/fondo10.png'
+    ];
+
+    let index = 0;
+
+    function cambiarFondo() {
+      document.body.style.backgroundImage = `url('${fondos[index]}')`;
+      index = (index + 1) % fondos.length;
+    }
+
+    cambiarFondo();
+    setInterval(cambiarFondo, 10000);
+  </script>
+</body>
+</html>

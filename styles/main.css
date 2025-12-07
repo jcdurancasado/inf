@@ -72,7 +72,7 @@ body {
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.75); /* blanco semitransparente */
+  background: rgba(255, 255, 255, 0.70); /* blanco semitransparente */
   backdrop-filter: blur(6px); /* efecto de vidrio esmerilado */
   border-radius: 12px;
   padding: 30px;
@@ -96,5 +96,6 @@ body {
     padding: 20px;    /* menos espacio interno */
   }
 }
+
 
 

@@ -55,7 +55,7 @@ body {
 .footer {
   margin-top: 14px;
   font-size: 0.75rem;
-  color: #111;   /* casi negro */
+  color: #000;   /* negro total */
 }
 
 html, body { height: 100%; }
@@ -362,6 +362,7 @@ body.contact form label {
 .links a.threads:hover {
   background: rgba(0, 0, 0, 1);      /* negro sólido */
 }
+
 
 
 

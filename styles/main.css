@@ -354,5 +354,16 @@ body.contact form label {
   margin-bottom: 2px; /* el label queda pegado al cuadro */
 }
 
+/* Threads: estilo minimalista en negro */
+.links a.threads {
+  background: rgba(0, 0, 0, 0.85);   /* negro translúcido */
+  color: #fff;                       /* texto blanco */
+}
+.links a.threads:hover {
+  background: rgba(0, 0, 0, 1);      /* negro sólido */
+}
+
+
+
 
 

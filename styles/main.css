@@ -37,7 +37,7 @@ body {
 
 .links a {
   display: block;
-  margin: 4px auto;
+  margin: 2px auto;
   width: 100%; /* ocupa todo el ancho disponible */
   max-width: 420px; /* pero no más de 400px en PC */
   text-decoration: none;
@@ -467,4 +467,5 @@ body {
 #bg2 {
   opacity: 0;
 }
+
 

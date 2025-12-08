@@ -13,6 +13,16 @@
   <meta property="og:image" content="https://jcdurancasado.github.io/inf/assets/profile.png">
   <meta property="og:url" content="https://jcdurancasado.github.io/inf/">
   <meta property="og:type" content="website">
+
+    <!-- Script para ajustar og:url dinámicamente -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const metaUrl = document.querySelector('meta[property="og:url"]');
+      if (metaUrl) {
+        metaUrl.setAttribute("content", window.location.href);
+      }
+    });
+  </script>
 </head>
 <body>
   <div id="bg1"></div>
@@ -101,3 +111,4 @@
 
 </body>
 </html>
+

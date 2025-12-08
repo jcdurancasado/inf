@@ -55,7 +55,7 @@ body {
 .footer {
   margin-top: 14px;
   font-size: 0.75rem;
-  color: #777;
+  color: #111;   /* casi negro */
 }
 
 html, body { height: 100%; }
@@ -353,5 +353,6 @@ body.contact form .btn {
 body.contact form label {
   margin-bottom: 2px; /* el label queda pegado al cuadro */
 }
+
 
 

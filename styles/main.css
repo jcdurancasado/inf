@@ -55,7 +55,7 @@ body {
 .footer {
   margin-top: 14px;
   font-size: 0.75rem;
-  color: #000;   /* negro total */
+  color: #333;   /* gris más oscuro */
 }
 
 html, body { height: 100%; }
@@ -297,12 +297,19 @@ body.contact form .btn {
   background: rgba(0, 0, 0, 1);
 }
 
-/* WhatsApp: verde vibrante */
+/* WhatsApp: verde más llamativo con degradado */
 .links a.whatsapp {
-  background: rgba(37, 211, 102, 0.9);
+  background: linear-gradient(135deg,
+    rgba(37, 211, 102, 0.95),   /* verde WhatsApp */
+    rgba(7, 94, 84, 0.95)       /* verde más oscuro para contraste */
+  );
+  color: #fff;
 }
 .links a.whatsapp:hover {
-  background: rgba(37, 211, 102, 1);
+  background: linear-gradient(135deg,
+    rgba(37, 211, 102, 1),
+    rgba(7, 94, 84, 1)
+  );
 }
 
 /* Email/Gmail: rojo más vivo */
@@ -362,6 +369,7 @@ body.contact form label {
 .links a.threads:hover {
   background: rgba(0, 0, 0, 1);      /* negro sólido */
 }
+
 
 
 

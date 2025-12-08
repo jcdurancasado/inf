@@ -217,7 +217,141 @@ body.contact form {
   gap: 14px; /* espacio entre cada bloque label+input */
 }
 
+  /* Ajustes SOLO para la página de contacto */
+body.contact .card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;   /* centra todo dentro del cuadro blanco */
+  padding: 19px;
+  max-width: 560px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+body.contact form {
+  width: 100%;
+  max-width: 450px;      /* crea margen interno uniforme */
+  margin: 0 auto;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+body.contact form input,
+body.contact form textarea {
+  width: 100%;
+  padding: 8px;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+body.contact form .btn {
+  margin-top: 10px;
+  padding: 10px;
+  font-size: 0.9rem;
+  border-radius: 6px;
+}
+
+/* Instagram: degradado más vibrante */
+.links a.instagram {
+  background: linear-gradient(45deg,
+    rgba(245, 133, 41, 0.9),
+    rgba(253, 29, 29, 0.9),
+    rgba(193, 53, 132, 0.9),
+    rgba(131, 58, 180, 0.9),
+    rgba(88, 81, 219, 0.9)
+  );
+}
+.links a.instagram:hover {
+  background: linear-gradient(45deg,
+    rgba(245, 133, 41, 1),
+    rgba(253, 29, 29, 1),
+    rgba(193, 53, 132, 1),
+    rgba(131, 58, 180, 1),
+    rgba(88, 81, 219, 1)
+  );
+}
+
+/* Facebook: azul más intenso */
+.links a.facebook {
+  background: rgba(24, 119, 242, 0.9);
+}
+.links a.facebook:hover {
+  background: rgba(24, 119, 242, 1);
+}
+
+/* LinkedIn: azul corporativo más fuerte */
+.links a.linkedin {
+  background: rgba(10, 102, 194, 0.9);
+}
+.links a.linkedin:hover {
+  background: rgba(10, 102, 194, 1);
+}
+
+/* X/Twitter: negro más marcado */
+.links a.twitter {
+  background: rgba(0, 0, 0, 0.85);
+}
+.links a.twitter:hover {
+  background: rgba(0, 0, 0, 1);
+}
+
+/* WhatsApp: verde vibrante */
+.links a.whatsapp {
+  background: rgba(37, 211, 102, 0.9);
+}
+.links a.whatsapp:hover {
+  background: rgba(37, 211, 102, 1);
+}
+
+/* Email/Gmail: rojo más vivo */
+.links a.email {
+  background: rgba(212, 70, 56, 0.9);
+}
+.links a.email:hover {
+  background: rgba(212, 70, 56, 1);
+}
+
+.links a.youtube {
+  background: linear-gradient(45deg,
+    rgba(229, 57, 53, 0.9),
+    rgba(213, 0, 0, 0.9),
+    rgba(183, 28, 28, 0.9)
+  );
+}
+.links a.youtube:hover {
+  background: linear-gradient(45deg,
+    rgba(229, 57, 53, 1),
+    rgba(213, 0, 0, 1),
+    rgba(183, 28, 28, 1)
+  );
+}
+
+/* Refuerzo general para todos los botones */
+.links a {
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  transition: transform 0.08s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+/* Hover más contundente (todos) */
+.links a:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
+  filter: saturate(115%);
+}
+
+/* Estado de foco accesible y elegante */
+.links a:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.7);
+  outline-offset: 2px;
+}
+
+
 body.contact form label {
   margin-bottom: 2px; /* el label queda pegado al cuadro */
 }
+
 

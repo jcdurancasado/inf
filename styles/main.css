@@ -370,6 +370,16 @@ body.contact form label {
   background: rgba(0, 0, 0, 1);      /* negro sólido */
 }
 
+/* Fondo con transición suave */
+body {
+  transition: background-image 1s ease-in-out, opacity 1s ease-in-out;
+}
+
+/* Truco para evitar parpadeo entre imágenes */
+.fade-bg {
+  opacity: 0;
+}
+
 
 
 

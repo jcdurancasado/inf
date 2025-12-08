@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="styles/main.css" />
 </head>
 <body>
+  <div id="bg1"></div>
+  <div id="bg2"></div>
   <main class="page">
     <section class="card">
       <h1>¡Gracias!</h1>
@@ -22,31 +24,49 @@
     </section>
   </main>
 
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Script de fondos dinámicos (igual que en index/contact)
-    const fondos = [
-      'assets/fondo1.png',
-      'assets/fondo2.png',
-      'assets/fondo3.png',
-      'assets/fondo4.png',
-      'assets/fondo5.png',
-      'assets/fondo6.png',
-      'assets/fondo7.png',
-      'assets/fondo8.png',
-      'assets/fondo9.png',
-      'assets/fondo10.png'
-    ];
+  const fondos = [
+    'assets/fondo1.png',
+    'assets/fondo2.png',
+    'assets/fondo3.png',
+    'assets/fondo4.png',
+    'assets/fondo5.png',
+    'assets/fondo6.png',
+    'assets/fondo7.png',
+    'assets/fondo8.png',
+    'assets/fondo9.png',
+    'assets/fondo10.png'
+  ];
 
-    let index = 0;
-    function cambiarFondo() {
-      document.body.style.backgroundImage = `url('${fondos[index]}')`;
-      index = (index + 1) % fondos.length;
+  let index = 0;
+  let activo = 1;
+
+  // Imagen inicial
+  document.getElementById("bg1").style.backgroundImage = `url('${fondos[0]}')`;
+
+  function cambiarFondo() {
+    const bg1 = document.getElementById("bg1");
+    const bg2 = document.getElementById("bg2");
+
+    if (activo === 1) {
+      bg2.style.backgroundImage = `url('${fondos[index]}')`;
+      bg2.style.opacity = 1;
+      bg1.style.opacity = 0;
+      activo = 2;
+    } else {
+      bg1.style.backgroundImage = `url('${fondos[index]}')`;
+      bg1.style.opacity = 1;
+      bg2.style.opacity = 0;
+      activo = 1;
     }
-    cambiarFondo();
-    setInterval(cambiarFondo, 10000);
-  </script>
+
+    index = (index + 1) % fondos.length;
+  }
+
+  setInterval(cambiarFondo, 10000);
+</script>
+
 </body>
 </html>
-

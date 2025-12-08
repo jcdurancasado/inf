@@ -431,6 +431,40 @@ body {
   opacity: 1;
 }
 
+/* ========================================= */
+/* Estilos generales de los botones (links)  */
+/* ========================================= */
+.links a {
+  display: inline-flex;        /* flex para alinear icono + texto */
+  align-items: center;         /* centra verticalmente */
+  justify-content: center;     /* centra horizontalmente */
+  gap: 10px;                   /* espacio entre icono y texto */
+  text-align: center;           /* centra el texto dentro del botón */
+  color: #fff;
+  border: 0px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  transition: transform 0.08s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.links a:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
+  filter: saturate(115%);
+}
+
+.links a:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.7);
+  outline-offset: 2px;
+}
+
+.links a .icon {
+  width: 20px;   /* tamaño del icono */
+  height: 20px;
+  display: inline-block;
+}
+
+
 #bg2 {
   opacity: 0;
 }
+

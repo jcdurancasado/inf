@@ -943,3 +943,7 @@ body.pagos .card {
   backdrop-filter: blur(6px);             /* efecto vidrio esmerilado */
 }
 
+/* 🔹 Color azul oscuro para los labels en los datos de pago solo en la página Pagos */
+body.pagos .datos-pago strong {
+  color: #1e3a8a; /* azul oscuro */
+}

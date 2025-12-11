@@ -801,7 +801,7 @@ body.pagos .cuadro-pago:hover {
 }
 
 body.pagos .logo-transferencia {
-  width: 60px;
+  width: 40px;
   display: block;
   margin: 0 auto 10px auto;
 }
@@ -947,3 +947,4 @@ body.pagos .card {
 body.pagos .datos-pago strong {
   color: #1e3a8a; /* azul oscuro */
 }
+

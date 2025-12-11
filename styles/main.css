@@ -936,3 +936,10 @@ body.pagos .cuadro-pago h3 {
   font-weight: bold;          /* resalta el nombre */
   text-shadow: 1px 1px 2px rgba(0,0,0,0.2); /* sombra suave para dar relieve */
 }
+
+/* 🔹 Ajuste de transparencia del contenedor principal solo en Pagos */
+body.pagos .card {
+  background: rgba(255, 255, 255, 0.70); /* igual que Index */
+  backdrop-filter: blur(6px);             /* efecto vidrio esmerilado */
+}
+

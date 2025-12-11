@@ -729,3 +729,199 @@ body.pagos .card .bio {
   color: #333;                  /* color oscuro */
   box-sizing: border-box;       /* asegura que el padding se considere dentro del ancho */
 }
+
+/* ====================== */
+/* ESTILOS RESPONSIVOS PAGOS */
+/* ====================== */
+
+body.pagos {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 26px 10px; /* margen lateral para móvil */
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+body.pagos .card {
+  max-width: 950px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+  box-sizing: border-box;
+}
+
+body.pagos .avatar {
+  width: 150px;
+  height: 150px;
+  margin-bottom: 12px;
+}
+
+body.pagos .bio {
+  text-align: center;
+  padding: 15px 30px; /* izquierda y derecha para que no pegue a los bordes */
+  max-width: 800px;
+  margin: 0 auto 20px auto;
+  line-height: 1.5;
+  font-size: 16px;
+  color: #333;
+  box-sizing: border-box;
+}
+
+body.pagos .titulo-bloque {
+  font-size: 20px;
+  margin-top: 12px;
+  padding: 10px 0;
+  border-radius: 10px;
+}
+
+body.pagos .contenedor-cuadros {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 20px;
+}
+
+body.pagos .cuadro-pago {
+  background: rgba(255, 255, 255, 0.75);
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  backdrop-filter: blur(4px);
+  transition: transform 0.08s ease, box-shadow 0.08s ease, background-color 0.08s ease, filter 0.08s ease;
+}
+
+body.pagos .cuadro-pago:hover {
+  transform: translateY(-6px) scale(1.04);
+  box-shadow: 0 12px 30px rgba(40, 200, 40, 0.7);
+  background-color: rgba(255, 255, 255, 0.95);
+  filter: drop-shadow(0 0 15px rgba(40, 200, 40, 0.7));
+}
+
+body.pagos .logo-transferencia {
+  width: 60px;
+  display: block;
+  margin: 0 auto 10px auto;
+}
+
+body.pagos .datos-enmarcados {
+  border: 1px solid #000000;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-top: 10px;
+  background-color: #ffffff;
+}
+
+body.pagos .datos-pago p {
+  font-size: 14px;
+  margin: 4px 0;
+  color: #000;
+  text-align: left;
+}
+
+body.pagos .boton-pago {
+  text-align: center;
+  margin-top: 12px;
+}
+
+body.pagos .btn-pagar {
+  display: inline-block;
+  background-color: #28a745;
+  color: #fff;
+  padding: 4px 20px;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+body.pagos .btn-pagar:hover {
+  background-color: #218838;
+}
+
+body.pagos .botones-finales {
+  text-align: center;
+  margin: 30px 0;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+body.pagos .btn-final {
+  padding: 6px 8px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+body.pagos .btn-final:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+body.pagos .btn-final.imprimir {
+  background-color: #1e90ff;
+}
+
+body.pagos .btn-final:not(.imprimir) {
+  background-color: #ff6600;
+}
+
+/* ====================== */
+/* MEDIA QUERIES RESPONSIVE */
+/* ====================== */
+@media (max-width: 992px) {
+  body.pagos .contenedor-cuadros {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+}
+
+@media (max-width: 600px) {
+  body.pagos {
+    padding: 20px 10px;
+  }
+
+  body.pagos .card {
+    padding: 20px;
+  }
+
+  body.pagos .bio {
+    padding: 15px 15px;
+  }
+
+  body.pagos .contenedor-cuadros {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  body.pagos .logo-transferencia {
+    width: 50px;
+    margin-bottom: 8px;
+  }
+
+  body.pagos .titulo-bloque {
+    font-size: 18px;
+    padding: 8px 0;
+  }
+
+  body.pagos .btn-pagar {
+    padding: 6px 16px;
+    font-size: 14px;
+  }
+
+  body.pagos .btn-final {
+    font-size: 14px;
+    padding: 5px 12px;
+  }
+}

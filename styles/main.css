@@ -31,7 +31,7 @@ body {
 }
 
 .bio {
-  color: #555;
+  color: #1a1a1a;
   margin-bottom: 12px;
   padding: 0 20px;   /* ← AQUI: 20px a izquierda y derecha */
 }
@@ -947,4 +947,5 @@ body.pagos .card {
 body.pagos .datos-pago strong {
   color: #1e3a8a; /* azul oscuro */
 }
+
 

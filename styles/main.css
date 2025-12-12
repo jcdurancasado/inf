@@ -828,7 +828,7 @@ body.pagos .boton-pago {
 
 body.pagos .btn-pagar {
   display: inline-block;
-  background-color: #28a745;
+  background-color: #0c8a56;
   color: #fff;
   padding: 4px 20px;
   text-decoration: none;
@@ -838,7 +838,7 @@ body.pagos .btn-pagar {
 }
 
 body.pagos .btn-pagar:hover {
-  background-color: #218838;
+  background-color: #003366;
 }
 
 body.pagos .botones-finales {
@@ -947,5 +947,6 @@ body.pagos .card {
 body.pagos .datos-pago strong {
   color: #1e3a8a; /* azul oscuro */
 }
+
 
 

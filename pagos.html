@@ -17,7 +17,27 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 </head>
+
+
 <body class="pagos">
+
+  <!-- 🔒 MODAL DE ACCESO RESTRINGIDO -->
+  <div id="modal-acceso" class="modal-acceso">
+    <div class="modal-contenido">
+      <div class="modal-icono">🔒</div>
+      <h2>Acceso restringido</h2>
+      <p class="modal-texto">
+        Para acceder a esta sección, solicita el código de autorización de pago al administrador.
+      </p>
+
+      <input type="password" id="codigoPago" placeholder="Introduce el código de autorización">
+      
+      <div class="modal-botones">
+        <button id="btnAcceder" class="btn-azul">Aceptar</button>
+      </div>
+    </div>
+  </div>
+
   <div id="bg1"></div>
   <div id="bg2"></div>
   <main class="page">
@@ -47,9 +67,9 @@
     <div class="datos-enmarcados">
         <div class="datos-pago">
         <p><strong>Nombre:</strong> Julio Cesar Durán Casado</p>
-        <p><strong>Numero de cuenta:</strong> 9600338479</p>
-        <p><strong>Tipo de cuenta:</strong> Ahorros</p>
-        <p><strong>Correo:</strong> </p>
+        <p><strong>Usuario:</strong> 9600338479</p>
+        <p><strong>Tipo:</strong> Ahorros</p>
+        <p><strong>Correo:</strong> jcdurancasado@gmail.com</p>
     </div>
     </div>
 
@@ -69,9 +89,9 @@
     <div class="datos-enmarcados">
         <div class="datos-pago">
         <p><strong>Nombre:</strong> Julio Cesar Durán Casado</p>
-        <p><strong>Numero de cuenta:</strong> 32546900013</p>
-        <p><strong>Tipo de cuenta:</strong> Ahorros</p>
-        <p><strong>Correo:</strong> </p>
+        <p><strong>Usuario:</strong> 32546900013</p>
+        <p><strong>Tipo:</strong> Ahorros</p>
+        <p><strong>Correo:</strong> jcdurancasado@gmail.com</p>
     </div>
     </div>
 
@@ -91,9 +111,9 @@
     <div class="datos-enmarcados">
         <div class="datos-pago">
         <p><strong>Nombre:</strong> Julio Cesar Durán Casado</p>
-        <p><strong>Numero de cuenta:</strong> 828282707</p>
-        <p><strong>Tipo de cuenta:</strong> Corriente</p>
-        <p><strong>Correo:</strong> </p>
+        <p><strong>Usuario:</strong> 828282707</p>
+        <p><strong>Tipo:</strong> Corriente</p>
+        <p><strong>Correo:</strong> jcdurancasado@gmail.com</p>
     </div>
     </div>
 
@@ -113,9 +133,9 @@
     <div class="datos-enmarcados">
         <div class="datos-pago">
         <p><strong>Nombre:</strong> Julio Cesar Durán Casado</p>
-        <p><strong>Numero de cuenta:</strong> 4271931898</p>
-        <p><strong>Tipo de cuenta:</strong> Ahorros</p>
-        <p><strong>Correo:</strong> </p>
+        <p><strong>Usuario:</strong> 4271931898</p>
+        <p><strong>Tipo:</strong> Ahorros</p>
+        <p><strong>Correo:</strong> jcdurancasado@gmail.com</p>
     </div>
     </div>
 
@@ -135,9 +155,9 @@
     <div class="datos-enmarcados">
         <div class="datos-pago">
         <p><strong>Nombre:</strong> Julio Cesar Durán Casado</p>
-        <p><strong>Numero de cuenta:</strong> 1002377515</p>
-        <p><strong>Tipo de cuenta:</strong> Ahorros</p>
-        <p><strong>Correo:</strong> </p>
+        <p><strong>Usuario:</strong> 1002377515</p>
+        <p><strong>Tipo:</strong> Ahorros</p>
+        <p><strong>Correo:</strong> jcdurancasado@gmail.com</p>
     </div>
     </div>
 
@@ -157,9 +177,9 @@
     <div class="datos-enmarcados">
         <div class="datos-pago">
         <p><strong>Nombre:</strong> Julio Cesar Durán Casado</p>
-        <p><strong>Numero de cuenta:</strong> 1031470824</p>
-        <p><strong>Tipo de cuenta:</strong> Ahorros</p>
-        <p><strong>Correo:</strong> </p>
+        <p><strong>Usuario:</strong> 1031470824</p>
+        <p><strong>Tipo:</strong> Ahorros</p>
+        <p><strong>Correo:</strong> jcdurancasado@gmail.com</p>
     </div>
     </div>
 
@@ -190,7 +210,7 @@
         <div class="datos-pago">
         <p><strong>Nombre:</strong> Julio Cesar Durán Casado</p>
         <p><strong>Usuario:</strong> jcdurancasado</p>
-        <p><strong>Correo:</strong> </p>
+        <p><strong>Correo:</strong> jcdurancasado@gmail.com</p>
     </div>
     </div>
 
@@ -202,7 +222,7 @@
 
     <!-- CUADRO 2 -->
     <div class="cuadro-pago">
-      <a href="https://airtm.me/jcdurancasado" target="_blank">
+      <a href="https://app.airtm.com/ivt/jcdurancasado" target="_blank">
         <img src="assets/pagos/airtm_icon.png" alt="Airtm" class="logo-transferencia">
       </a>
       <h3>Airtm</h3>
@@ -212,13 +232,13 @@
         <div class="datos-pago">
         <p><strong>Nombre:</strong> Julio Cesar Durán Casado</p>
         <p><strong>Usuario:</strong> jcdurancasado</p>
-        <p><strong>Correo:</strong> </p>
+        <p><strong>Correo:</strong></p>
     </div>
     </div>
 
     <!-- Botón fuera del cuadro -->
     <div class="boton-pago">
-        <a href="https://airtm.me/jcdurancasado" target="_blank" class="btn-pagar">Pagar</a>
+        <a href="https://app.airtm.com/ivt/jcdurancasado" target="_blank" class="btn-pagar">Pagar</a>
     </div>
     </div>
 
@@ -233,7 +253,7 @@
     <div class="datos-enmarcados">
         <div class="datos-pago">
         <p><strong>Nombre:</strong> Julio Cesar Durán Casado</p>
-        <p><strong>Usuario:</strong> </p>
+        <p><strong>Usuario:</strong> jcdurancasado</p>
         <p><strong>Correo:</strong> </p>
     </div>
     </div>
@@ -305,17 +325,16 @@
   </div>
   
 
-<!-- 🔘 BOTONES DESCARGAR PDF E IMPRIMIR -->
-<div class="botones-finales">
-  <button id="generarPDF" class="btn-final">📄 Descargar PDF</button>
-  <button id="imprimir" class="btn-final imprimir">🖨️ Imprimir</button>
-</div>
+    <!-- 🔘 BOTONES DESCARGAR PDF E IMPRIMIR -->
+  <div class="botones-finales">
+    <button id="generarPDF" class="btn-final">📄 Descargar PDF</button>
+    <button id="imprimir" class="btn-final imprimir">🖨️ Imprimir</button>
+  </div>
+</section>
 
   <footer class="footer">
     <small>© <span id="year"></span> JCDC – Todos los derechos reservados.</small>
   </footer>
-</section>
-
   </main>
 
   <script>
@@ -412,11 +431,32 @@ document.getElementById('generarPDF').addEventListener('click', () => {
 });
 </script>
 
+<script>
+  const codigoCorrecto = "2030"; // ← EL CÓDIGO DE AUTORIZACIÓN
+
+  const modal = document.getElementById("modal-acceso");
+  const btn = document.getElementById("btnAcceder");
+  const input = document.getElementById("codigoPago");
+
+  btn.addEventListener("click", () => {
+    if (input.value === codigoCorrecto) {
+      modal.style.display = "none";
+    } else {
+      alert("Código incorrecto. Solicítelo al administrador.");
+      input.value = "";
+    }
+  });
+
+// Bloquear interacción FUERA del modal, pero permitir escribir dentro del input
+document.addEventListener("keydown", (e) => {
+  if (modal.style.display !== "none") {
+    const esInput = e.target === input;
+    if (!esInput) {
+      e.preventDefault();
+    }
+  }
+}, true);
+</script>
+
 </body>
-
 </html>
-
-
-
-
-

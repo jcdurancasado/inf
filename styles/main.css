@@ -726,7 +726,7 @@ body.pagos .card .bio {
   max-width: 800px;             /* limita el ancho del texto en pantallas grandes */
   line-height: 1.5;             /* mejora la lectura */
   font-size: 16px;              /* tamaño legible */
-  color: #333;                  /* color oscuro */
+  color: #1a1a1a;                  /* color oscuro */
   box-sizing: border-box;       /* asegura que el padding se considere dentro del ancho */
 }
 
@@ -947,6 +947,7 @@ body.pagos .card {
 body.pagos .datos-pago strong {
   color: #1e3a8a; /* azul oscuro */
 }
+
 
 
 

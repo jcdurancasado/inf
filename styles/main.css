@@ -1,13 +1,3 @@
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f4f4f9;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-
 .card {
   text-align: center;
   background: #fff;
@@ -15,6 +5,11 @@ body {
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   max-width: 540px;
+  background: rgba(255, 255, 255, 0.70); /* blanco semitransparente */
+  backdrop-filter: blur(6px); /* efecto de vidrio esmerilado */
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
 .avatar {
@@ -40,7 +35,7 @@ body {
   display: block;
   margin: 2px auto;
   width: 100%; /* ocupa todo el ancho disponible */
-  max-width: 420px; /* pero no más de 400px en PC */
+  max-width: 444px; /* pero no más de 400px en PC */
   text-decoration: none;
   color: #fff;
   background: #0077b5;
@@ -59,8 +54,6 @@ body {
   color: #333;   /* gris más oscuro */
 }
 
-html, body { height: 100%; }
-
 body {
   margin: 0;
   font-family: Arial, sans-serif;
@@ -71,14 +64,6 @@ body {
   justify-content: center;
   align-items: center;
   padding: -8px auto;
-}
-
-.card {
-  background: rgba(255, 255, 255, 0.70); /* blanco semitransparente */
-  backdrop-filter: blur(6px); /* efecto de vidrio esmerilado */
-  border-radius: 12px;
-  padding: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
 /* Ajustes SOLO para pantallas de teléfono */
@@ -99,160 +84,6 @@ body {
   }
 }
 
-/* Estilo general del formulario */
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-form label {
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 5px;
-}
-
-form input, form textarea {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-family: Arial, sans-serif;
-  font-size: 0.95rem;
-  transition: border-color 0.3s;
-}
-
-form input:focus, form textarea:focus {
-  border-color: #0077b5;
-  outline: none;
-}
-
-/* Botón */
-form .btn {
-  background: #0077b5;
-  color: #fff;
-  font-weight: bold;
-  padding: 10px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-form .btn:hover {
-  background: #005582;
-}
-
-/* Aviso profesional */
-.aviso {
-  margin-top: 15px;
-  font-size: 0.8rem;
-  color: #555;
-  font-style: italic;
-  text-align: center;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  text-align: left;   /* fuerza alineación a la izquierda */
-}
-
-form label {
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 5px;
-  text-align: left;   /* asegura que el texto del label quede a la izquierda */
-}
-
-form input, form textarea {
-  text-align: left;   /* el texto dentro de los campos también alineado a la izquierda */
-  }
-
-  /* Ajustes SOLO para la página de contacto */
-body.contact .card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;   /* centra todo dentro del cuadro blanco */
-  padding: 19px;
-  max-width: 560px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-body.contact form {
-  width: 100%;
-  max-width: 450px;      /* crea margen interno uniforme */
-  margin: 0 auto;
-  text-align: left;
-  box-sizing: border-box;
-}
-
-body.contact form input,
-body.contact form textarea {
-  width: 100%;
-  padding: 8px;
-  font-size: 0.9rem;
-  border-radius: 6px;
-  box-sizing: border-box;
-  text-align: left;
-}
-
-body.contact form .btn {
-  margin-top: 10px;
-  padding: 10px;
-  font-size: 0.9rem;
-  border-radius: 6px;
-}
-
-/* Ajuste SOLO para contacto: que los labels estén más cerca de sus campos */
-body.contact form label {
-  margin-bottom: 0px; /* más pegado al input */
-}
-
-/* Espaciado uniforme SOLO en contacto */
-body.contact form {
-  display: flex;
-  flex-direction: column;
-  gap: 14px; /* espacio entre cada bloque label+input */
-}
-
-  /* Ajustes SOLO para la página de contacto */
-body.contact .card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;   /* centra todo dentro del cuadro blanco */
-  padding: 19px;
-  max-width: 560px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-body.contact form {
-  width: 100%;
-  max-width: 450px;      /* crea margen interno uniforme */
-  margin: 0 auto;
-  text-align: left;
-  box-sizing: border-box;
-}
-
-body.contact form input,
-body.contact form textarea {
-  width: 100%;
-  padding: px;
-  font-size: 0.9rem;
-  border-radius: 6px;
-  box-sizing: border-box;
-  text-align: left;
-}
-
-body.contact form .btn {
-  margin-top: 10px;
-  padding: 10px;
-  font-size: 0.9rem;
-  border-radius: 6px;
-}
 
 /* Instagram: degradado más vibrante */
 .links a.instagram {
@@ -274,6 +105,7 @@ body.contact form .btn {
   );
 }
 
+
 /* Facebook: azul más intenso */
 .links a.facebook {
   background: rgba(24, 119, 242, 0.9);
@@ -290,6 +122,7 @@ body.contact form .btn {
   background: rgba(10, 102, 194, 1);
 }
 
+
 /* X/Twitter: negro más marcado */
 .links a.twitter {
   background: rgba(0, 0, 0, 0.85);
@@ -298,6 +131,7 @@ body.contact form .btn {
   background: rgba(0, 0, 0, 1);
 }
 
+
 /* TikTok: negro más marcado */
 .links a.tiktok {
   background: rgba(0, 0, 0, 0.85);
@@ -305,6 +139,7 @@ body.contact form .btn {
 .links a.tiktok:hover {
   background: rgba(0, 0, 0, 1);
 }
+
 
 /* WhatsApp: verde más llamativo con degradado */
 .links a.whatsapp {
@@ -321,13 +156,6 @@ body.contact form .btn {
   );
 }
 
-/* Email/Gmail: rojo más vivo */
-.links a.email {
-  background: rgba(212, 70, 56, 0.9);
-}
-.links a.email:hover {
-  background: rgba(212, 70, 56, 1);
-}
 
 .links a.youtube {
   background: linear-gradient(45deg,
@@ -372,32 +200,6 @@ body.contact form .btn {
     rgba(0, 43, 91, 1),
     rgba(0, 102, 194, 1)
   );
-}
-
-/* Refuerzo general para todos los botones */
-.links a {
-  color: #fff;
-  border: 0px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
-  transition: transform 0.08s ease, box-shadow 0.2s ease, filter 0.2s ease;
-}
-
-/* Hover más contundente (todos) */
-.links a:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
-  filter: saturate(115%);
-}
-
-/* Estado de foco accesible y elegante */
-.links a:focus {
-  outline: 2px solid rgba(255, 255, 255, 0.7);
-  outline-offset: 2px;
-}
-
-
-body.contact form label {
-  margin-bottom: 2px; /* el label queda pegado al cuadro */
 }
 
 /* Threads: estilo minimalista en negro */
@@ -485,10 +287,11 @@ body {
   transition: transform 0.08s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
+/* Hover más tecnológico */
 .links a:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
-  filter: saturate(115%);
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 12px 50px rgba(0,255,255,0.4);
+  background: #005582;
 }
 
 .links a:focus {
@@ -502,545 +305,6 @@ body {
   display: inline-block;
 }
 
-
 #bg2 {
   opacity: 0;
 }
-
-/* 🔵 Título de bloques (Pagos Nacionales / Internacionales) */
-.titulo-bloque {
-  width: 100%;
-  text-align: center;
-  background: #002b5b;
-  color: white;
-  padding: 10px 0;
-  font-size: 18px;
-  margin-top: 25px;
-  border-radius: 8px;
-}
-
-/* Contenedor de 6 cuadros */
-.contenedor-cuadros {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 15px;
-  margin-top: 15px;
-}
-
-/* Cada cuadro */
-.cuadro-pago {
-  background: rgba(255, 255, 255, 0.65);
-  border-radius: 10px;
-  padding: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  backdrop-filter: blur(5px);
-}
-
-/* Imagen del banco */
-.logo-transferencia {
-  width: 60px;
-  display: block;
-  margin: 0 auto 10px auto;
-}
-
-/* Alineación de texto */
-.datos-pago p {
-  margin: 4px 0;
-  font-size: 14px;
-  color: #000;
-}
-
-/* 🔹 Contenedor principal solo para la página pagos */
-body.pagos {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start; /* no centrar vertical absoluto */
-  padding: 26px 0;
-  min-height: 100vh;
-}
-
-/* 🔹 Tarjeta principal */
-body.pagos .card {
-  max-width: 950px;          /* ancho aproximado hoja 8.5" */
-  width: 100%;                /* adaptable al viewport */
-  background: rgba(255, 255, 255, 0.9);
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.3);
-  box-sizing: border-box;
-}
-
-/* 🔹 Avatar más grande */
-body.pagos .avatar {
-  width: 150px;
-  height: 150px;
-  margin-bottom: 2px;
-}
-
-/* 🔹 Títulos de bloques (Pagos Nacionales / Internacionales) */
-body.pagos .titulo-bloque {
-  font-size: 20px;
-  margin-top: 12px;
-  padding: 10px 0;
-  border-radius: 10px;
-}
-
-/* 🔹 Contenedor de cuadros */
-body.pagos .contenedor-cuadros {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  margin-top: 20px;
-}
-
-/* 🔹 Cada cuadro de pago */
-body.pagos .cuadro-pago {
-  background: rgba(255, 255, 255, 0.75);
-  border-radius: 10px;
-  padding: 15px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  backdrop-filter: blur(4px);
-}
-
-/* 🔹 Logo de transferencia */
-body.pagos .logo-transferencia {
-  width: 34px;
-  margin-bottom: -12px;
-}
-
-/* 🔹 Datos de pago */
-body.pagos .datos-pago p {
-  font-size: 14px;
-  margin: 4px 0;
-  color: #000;
-  text-align: left;
-}
-
-/* 🔹 Boton de pago en cuadros de pagos electrónicos */
-.boton-pago {
-  text-align: center; /* Centra el botón */
-  margin-top: 22px;   /* Espacio arriba */
-}
-
-.btn-pagar {
-  display: inline-block;
-  background-color: #28a745; /* Verde estilo "pagar" */
-  color: #fff;
-  padding: 1px 20px;
-  text-decoration: none;
-  font-weight: bold;
-  border-radius: 2px;
-  transition: background-color 0.3s ease;
-}
-
-.btn-pagar:hover {
-  background-color: #218838; /* Verde más oscuro al pasar el mouse */
-}
-
-.datos-pago-borde {
-  background-color: #ffffff;   /* Fondo blanco */
-  border: 1px solid #000000;   /* Borde negro fino */
-  padding: 8px;                /* Espacio interno mínimo */
-  margin-top: 10px;
-  border-radius: 4px;
-  text-align: left;            /* Mantiene alineación original */
-}
-
-
-.boton-pago {
-  text-align: center; /* Centra el botón */
-  margin-top: 8px;
-}
-
-.btn-pagar {
-  display: inline-block;
-  background-color: #28a745; /* Verde estilo "pagar" */
-  color: #fff;
-  padding: 4px 20px;
-  text-decoration: none;
-  font-weight: bold;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
-}
-
-.btn-pagar:hover {
-  background-color: #218838; /* Verde más oscuro al pasar el mouse */
-}
-
-/* 🔹 Cuadro interno para los datos */
-.datos-enmarcados {
-  border: 1px solid #000000;   /* Borde negro fino */
-  border-radius: 6px;          /* Bordes suaves */
-  padding: 8px 12px;           /* Espacio interno */
-  margin-top: 10px;            /* Separación respecto al título */
-  background-color: #ffffff;   /* Fondo blanco */
-}
-
-/* Hover ultra rápido y vibrante para los cuadros de pago */ 
-.cuadro-pago {
-  transition: transform 0.08s ease, box-shadow 0.08s ease, background-color 0.08s ease, filter 0.08s ease;
-}
-
-.cuadro-pago:hover {
-  transform: translateY(-6px) scale(1.04);
-  box-shadow: 0 12px 30px rgba(40, 200, 40, 0.7); /* verde brillante */
-  background-color: rgba(255, 255, 255, 0.95);
-  filter: drop-shadow(0 0 15px rgba(40, 200, 40, 0.7));
-}
-
-/* BOTONES FINALES */
-.botones-finales {
-  text-align: center;
-  margin: 30px 0;
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  flex-wrap: wrap;
-}
-
-.btn-final {
-  padding: 6px 8px;
-  font-size: 16px;
-  font-weight: bold;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
-  color: #fff;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.btn-final:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-}
-
-/* Color específico de cada botón */
-.btn-final.imprimir {
-  background-color: #1e90ff; /* azul para imprimir */
-}
-
-.btn-final:not(.imprimir) {
-  background-color: #ff6600; /* naranja para PDF */
-}
-
-/* Ajuste de la bio solo para la página pagos */
-body.pagos .card .bio {
-  text-align: center;           /* centra el texto */
-  padding: 15px 90px;           /* 15px arriba/abajo, 40px izquierda/derecha */
-  margin: -18px auto -20px auto;  /* margen superior e inferior, auto a los lados para centrar */
-  max-width: 800px;             /* limita el ancho del texto en pantallas grandes */
-  line-height: 1.5;             /* mejora la lectura */
-  font-size: 16px;              /* tamaño legible */
-  color: #1a1a1a;                  /* color oscuro */
-  box-sizing: border-box;       /* asegura que el padding se considere dentro del ancho */
-}
-
-/* ====================== */
-/* ESTILOS RESPONSIVOS PAGOS */
-/* ====================== */
-
-body.pagos {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 26px 10px; /* margen lateral para móvil */
-  min-height: 100vh;
-  box-sizing: border-box;
-}
-
-body.pagos .card {
-  max-width: 950px;
-  width: 100%;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.3);
-  box-sizing: border-box;
-}
-
-body.pagos .avatar {
-  width: 150px;
-  height: 150px;
-  margin-bottom: 12px;
-}
-
-body.pagos .bio {
-  text-align: center;
-  padding: 15px 30px; /* izquierda y derecha para que no pegue a los bordes */
-  max-width: 800px;
-  margin: 0 auto 20px auto;
-  line-height: 1.5;
-  font-size: 16px;
-  color: #333;
-  box-sizing: border-box;
-}
-
-body.pagos .titulo-bloque {
-  font-size: 20px;
-  margin-top: 12px;
-  padding: 10px 0;
-  border-radius: 10px;
-}
-
-body.pagos .contenedor-cuadros {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  margin-top: 20px;
-}
-
-body.pagos .cuadro-pago {
-  background: rgba(255, 255, 255, 0.75);
-  border-radius: 10px;
-  padding: 15px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  backdrop-filter: blur(4px);
-  transition: transform 0.08s ease, box-shadow 0.08s ease, background-color 0.08s ease, filter 0.08s ease;
-}
-
-body.pagos .cuadro-pago:hover {
-  transform: translateY(-6px) scale(1.04);
-  box-shadow: 0 12px 30px rgba(40, 200, 40, 0.7);
-  background-color: rgba(255, 255, 255, 0.95);
-  filter: drop-shadow(0 0 15px rgba(40, 200, 40, 0.7));
-}
-
-body.pagos .logo-transferencia {
-  width: 40px;
-  display: block;
-  margin: 0 auto 10px auto;
-}
-
-body.pagos .datos-enmarcados {
-  border: 1px solid #000000;
-  border-radius: 6px;
-  padding: 8px 12px;
-  margin-top: 10px;
-  background-color: #ffffff;
-}
-
-body.pagos .datos-pago p {
-  font-size: 14px;
-  margin: 4px 0;
-  color: #000;
-  text-align: left;
-}
-
-body.pagos .boton-pago {
-  text-align: center;
-  margin-top: 12px;
-}
-
-body.pagos .btn-pagar {
-  display: inline-block;
-  background-color: #0c8a56;
-  color: #fff;
-  padding: 4px 20px;
-  text-decoration: none;
-  font-weight: bold;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
-}
-
-body.pagos .btn-pagar:hover {
-  background-color: #003366;
-}
-
-body.pagos .botones-finales {
-  text-align: center;
-  margin: 30px 0;
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  flex-wrap: wrap;
-}
-
-body.pagos .btn-final {
-  padding: 6px 8px;
-  font-size: 16px;
-  font-weight: bold;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
-  color: #fff;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-body.pagos .btn-final:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-}
-
-body.pagos .btn-final.imprimir {
-  background-color: #1e90ff;
-}
-
-body.pagos .btn-final:not(.imprimir) {
-  background-color: #ff6600;
-}
-
-/* ====================== */
-/* MEDIA QUERIES RESPONSIVE */
-/* ====================== */
-@media (max-width: 992px) {
-  body.pagos .contenedor-cuadros {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-  }
-}
-
-@media (max-width: 600px) {
-  body.pagos {
-    padding: 20px 10px;
-  }
-
-  body.pagos .card {
-    padding: 20px;
-  }
-
-  body.pagos .bio {
-    padding: 15px 15px;
-  }
-
-  body.pagos .contenedor-cuadros {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  body.pagos .logo-transferencia {
-    width: 50px;
-    margin-bottom: 8px;
-  }
-
-  body.pagos .titulo-bloque {
-    font-size: 18px;
-    padding: 8px 0;
-  }
-
-  body.pagos .btn-pagar {
-    padding: 6px 16px;
-    font-size: 14px;
-  }
-
-  body.pagos .btn-final {
-    font-size: 14px;
-    padding: 5px 12px;
-  }
-}
-
-/* Reducir espacio entre logo y nombre del banco */
-body.pagos .cuadro-pago h3 {
-  margin-top: 2px;   /* ajusta este valor según lo pegado que quieras */
-  margin-bottom: 6px; /* margen inferior opcional */
-  font-size: 14px;   /* tamaño del texto si quieres ajustarlo */
-  text-align: center; /* centrado debajo de la imagen */
-  color: #1e3a8a;            /* azul oscuro bonito */
-  font-weight: bold;          /* resalta el nombre */
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.2); /* sombra suave para dar relieve */
-}
-
-/* 🔹 Ajuste de transparencia del contenedor principal solo en Pagos */
-body.pagos .card {
-  background: rgba(255, 255, 255, 0.70); /* igual que Index */
-  backdrop-filter: blur(6px);             /* efecto vidrio esmerilado */
-}
-
-/* 🔹 Color azul oscuro para los labels en los datos de pago solo en la página Pagos */
-body.pagos .datos-pago strong {
-  color: #1e3a8a; /* azul oscuro */
-}
-
-/* ===========================
-   🔒 MODAL DE ACCESO RESTRINGIDO
-   =========================== */
-.modal-acceso {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.65);
-  backdrop-filter: blur(24px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 99999;
-}
-
-.modal-contenido {
-  background: #170d17;
-  color: white;
-  width: 100%;
-  max-width: 420px;
-  padding: 25px 30px;
-  border-radius: 18px;
-  text-align: center;
-  box-shadow: 0 0 25px rgba(0,0,0,0.5);
-  border: 1px solid #1f6feb;
-}
-
-.modal-icono {
-  font-size: 48px;
-  margin-bottom: 10px;
-}
-
-.modal-acceso h2 {
-  color: #cc0000;
-  font-weight: 700;
-  font-size: 30px;
-  margin-bottom: 10px;
-}
-
-.modal-texto {
-  font-size: 15px;
-  margin-bottom: 10px;
-  opacity: 0.9;
-}
-
-.modal-texto {
-  color: white; /* azul oscuro profesional */
-  font-size: 15px;
-}
-
-#codigoPago {
-  width: 90%;
-  padding: 12px;
-  font-size: 16px;
-  border-radius: 8px;
-  border: 1px solid #2f81f7;
-  outline: none;
-  text-align: center;
-  margin-bottom: 20px;
-  background: #161b22;
-  color: white;
-}
-
-#codigoPago:focus {
-  border-color: #54a3ff;
-}
-
-.modal-botones .btn-azul {
-  background: #1f6feb;
-  padding: 12px 30px;
-  border: none;
-  color: white;
-  border-radius: 10px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: .2s;
-}
-
-.modal-botones .btn-azul:hover {
-  background: #388bfd;
-}
-
-
-
-
-

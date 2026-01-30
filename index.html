@@ -6,15 +6,13 @@
   <title>J. Durán</title>
   <meta name="description" content="Hub de enlaces personales de J. Durán" />
   <link rel="stylesheet" href="styles/main.css" />
-
-  <!-- Metadatos para vista previa en WhatsApp -->
+
   <meta property="og:title" content="J. Durán">
   <meta property="og:description" content="Ingeniero en Redes y Telecomunicaciones">
   <meta property="og:image" content="https://jcdurancasado.github.io/inf/assets/profile.png">
   <meta property="og:url" content="https://jcdurancasado.github.io/inf/">
   <meta property="og:type" content="website">
 
-    <!-- Script para ajustar og:url dinámicamente -->
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const metaUrl = document.querySelector('meta[property="og:url"]');
@@ -63,7 +61,7 @@
   <a class="btn tiktok" href="https://jcdurancasado.vercel.app/desactivado" target="_blank">
     <img src="assets/icons/tiktok.svg" alt="TikTok" class="icon"> TikTok
   </a>
-  <a class="btn cursos" href="https://comendador.vercel.app/cursos" target="_blank" rel="noopener noreferrer">
+  <a class="btn cursos" href="https://ctccomendador.vercel.app/cursos" target="_blank" rel="noopener noreferrer">
     <img src="assets/icons/cursos.png" alt="Cursos" class="icon"> Cursos
   </a>
   <a class="btn bancos" href="https://jcdurancasado.vercel.app/" target="_blank" rel="noopener noreferrer">
@@ -110,8 +108,7 @@
 
   let index = 0;
   let activo = 1; // cuál capa está activa
-
-  // Asignar imagen inicial
+
   document.getElementById("bg1").style.backgroundImage = `url('${fondos[0]}')`;
 
   function cambiarFondo() {

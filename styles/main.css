@@ -126,20 +126,31 @@ body {
 /* X/Twitter: negro más marcado */
 .links a.twitter {
   background: rgba(0, 0, 0, 0.85);
+  color: #fff;
 }
 .links a.twitter:hover {
   background: rgba(0, 0, 0, 1);
+  color: #fff;
 }
 
 
 /* TikTok: negro más marcado */
 .links a.tiktok {
-  background: rgba(0, 0, 0, 0.85);
+  background: linear-gradient(135deg,
+    #25F4EE,   /* turquesa oficial */
+    #FE2C55,   /* rojo oficial */
+    #000000    /* negro oficial */
+  );
+  color: #fff;
 }
 .links a.tiktok:hover {
-  background: rgba(0, 0, 0, 1);
+  background: linear-gradient(135deg,
+    #25F4EE,
+    #FE2C55,
+    #000000
+  );
+  color: #fff;
 }
-
 
 /* WhatsApp: verde más llamativo con degradado */
 .links a.whatsapp {
@@ -175,17 +186,17 @@ body {
 /* PayPal: azul corporativo */
 .links a.paypal {
   background: linear-gradient(135deg,
-    rgba(0, 82, 155, 0.9),  /* azul oscuro PayPal */
-    rgba(0, 153, 255, 0.9)  /* azul más claro */
+    #003087,   /* azul oscuro oficial */
+    #009CDE    /* azul claro oficial */
   );
   color: #fff;
 }
-
 .links a.paypal:hover {
   background: linear-gradient(135deg,
-    rgba(0, 82, 155, 1),
-    rgba(0, 153, 255, 1)
+    #003087,
+    #009CDE
   );
+  color: #fff;
 }
 
 .links a.bancos {
@@ -317,3 +328,4 @@ body {
 .links a.telegram:hover {
   background: rgba(0, 136, 204, 1);
 }
+

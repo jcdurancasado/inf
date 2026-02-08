@@ -308,3 +308,12 @@ body {
 #bg2 {
   opacity: 0;
 }
+
+/* Telegram: azul oficial */
+.links a.telegram {
+  background: rgba(0, 136, 204, 0.9);  /* azul Telegram */
+  color: #fff;
+}
+.links a.telegram:hover {
+  background: rgba(0, 136, 204, 1);
+}

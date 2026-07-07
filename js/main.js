@@ -782,28 +782,47 @@ const Modal = {
 };
 
 // ==========================================
-// CONTACT FORM
+// CONTACT FORM - CONECTADO A VERCEL
 // ==========================================
 const ContactForm = {
   init() {
     const form = document.querySelector('[data-contact-form]');
     if (!form) return;
     
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       
       const submitBtn = form.querySelector('button[type="submit"]');
       const originalText = submitBtn.innerHTML;
+      
       submitBtn.disabled = true;
       submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ENVIANDO...`;
       
-      // Simular envío (reemplazar con Formspree real)
-      setTimeout(() => {
-        Toast.show('Mensaje enviado correctamente.', 'success');
-        form.reset();
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      try {
+        const res = await fetch('https://api-contacto-jcdc.vercel.app/api/contacto', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+
+        if (res.ok) {
+          Toast.show(result.message || 'Mensaje enviado. Te responderé en 24-48h.', 'success');
+          form.reset();
+        } else {
+          throw new Error(result.message || 'Error al enviar mensaje');
+        }
+      } catch (error) {
+        Toast.show(error.message || 'Error de conexión. Intenta más tarde.', 'error');
+        console.error('Error:', error);
+      } finally {
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalText;
-      }, 1500);
+      }
     });
   }
 };

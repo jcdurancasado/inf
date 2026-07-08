@@ -3245,18 +3245,19 @@ body {
 }
 
 @media (max-width: 768px) {
-  /* Badge superior: Disponible para proyectos */
+  /* Reubicar badge verde en móvil */
   .hero__badge {
-    order: -1;              /* lo coloca antes de la foto */
-    display: block;
-    position: relative;
-    margin-bottom: var(--space-md);
-    text-align: center;
-    z-index: 2;             /* asegura que no se superponga */
+    position: absolute;       /* lo sacamos del flujo normal */
+    top: -40px;               /* ajusta según el alto de tu foto */
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0 auto;
+    z-index: 5;               /* asegura que quede visible */
   }
 
-  /* Ajuste extra para separar la foto del texto */
+  /* Ajuste extra para la foto en móvil */
   .hero__visual {
-    margin-top: var(--space-md);
+    margin-top: 60px;         /* crea espacio debajo del badge */
   }
 }
+

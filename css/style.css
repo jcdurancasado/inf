@@ -3256,15 +3256,16 @@ body {
   /* Reubicar el badge sobre la foto */
   .hero__badge {
     position: absolute;
-    top: -20px;               /* ajusta según el alto del holograma */
+    top: -25px;               /* ajusta según el alto del holograma */
     left: 50%;
     transform: translateX(-50%);
     white-space: nowrap;      /* evita que se parta en dos líneas */
-    z-index: 20;
+    z-index: 30;
   }
 
   /* Ajustar la foto para dar espacio debajo del badge */
   .hero__visual {
-    margin-top: 40px;
+    margin-top: 60px;         /* crea espacio debajo del badge */
   }
 }
+

@@ -3245,20 +3245,21 @@ body {
 }
 
 @media (max-width: 768px) {
-  /* Reubicar "Disponible para proyectos" en móvil */
+  /* Reubicar el badge verde sobre la foto en móvil */
   .hero__container {
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
   }
 
   .hero__badge {
     position: absolute;       /* lo sacamos del flujo normal */
-    top: 0;                   /* lo fijamos arriba del contenedor */
+    top: 10px;                /* ajusta según el alto del holograma */
     left: 50%;
     transform: translateX(-50%);
-    margin-top: var(--space-sm);
-    z-index: 10;              /* asegura que quede visible */
+    margin: 0;
+    z-index: 20;              /* asegura que quede visible */
   }
 
   .hero__visual {

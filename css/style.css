@@ -3197,3 +3197,49 @@ body {
     display: none;
   }
 }
+
+/* ============================================
+   AJUSTES SOLO PARA MODO MÓVIL
+============================================ */
+@media (max-width: 768px) {
+  /* Badge superior: Disponible para proyectos */
+  .id-card .id-card__role {
+    order: -1;              /* lo coloca antes de la foto */
+    display: block;
+    position: relative;
+    margin-bottom: var(--space-md);
+    text-align: center;
+    z-index: 2;             /* asegura que no se superponga */
+  }
+
+  /* Ajuste extra para separar del texto debajo */
+  .about__sidebar .id-card__photo {
+    margin-top: var(--space-md);
+  }
+
+  /* Métricas en una sola fila */
+  .cyber-stats {
+    flex-direction: row;
+    justify-content: space-around;
+    gap: var(--space-md);
+    flex-wrap: nowrap;
+  }
+  .cyber-stat {
+    flex: 1;
+    max-width: 90px; /* más compacto en móvil */
+  }
+  .stat__number {
+    font-size: 1.5rem; /* reduce tamaño */
+  }
+
+  /* Botones centrados */
+  .hero__actions {
+    justify-content: center;
+    text-align: center;
+  }
+  .hero__actions a,
+  .hero__actions button {
+    margin: 0 auto;
+    display: inline-block;
+  }
+}

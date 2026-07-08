@@ -704,6 +704,12 @@ body {
   font-weight: 500;
 }
 
+@media (max-width: 768px) {
+  .hero__prefix {
+    margin-top: 1rem;
+  }
+}
+
 .text-gradient {
   background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
   -webkit-background-clip: text;
@@ -916,7 +922,8 @@ body {
 
 .data-label {
   color: var(--text-muted);
-  margin-right: 0.5rem;
+  margin-right: 0.85rem;
+  letter-spacing: 0.05em;
 }
 
 @keyframes hologram-rotate {
@@ -3274,8 +3281,25 @@ body {
     margin: 0;
   }
 
-  .hero__visual {
+.hero__visual {
     margin-top: 40px;
+    margin-bottom: 70px;
     position: relative;
+  }
+
+  /* Da más espacio entre la ficha de datos y el título */
+  .hologram-data {
+    bottom: -55px;
+    padding: 0.7rem 1.2rem;
+  }
+
+  .data-line {
+    margin-bottom: 0.4rem;
+  }
+
+  /* Centra realmente el párrafo (no solo el texto interno) */
+  .hero__subtitle {
+    margin-left: auto;
+    margin-right: auto;
   }
 }

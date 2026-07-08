@@ -3245,24 +3245,23 @@ body {
 }
 
 @media (max-width: 768px) {
-  /* Reubicar el badge verde sobre la foto en móvil */
+  /* Cambiar layout del hero en móvil */
   .hero__container {
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse; /* primero la foto, luego el contenido */
     align-items: center;
-    position: relative;
   }
 
+  /* Reubicar el badge sobre la foto */
   .hero__badge {
-    position: absolute;       /* lo sacamos del flujo normal */
-    top: 10px;                /* ajusta según el alto del holograma */
-    left: 50%;
-    transform: translateX(-50%);
-    margin: 0;
-    z-index: 20;              /* asegura que quede visible */
+    position: relative;
+    margin-bottom: var(--space-md);
+    text-align: center;
+    order: -1; /* lo coloca antes del resto del contenido */
   }
 
+  /* Ajustar la foto para dar espacio */
   .hero__visual {
-    margin-top: 60px;         /* crea espacio debajo del badge */
+    margin-top: var(--space-md);
   }
 }

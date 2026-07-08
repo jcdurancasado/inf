@@ -3246,18 +3246,22 @@ body {
 
 @media (max-width: 768px) {
   /* Reubicar "Disponible para proyectos" en móvil */
-  .id-card__role {
+  .hero__container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hero__badge {
     position: absolute;       /* lo sacamos del flujo normal */
-    top: -30px;               /* ajusta según el alto de tu foto */
+    top: 0;                   /* lo fijamos arriba del contenedor */
     left: 50%;
     transform: translateX(-50%);
-    margin: 0 auto;
+    margin-top: var(--space-sm);
     z-index: 10;              /* asegura que quede visible */
   }
 
-  /* Crear espacio debajo de la foto para que no se monte */
-  .id-card__photo {
-    margin-top: 50px;         /* ajusta este valor según necesites */
+  .hero__visual {
+    margin-top: 60px;         /* crea espacio debajo del badge */
   }
 }
-

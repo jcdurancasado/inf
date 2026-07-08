@@ -681,6 +681,10 @@ body {
   animation: pulse 2s infinite;
 }
 
+.hero__badge--photo {
+  display: none; /* solo se muestra en móvil */
+}
+
 /* Título principal - SIN GUIONES BAJOS */
 .hero__title {
   font-family: var(--font-display);
@@ -3253,18 +3257,25 @@ body {
     position: relative;
   }
 
-  /* Reubicar el badge sobre la foto */
+  /* Ocultamos el badge original (el de junto al título) */
   .hero__badge {
-    position: absolute;
-    top: -25px;               /* ajusta según el alto del holograma */
-    left: 50%;
-    transform: translateX(-50%);
-    white-space: nowrap;      /* evita que se parta en dos líneas */
-    z-index: 30;
+    display: none;
   }
 
-  /* Ajustar la foto para dar espacio debajo del badge */
+  /* Mostramos el badge que vive dentro del holograma, anclado a la foto */
+  .hero__badge--photo {
+    display: inline-flex;
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    z-index: 30;
+    margin: 0;
+  }
+
   .hero__visual {
-    margin-top: 60px;         /* crea espacio debajo del badge */
+    margin-top: 40px;
+    position: relative;
   }
 }

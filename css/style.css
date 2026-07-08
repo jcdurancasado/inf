@@ -3203,16 +3203,16 @@ body {
 ============================================ */
 @media (max-width: 768px) {
   /* Badge superior: Disponible para proyectos */
-  .id-card .id-card__role {
-    order: -1;              /* lo coloca antes de la foto */
+  .quick-specs .specs__value--active {
     display: block;
     position: relative;
+    order: -1;              /* lo coloca antes de la foto */
     margin-bottom: var(--space-md);
     text-align: center;
     z-index: 2;             /* asegura que no se superponga */
   }
 
-  /* Ajuste extra para separar del texto debajo */
+  /* Ajuste extra para separar la foto del texto */
   .about__sidebar .id-card__photo {
     margin-top: var(--space-md);
   }

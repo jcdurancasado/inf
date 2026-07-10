@@ -3277,7 +3277,7 @@ body {
   .hero__badge--photo {
     display: inline-flex;
     position: absolute;
-    top: -15px;
+    top: -35px;
     left: 50%;
     transform: translateX(-50%);
     white-space: nowrap;
@@ -3286,11 +3286,10 @@ body {
   }
 
 .hero__visual {
-    margin-top: 40px;
+    margin-top: -25px;
     margin-bottom: 70px;
     position: relative;
-  }
-
+}
   /* Da más espacio entre la ficha de datos y el título */
   .hologram-data {
     bottom: -55px;

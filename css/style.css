@@ -3307,3 +3307,9 @@ body {
     margin-right: auto;
   }
 }
+
+@media (min-width: 1400px) {
+  .container { max-width: 1300px; }
+  .hero__title { font-size: 4rem; }
+  .hologram-container { width: 500px; height: 500px; }
+}

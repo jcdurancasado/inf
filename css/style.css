@@ -3267,11 +3267,7 @@ body {
     align-items: center;
     position: relative;
   }
-   
-.cyber-hero{
-    padding-top: 0 !important;
-    min-height: auto !important;
-}
+
   /* Ocultamos el badge original (el de junto al título) */
   .hero__badge {
     display: none;
@@ -3281,7 +3277,7 @@ body {
   .hero__badge--photo {
     display: inline-flex;
     position: absolute;
-    top: -35px;
+    top: -15px;
     left: 50%;
     transform: translateX(-50%);
     white-space: nowrap;
@@ -3290,10 +3286,11 @@ body {
   }
 
 .hero__visual {
-    margin-top: -25px;
+    margin-top: 40px;
     margin-bottom: 70px;
     position: relative;
-}
+  }
+
   /* Da más espacio entre la ficha de datos y el título */
   .hologram-data {
     bottom: -55px;

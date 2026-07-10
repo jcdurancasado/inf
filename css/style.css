@@ -3267,7 +3267,11 @@ body {
     align-items: center;
     position: relative;
   }
-
+   
+.cyber-hero{
+    padding-top: 20px !important;
+    min-height: auto;
+}
   /* Ocultamos el badge original (el de junto al título) */
   .hero__badge {
     display: none;
@@ -3277,7 +3281,7 @@ body {
   .hero__badge--photo {
     display: inline-flex;
     position: absolute;
-    top: -35px;
+    top: -80px;
     left: 50%;
     transform: translateX(-50%);
     white-space: nowrap;
@@ -3285,8 +3289,8 @@ body {
     margin: 0;
   }
 
-.hero__visual {
-    margin-top: -25px;
+.hero__visual{
+    margin-top: -70px;
     margin-bottom: 70px;
     position: relative;
 }

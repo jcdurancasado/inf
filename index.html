@@ -1109,5 +1109,65 @@ de la enseñanza.</h3>
   </button>
 
   <script src="js/main.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("contactForm");
+      const responseEl = document.getElementById("formResponse");
+    
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        responseEl.textContent = "";
+        responseEl.className = "form-response";
+    
+        // Validación de campos obligatorios
+        const nombre = document.getElementById("contact-name").value.trim();
+        const telefono = document.getElementById("contact-phone").value.trim();
+        const correo = document.getElementById("contact-email").value.trim();
+    
+        if (!nombre || !telefono || !correo) {
+          responseEl.textContent = "❌ Todos los campos son obligatorios (excepto mensaje y archivos).";
+          responseEl.classList.add("error");
+          return;
+        }
+    
+        // Validación de archivos
+        const files = document.getElementById("contact-files").files;
+        if (files.length > 5) {
+          responseEl.textContent = "❌ Máximo 5 archivos permitidos.";
+          responseEl.classList.add("error");
+          return;
+        }
+        const totalSize = Array.from(files).reduce((acc, f) => acc + f.size, 0);
+        if (totalSize > 5 * 1024 * 1024) {
+          responseEl.textContent = "❌ El total de archivos no debe superar 5 MB.";
+          responseEl.classList.add("error");
+          return;
+        }
+    
+        // Envío al backend
+        const formData = new FormData(form);
+        try {
+          const res = await fetch(form.action, {
+            method: "POST",
+            body: formData,
+          });
+          const data = await res.json();
+          if (res.ok) {
+            responseEl.textContent = "✅ " + data.message;
+            responseEl.classList.add("ok");
+            form.reset();
+          } else {
+            responseEl.textContent = "❌ " + data.message;
+            responseEl.classList.add("error");
+          }
+        } catch {
+          responseEl.textContent = "❌ Error enviando el formulario.";
+          responseEl.classList.add("error");
+        }
+      });
+    });
+    </script>
+
 </body>
 </html>

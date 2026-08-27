@@ -3313,3 +3313,25 @@ body {
   .hero__title { font-size: 4rem; }
   .hologram-container { width: 500px; height: 500px; }
 }
+
+.form-response {
+  margin-top: 10px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.form-response.ok {
+  color: #00c853; /* verde éxito */
+}
+
+.form-response.error {
+  color: #d50000; /* rojo error */
+}
+
+.form-note {
+  margin-top: 15px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #ccc;
+  line-height: 1.4;
+}

@@ -967,6 +967,7 @@ de la enseñanza.</h3>
             action="https://jcdurancasado.vercel.app/api/contacto" 
             method="POST" 
             enctype="multipart/form-data"
+            id="contactForm"
           >
             <div class="cyber-input-group">
               <input type="text" id="contact-name" name="nombre" class="cyber-input" required placeholder=" " />
@@ -974,7 +975,7 @@ de la enseñanza.</h3>
             </div>
           
             <div class="cyber-input-group">
-              <input type="tel" id="contact-phone" name="telefono" class="cyber-input" placeholder=" " />
+              <input type="tel" id="contact-phone" name="telefono" class="cyber-input" required placeholder=" " />
               <label class="cyber-label">TELÉFONO</label>
             </div>
           
@@ -984,11 +985,7 @@ de la enseñanza.</h3>
             </div>
           
             <div class="cyber-input-group">
-              <textarea id="contact-message" name="mensaje" class="cyber-input cyber-textarea" rows="4" required placeholder=" ">
-          Hola Julio C. Durán Casado, espero que estés muy bien.
-          
-          Me gustaría poder ponerme en contacto contigo y que me compartas tu número de teléfono. También me encantaría conversar un poco sobre tus proyectos y experiencia.
-              </textarea>
+              <textarea id="contact-message" name="mensaje" class="cyber-input cyber-textarea" rows="4" placeholder=" "></textarea>
               <label class="cyber-label">MENSAJE</label>
             </div>
           
@@ -997,7 +994,7 @@ de la enseñanza.</h3>
               <label class="cyber-label">ADJUNTAR ARCHIVOS (máx. 5, total 5 MB)</label>
             </div>
           
-            <!-- Campo oculto para el código de acceso del modal -->
+            <!-- Campo oculto para el código del modal -->
             <input type="hidden" name="codigoAcceso" id="codigoAcceso" />
           
             <button type="submit" class="cyber-btn cyber-btn--primary cyber-btn--full cyber-btn--large">
@@ -1005,9 +1002,14 @@ de la enseñanza.</h3>
               <i class="fa-solid fa-paper-plane"></i>
             </button>
           
-            <p class="form__response-time">
-              <i class="fa-solid fa-clock"></i>
-              TIEMPO DE RESPUESTA ESTIMADO: 24-48H
+            <!-- Mensajes dinámicos -->
+            <p id="formResponse" class="form-response"></p>
+          
+            <!-- Nota centrada -->
+            <p class="form-note">
+              <strong>Nota:</strong> El envío de este formulario no garantiza una respuesta.  
+              Me reservo el derecho de atender o no las solicitudes recibidas,  
+              según mi disponibilidad y criterio profesional.
             </p>
           </form>
         </div>

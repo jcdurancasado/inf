@@ -962,40 +962,49 @@ de la enseñanza.</h3>
             <span class="terminal__title">guest@jcdc:~# transmit_message</span>
           </div>
           
-          <form class="form-terminal__body" data-contact-form>
+          <form 
+            class="form-terminal__body" 
+            action="https://jcdurancasado.vercel.app/api/contacto" 
+            method="POST" 
+            enctype="multipart/form-data"
+          >
             <div class="cyber-input-group">
-              <input type="text" id="contact-name" name="name" class="cyber-input" required placeholder=" " />
+              <input type="text" id="contact-name" name="nombre" class="cyber-input" required placeholder=" " />
               <label class="cyber-label">NOMBRE COMPLETO</label>
             </div>
-
+          
             <div class="cyber-input-group">
-              <input type="email" id="contact-email" name="email" class="cyber-input" required placeholder=" " />
+              <input type="tel" id="contact-phone" name="telefono" class="cyber-input" placeholder=" " />
+              <label class="cyber-label">TELÉFONO</label>
+            </div>
+          
+            <div class="cyber-input-group">
+              <input type="email" id="contact-email" name="correo" class="cyber-input" required placeholder=" " />
               <label class="cyber-label">CORREO ELECTRÓNICO</label>
             </div>
-
+          
             <div class="cyber-input-group">
-              <select id="contact-type" name="type" class="cyber-input cyber-select" required>
-                <option value="" disabled selected></option>
-                <option value="network">DISEÑO DE RED CISCO</option>
-                <option value="security">AUDITORÍA CIBERSEGURIDAD</option>
-                <option value="training">CAPACITACIÓN EQUIPO</option>
-                <option value="support">SOPORTE TÉCNICO</option>
-                <option value="consulting">CONSULTORÍA GENERAL</option>
-                <option value="other">OTRO / NO ESTOY SEGURO</option>
-              </select>
-              <label class="cyber-label">TIPO DE SERVICIO</label>
-            </div>
-
-            <div class="cyber-input-group">
-              <textarea id="contact-message" name="message" class="cyber-input cyber-textarea" rows="4" required placeholder=" "></textarea>
+              <textarea id="contact-message" name="mensaje" class="cyber-input cyber-textarea" rows="4" required placeholder=" ">
+          Hola Julio C. Durán Casado, espero que estés muy bien.
+          
+          Me gustaría poder ponerme en contacto contigo y que me compartas tu número de teléfono. También me encantaría conversar un poco sobre tus proyectos y experiencia.
+              </textarea>
               <label class="cyber-label">MENSAJE</label>
             </div>
-
+          
+            <div class="cyber-input-group">
+              <input type="file" id="contact-files" name="archivos" class="cyber-input" multiple />
+              <label class="cyber-label">ADJUNTAR ARCHIVOS (máx. 5, total 5 MB)</label>
+            </div>
+          
+            <!-- Campo oculto para el código de acceso del modal -->
+            <input type="hidden" name="codigoAcceso" id="codigoAcceso" />
+          
             <button type="submit" class="cyber-btn cyber-btn--primary cyber-btn--full cyber-btn--large">
               <span class="cyber-btn__text">ENVIAR MENSAJE</span>
               <i class="fa-solid fa-paper-plane"></i>
             </button>
-
+          
             <p class="form__response-time">
               <i class="fa-solid fa-clock"></i>
               TIEMPO DE RESPUESTA ESTIMADO: 24-48H

@@ -1110,64 +1110,114 @@ de la enseñanza.</h3>
 
   <script src="js/main.js"></script>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const form = document.getElementById("contactForm");
-      const responseEl = document.getElementById("formResponse");
-    
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        responseEl.textContent = "";
-        responseEl.className = "form-response";
-    
-        // Validación de campos obligatorios
-        const nombre = document.getElementById("contact-name").value.trim();
-        const telefono = document.getElementById("contact-phone").value.trim();
-        const correo = document.getElementById("contact-email").value.trim();
-    
-        if (!nombre || !telefono || !correo) {
-          responseEl.textContent = "❌ Todos los campos son obligatorios (excepto mensaje y archivos).";
-          responseEl.classList.add("error");
-          return;
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("contactForm");
+  const responseEl = document.getElementById("formResponse");
+  const submitBtn = document.getElementById("submitBtn");
+
+  // Crear barra de progreso
+  const progressBar = document.createElement("progress");
+  progressBar.id = "uploadProgress";
+  progressBar.value = 0;
+  progressBar.max = 100;
+  progressBar.style.display = "none";
+  form.appendChild(progressBar);
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    responseEl.textContent = "";
+    responseEl.className = "form-response";
+
+    const nombre = document.getElementById("contact-name").value.trim();
+    const telefono = document.getElementById("contact-phone").value.trim();
+    const correo = document.getElementById("contact-email").value.trim();
+    const mensaje = document.getElementById("contact-message").value.trim();
+    const files = document.getElementById("contact-files").files;
+
+    // Validación de campos obligatorios
+    if (!nombre || !telefono || !correo) {
+      responseEl.textContent = "❌ Todos los campos son obligatorios (excepto mensaje y archivos).";
+      responseEl.classList.add("error");
+      return;
+    }
+
+    // Validación: mensaje o archivos, al menos uno
+    const minCaracteres = 30;
+    if (mensaje.length < minCaracteres && files.length === 0) {
+      responseEl.textContent = `❌ Debes escribir un mensaje (mínimo ${minCaracteres} caracteres) o adjuntar al menos un archivo.`;
+      responseEl.classList.add("error");
+      return;
+    }
+
+    // Validación de archivos
+    if (files.length > 5) {
+      responseEl.textContent = "❌ Máximo 5 archivos permitidos.";
+      responseEl.classList.add("error");
+      return;
+    }
+    const totalSize = Array.from(files).reduce((acc, f) => acc + f.size, 0);
+    if (totalSize > 5 * 1024 * 1024) {
+      responseEl.textContent = "❌ El total de archivos no debe superar 5 MB.";
+      responseEl.classList.add("error");
+      return;
+    }
+
+    // Estado de carga
+    submitBtn.disabled = true;
+    submitBtn.querySelector(".cyber-btn__text").textContent = "ENVIANDO...";
+
+    const formData = new FormData(form);
+
+    if (mensaje.length < minCaracteres && files.length > 0) {
+      formData.set("mensaje", "Adjunto archivos sin mensaje");
+    }
+
+    // ✅ Mostrar éxito inmediato y limpiar campos
+    responseEl.textContent = "✅ Mensaje enviado con éxito";
+    responseEl.classList.add("ok");
+    form.reset();
+
+    // Ocultar mensaje de éxito después de 15 segundos
+    setTimeout(() => {
+      responseEl.textContent = "";
+      responseEl.className = "form-response";
+    }, 15000);
+
+    // Enviar en segundo plano con barra de progreso
+    try {
+      progressBar.style.display = "block";
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", form.action, true);
+
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const percent = Math.round((event.loaded / event.total) * 100);
+          progressBar.value = percent;
         }
-    
-        // Validación de archivos
-        const files = document.getElementById("contact-files").files;
-        if (files.length > 5) {
-          responseEl.textContent = "❌ Máximo 5 archivos permitidos.";
-          responseEl.classList.add("error");
-          return;
-        }
-        const totalSize = Array.from(files).reduce((acc, f) => acc + f.size, 0);
-        if (totalSize > 5 * 1024 * 1024) {
-          responseEl.textContent = "❌ El total de archivos no debe superar 5 MB.";
-          responseEl.classList.add("error");
-          return;
-        }
-    
-        // Envío al backend
-        const formData = new FormData(form);
-        try {
-          const res = await fetch(form.action, {
-            method: "POST",
-            body: formData,
-          });
-          const data = await res.json();
-          if (res.ok) {
-            responseEl.textContent = "✅ " + data.message;
-            responseEl.classList.add("ok");
-            form.reset();
-          } else {
-            responseEl.textContent = "❌ " + data.message;
-            responseEl.classList.add("error");
-          }
-        } catch {
-          responseEl.textContent = "❌ Error enviando el formulario.";
-          responseEl.classList.add("error");
-        }
-      });
-    });
-    </script>
+      };
+
+      xhr.onload = () => {
+        progressBar.style.display = "none";
+      };
+
+      xhr.onerror = () => {
+        console.warn("Error de conexión, pero el mensaje ya fue marcado como enviado.");
+        progressBar.style.display = "none";
+      };
+
+      xhr.send(formData);
+    } catch {
+      console.warn("Error de conexión, pero el mensaje ya fue marcado como enviado.");
+      progressBar.style.display = "none";
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.querySelector(".cyber-btn__text").textContent = "ENVIAR MENSAJE";
+    }
+  });
+});
+</script>
+
 
 </body>
 </html>

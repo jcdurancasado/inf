@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
+
   <!-- SEO -->
-  <meta name="description" content="Julio C. Durán Casado - Especialista en diseñar, implementar y proteger infraestructuras tecnológicas modernas." />
-  <meta name="keywords" content="Julio Durán Casado, redes, Cisco, CCNA, CCNP, CyberOps, ciberseguridad, telecomunicaciones, soporte técnico, desarrollo web, República Dominicana" />
+  <meta name="description" content="Julio C. Durán Casado - Ingeniero en Redes y Telecomunicaciones. Diseño, implementación y protección de infraestructuras tecnológicas modernas." />
+  <meta name="keywords" content="Julio Durán Casado, redes, Cisco, CCNA, CCNP, CyberOps, ciberseguridad, telecomunicaciones, República Dominicana" />
   <meta name="author" content="Julio César Durán Casado" />
   <meta name="theme-color" content="#00f0ff" />
 
@@ -20,7 +20,7 @@
   <meta property="og:url" content="https://jcdurancasado.github.io/inf/" />
   <meta property="og:type" content="website" />
 
-  <!-- Twitter Card -->
+    <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Julio C. Durán Casado - Ingeniero en Redes y Telecomunicaciones" />
   <meta name="twitter:description" content="Especialista en diseñar, implementar y proteger infraestructuras tecnológicas modernas." />
@@ -31,264 +31,104 @@
   <!-- Fuentes y estilos -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Rajdhani:wght@400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="icon" type="image/png" href="img/foto.png" />
-  <link rel="stylesheet" href="css/style.css?v=2" />
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 
 <body>
-  <!-- Scanlines overlay -->
   <div class="scanlines" aria-hidden="true"></div>
   <div class="vignette" aria-hidden="true"></div>
-  
-  <!-- Grid background -->
   <div class="cyber-grid" aria-hidden="true"></div>
-  
-  <!-- Floating particles -->
   <canvas id="particles" class="particles" aria-hidden="true"></canvas>
 
-  <!-- Custom cursor -->
-  <div class="cursor" aria-hidden="true"></div>
-  <div class="cursor-trail" aria-hidden="true"></div>
+  <div class="toast-container" aria-live="polite"></div>
 
-  <!-- Toast notifications -->
-  <div class="toast-container" aria-live="polite" aria-atomic="true"></div>
-
-  <!-- Boot sequence overlay -->
   <div class="boot-sequence" id="boot-sequence">
     <div class="boot-content">
-      <div class="boot-logo">
-       <!-- <span class="boot-icon">◈</span>-->
-        <span class="boot-text">JCDURANCASADO SYSTEM</span>
-      </div>
+      <div class="boot-logo"><span class="boot-text">JCDURANCASADO · SYSTEM</span></div>
       <div class="boot-lines" id="boot-lines"></div>
-      <div class="boot-progress">
-        <div class="boot-bar" id="boot-bar"></div>
-      </div>
+      <div class="boot-progress"><div class="boot-bar" id="boot-bar"></div></div>
       <div class="boot-status" id="boot-status">Inicializando...</div>
     </div>
   </div>
 
-  <!-- Modal cotización 
-  <div id="quote-modal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="modal-title">
-    <div class="modal__overlay" data-modal-close></div>
-    <div class="modal__content cyber-panel">
-      <div class="modal__header">
-        <h3 id="modal-title">SOLICITAR COTIZACIÓN</h3>
-        <button class="modal__close cyber-btn-icon" data-modal-close aria-label="Cerrar">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-      <div class="modal__body">
-        <div data-quote-summary></div>
-        <form id="quote-form" class="quote-form">
-          <div class="cyber-input-group">
-            <input type="text" name="name" class="cyber-input" required placeholder=" " />
-            <label class="cyber-label">NOMBRE COMPLETO</label>
-            <span class="cyber-input__border"></span>
-          </div>
-          <div class="cyber-input-group">
-            <input type="email" name="email" class="cyber-input" required placeholder=" " />
-            <label class="cyber-label">CORREO ELECTRÓNICO</label>
-            <span class="cyber-input__border"></span>
-          </div>
-          <div class="cyber-input-group">
-            <textarea name="details" class="cyber-input cyber-textarea" rows="3" placeholder=" "></textarea>
-            <label class="cyber-label">ESPECIFICACIONES DEL PROYECTO</label>
-            <span class="cyber-input__border"></span>
-          </div>
-          <button type="submit" class="cyber-btn cyber-btn--primary cyber-btn--full">
-            <span class="cyber-btn__text">ENVIAR SOLICITUD</span>
-            <i class="fa-solid fa-paper-plane"></i>
-          </button>
-        </form>
-      </div>
-    </div>
-  </div>-->
-
-  <!-- Header -->
-  <header class="header cyber-header" data-header>
+  <!-- HEADER -->
+  <header class="header" data-header>
     <div class="header__scanline"></div>
     <div class="container header__container">
-      
-      <!-- LOGO SOLO - SIN TEXTO -->
-      <a href="#inicio" class="logo cyber-logo" aria-label="Inicio">
+      <a href="#inicio" class="logo" aria-label="Inicio">
         <div class="logo__symbol">
           <svg viewBox="0 0 100 100" class="logo__svg">
-            <!-- Escudo exterior (ciberseguridad) -->
-            <path d="M50 5 L90 25 L90 60 Q90 85 50 95 Q10 85 10 60 L10 25 Z" 
-                  fill="none" stroke="currentColor" stroke-width="2"/>
-            
-            <!-- Red interna (redes) -->
+            <path d="M50 5 L90 25 L90 60 Q90 85 50 95 Q10 85 10 60 L10 25 Z" fill="none" stroke="currentColor" stroke-width="2"/>
             <circle cx="50" cy="45" r="25" fill="none" stroke="currentColor" stroke-width="1.5"/>
             <circle cx="50" cy="45" r="15" fill="none" stroke="currentColor" stroke-width="1"/>
             <circle cx="50" cy="45" r="5" fill="currentColor"/>
-            
-            <!-- Nodos de red -->
             <circle cx="50" cy="20" r="4" fill="currentColor"/>
             <circle cx="75" cy="35" r="4" fill="currentColor"/>
             <circle cx="75" cy="65" r="4" fill="currentColor"/>
             <circle cx="50" cy="80" r="4" fill="currentColor"/>
             <circle cx="25" cy="65" r="4" fill="currentColor"/>
             <circle cx="25" cy="35" r="4" fill="currentColor"/>
-            
-            <!-- Conexiones -->
             <line x1="50" y1="45" x2="50" y2="20" stroke="currentColor" stroke-width="1"/>
             <line x1="50" y1="45" x2="75" y2="35" stroke="currentColor" stroke-width="1"/>
             <line x1="50" y1="45" x2="75" y2="65" stroke="currentColor" stroke-width="1"/>
             <line x1="50" y1="45" x2="50" y2="80" stroke="currentColor" stroke-width="1"/>
             <line x1="50" y1="45" x2="25" y2="65" stroke="currentColor" stroke-width="1"/>
             <line x1="50" y1="45" x2="25" y2="35" stroke="currentColor" stroke-width="1"/>
-            
-            <!-- Circuitos del escudo -->
-            <path d="M20 30 L30 30 L35 40" fill="none" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-            <path d="M80 30 L70 30 L65 40" fill="none" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-            <path d="M20 70 L30 70 L35 60" fill="none" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-            <path d="M80 70 L70 70 L65 60" fill="none" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-            
-            <!-- Puntos de datos -->
-            <circle cx="30" cy="30" r="2" fill="currentColor" opacity="0.8"/>
-            <circle cx="70" cy="30" r="2" fill="currentColor" opacity="0.8"/>
-            <circle cx="30" cy="70" r="2" fill="currentColor" opacity="0.8"/>
-            <circle cx="70" cy="70" r="2" fill="currentColor" opacity="0.8"/>
           </svg>
         </div>
       </a>
 
-      <div class="header__actions">
-        <!-- ONLINE OCULTO -->
-        <div class="system-status hidden">
-          <span class="status-dot"></span>
-          <span class="status-text">ONLINE</span>
-        </div>
+      <nav id="nav-menu" class="nav" data-nav>
+        <ul class="nav__list">
+          <li><a href="#inicio" class="nav__link" data-nav-link>INICIO</a></li>
+          <li><a href="#perfil" class="nav__link" data-nav-link>PERFIL</a></li>
+          <li><a href="#trayectoria" class="nav__link" data-nav-link>TRAYECTORIA</a></li>
+          <li><a href="#certificaciones" class="nav__link" data-nav-link>CREDENCIALES</a></li>
+          <li><a href="#enlaces" class="nav__link" data-nav-link>ENLACES</a></li>
+          <li><a href="#contacto" class="nav__link nav__link--cta" data-nav-link>CONTACTO</a></li>
+        </ul>
+      </nav>
 
-        <nav id="nav-menu" class="nav cyber-nav" data-nav>
-          <ul class="nav__list">
-            <li><a href="#inicio" class="nav__link" data-nav-link>INICIO</a></li>
-            <li><a href="#sobre-mi" class="nav__link" data-nav-link>PERFIL</a></li>
-           <!-- <li><a href="#servicios" class="nav__link" data-nav-link>SERVICIOS</a></li> -->
-            <li><a href="#certificaciones" class="nav__link" data-nav-link>CERTIFICACIONES</a></li>
-            <li><a href="#experiencia" class="nav__link" data-nav-link>EXPERIENCIA</a></li>
-            <li><a href="#contacto" class="nav__link nav__link--cta" data-nav-link>CONTACTO</a></li>
-          </ul>
-        </nav>
-
-        <!--
-        <button class="cyber-icon-btn theme-toggle" aria-label="Cambiar tema" data-theme-toggle>
-          <i class="fa-solid fa-sun"></i>
-          <i class="fa-solid fa-moon"></i>
-        </button>
-        -->
-<!--
-        <button class="cyber-icon-btn cart-toggle" aria-label="Carrito de servicios" data-cart-toggle>
-          <i class="fa-solid fa-cart-shopping"></i>
-          <span class="cart-badge" data-cart-count>0</span>
-        </button> -->
-
-        <button class="nav-toggle cyber-nav-toggle" aria-label="Menú" aria-expanded="false" aria-controls="nav-menu" data-nav-toggle>
-          <span class="nav-toggle__bar"></span>
-          <span class="nav-toggle__bar"></span>
-          <span class="nav-toggle__bar"></span>
-        </button>
-      </div>
+      <button class="nav-toggle" aria-label="Menú" aria-expanded="false" aria-controls="nav-menu" data-nav-toggle>
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+      </button>
     </div>
   </header>
 
-  <!-- Sidebar servicios 
-  <aside class="cart-sidebar cyber-sidebar" aria-label="Carrito de servicios" data-cart>
-    <div class="sidebar__header">
-      <h3 class="sidebar__title">CARRITO DE SERVICIOS</h3>
-      <button class="sidebar__close cyber-btn-icon" aria-label="Cerrar" data-cart-close>
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
-    <div class="sidebar__items" data-cart-items>
-      <div class="sidebar-empty">
-        <div class="empty-icon">
-          <i class="fa-solid fa-cart-shopping"></i>
-        </div>
-        <p>Carrito vacío.<br>Selecciona servicios para comenzar.</p>
-      </div>
-    </div>
-    <div class="sidebar__footer">
-      <div class="sidebar__total">
-        <span>TOTAL ESTIMADO:</span>
-        <span class="sidebar__total-price" data-cart-total>0.00 USD</span>
-      </div>
-      <button class="cyber-btn cyber-btn--primary cyber-btn--full" data-checkout>
-        <span class="cyber-btn__text">SOLICITAR COTIZACIÓN</span>
-        <i class="fa-solid fa-arrow-right"></i>
-      </button>
-    </div>
-  </aside>
-  <div class="sidebar-overlay" data-cart-overlay></div>--> 
-
   <main>
-    <!-- HERO SECTION -->
-    <section class="hero cyber-hero" id="inicio" aria-labelledby="hero-title">
+    <!-- HERO -->
+    <section class="hero" id="inicio" aria-labelledby="hero-title">
       <div class="hero__bg" aria-hidden="true">
         <div class="hero__gradient"></div>
         <div class="hero__grid-perspective"></div>
       </div>
-      
+
       <div class="container hero__container">
         <div class="hero__content" data-reveal="left">
-          <div class="hero__badge cyber-badge">
-            <!--<span class="badge__pulse"></span> -->
+          <div class="hero__badge">
             <span class="badge__text">
               <i class="fa-solid fa-signal"></i>
               DISPONIBLE PARA PROYECTOS
             </span>
           </div>
-          
+
           <h1 id="hero-title" class="hero__title">
             <span class="hero__prefix">INGENIERO EN</span>
             <span class="text-gradient">REDES Y TELECOMUNICACIONES</span>
           </h1>
-          
-          <p class="hero__subtitle">
-            <span class="typing-text" data-text="Especialista en diseñar, implementar y proteger infraestructuras tecnológicas modernas. Combinando desarrollo web de alto rendimiento, administración de redes empresariales, ciberseguridad avanzada y soporte técnico informático para resultados medibles."></span>
-           <!-- <span class="cursor-blink">_</span>-->
-          </p>
-          <!--
-          <div class="hero__quote">
-            <div class="quote__bracket quote__bracket--left">[</div>
-            <p class="quote__text">"La tecnología debe servir a las personas, no al revés."</p>
-            <div class="quote__bracket quote__bracket--right">]</div>
-          </div>-->
 
-          <div class="hero__stats cyber-stats">
-            <div class="stat cyber-stat">
-              <div class="stat__hex">
-                <span class="stat__number" data-count="7">0</span>
-                <span class="stat__suffix">YRS</span>
-              </div>
-              <span class="stat__label">EXPERIENCIA</span>
-            </div>
-            <div class="stat cyber-stat">
-              <div class="stat__hex">
-                <span class="stat__number" data-count="500">0</span>
-                <span class="stat__suffix">+</span>
-              </div>
-              <span class="stat__label">ESTUDIANTES</span>
-            </div>
-            <div class="stat cyber-stat">
-              <div class="stat__hex">
-                <span class="stat__number" data-count="15">0</span>
-                <span class="stat__suffix">CERTS</span>
-              </div>
-              <span class="stat__label">CERTIFICACIONES</span>
-            </div>
-          </div>
+          <p class="hero__subtitle">
+            <span class="typing-text" data-text="Especialista en diseñar, implementar y proteger infraestructuras tecnológicas modernas. Combino redes empresariales Cisco, ciberseguridad avanzada y docencia técnica para entregar soluciones medibles, seguras y sostenibles."></span>
+          </p>
 
           <div class="hero__actions">
-            <a href="#certificaciones" class="cyber-btn cyber-btn--primary cyber-btn--large">
-              <span class="cyber-btn__text">VER CREDENCIALES</span>
-              <i class="fa-solid fa-fingerprint"></i>
-            </a>
-            <a href="#contacto" class="cyber-btn cyber-btn--secondary cyber-btn--large">
-              <span class="cyber-btn__text">CONTACTAR AHORA</span>
+            <a href="#contacto" class="cyber-btn cyber-btn--primary cyber-btn--large" data-scroll-to="contacto">
+              <span>CONTACTAR</span>
               <i class="fa-solid fa-tower-broadcast"></i>
             </a>
           </div>
@@ -296,18 +136,11 @@
 
         <div class="hero__visual" data-reveal="right">
           <div class="hologram-container">
-            <div class="hero__badge hero__badge--photo cyber-badge">
-             <!-- <span class="badge__pulse"></span> -->
-              <span class="badge__text">
-                <i class="fa-solid fa-signal"></i>
-                DISPONIBLE PARA PROYECTOS
-              </span>
-            </div>
             <div class="hologram-ring hologram-ring--1"></div>
             <div class="hologram-ring hologram-ring--2"></div>
             <div class="hologram-ring hologram-ring--3"></div>
             <div class="hologram-core">
-              <img src="img/foto.png" alt="Julio C. Durán Casado - Network Engineer" class="hologram-img" loading="eager" />
+              <img src="img/foto.png" alt="Julio C. Durán Casado" class="hologram-img" loading="eager" />
             </div>
             <div class="hologram-scan"></div>
             <div class="hologram-data">
@@ -320,21 +153,19 @@
       </div>
     </section>
 
-    <!-- SOBRE MÍ -->
-    <section class="section section--cyber" id="sobre-mi" aria-labelledby="sobre-mi-title">
-      <div class="cyber-section__bg">
-        <div class="cyber-lines"></div>
-      </div>
-      
+    <!-- PERFIL -->
+    <section class="section section--cyber" id="perfil" aria-labelledby="perfil-title">
+      <div class="cyber-section__bg" aria-hidden="true"><div class="cyber-lines"></div></div>
+
       <div class="container">
         <header class="section__header" data-reveal>
-          <span class="section__eyebrow cyber-eyebrow">[ PERFIL DE USUARIO ]</span>
-          <h2 id="sobre-mi-title" class="section__title">MÁS QUE CABLES Y CÓDIGO</h2>
+          <span class="section__eyebrow">[ PERFIL PROFESIONAL ]</span>
+          <h2 id="perfil-title" class="section__title">QUIÉN SOY · QUÉ HAGO</h2>
         </header>
 
-        <div class="about__layout cyber-about">
-          <aside class="about__sidebar" data-reveal="left">
-            <div class="id-card cyber-panel">
+        <div class="profile" data-reveal>
+          <aside class="profile__id">
+            <div class="id-card">
               <div class="id-card__header">
                 <span class="id-card__chip"></span>
                 <span class="id-card__type">CREDENCIAL DIGITAL</span>
@@ -343,861 +174,652 @@
                 <img src="img/foto.png" alt="Julio Durán" loading="lazy" />
                 <div class="id-card__scan"></div>
               </div>
-              <div class="id-card__info">
-                <div class="id-card__name">JULIO C. DURÁN CASADO</div>
-                <div class="id-card__role">NETWORK ENGINEER</div>
-                <div class="id-card__id">ID: RD-000-000-0000</div>
-              </div>
-              <div class="id-card__barcode">
-                <div class="barcode-line"></div>
-                <div class="barcode-line"></div>
-                <div class="barcode-line"></div>
-                <div class="barcode-line"></div>
-                <div class="barcode-line"></div>
-                <div class="barcode-line"></div>
-                <div class="barcode-line"></div>
-                <div class="barcode-line"></div>
-              </div>
+              <div class="id-card__name">JULIO C. DURÁN CASADO</div>
+              <div class="id-card__role">NETWORK AND TELECOMMUNICATIONS ENGINEERING</div>
+              <div class="id-card__id">ID: RD · 001 · JCDC</div>
             </div>
-            
-            <div class="quick-specs cyber-panel">
-              <h4 class="specs__title"><i class="fa-solid fa-microchip"></i> ESPECIFICACIONES</h4>
-              <ul class="specs__list">
-                <li class="specs__item">
-                  <span class="specs__label">UBICACIÓN</span>
-                  <span class="specs__value">República Dominicana</span>
-                </li>
-                <li class="specs__item">
-                  <span class="specs__label">DISPONIBILIDAD</span>
-                  <span class="specs__value specs__value--active">HORARIA Y GEOGRÁFICA</span>
-                </li>
-                <li class="specs__item">
-                  <span class="specs__label">IDIOMA</span>
-                  <span class="specs__value">Español Nativo</span>
-                </li>
-                <li class="specs__item">
-                  <span class="specs__label">ESPECIALIDAD</span>
-                  <span class="specs__value">Redes y Ciberseguridad</span>
-                </li>
-                <li class="specs__item">
-                  <span class="specs__label">MISIÓN</span>
-                  <span class="specs__value">Educar y Proteger</span>
-                </li>
-              </ul>
-            </div>
-            
-            <a href="mailto:jcdurancasado@gmail.com?subject=SOLICITUD CV&body=REQUEST ACCESS CV" class="cyber-btn cyber-btn--primary cyber-btn--full">
-              <span class="cyber-btn__text">DESCARGAR PERFIL</span>
-              <i class="fa-solid fa-download"></i>
-            </a>
           </aside>
 
-          <div class="about__main" data-reveal="right">
-            <div class="about__story cyber-panel">
-              <p class="about__lead">COMPROMETIDO CON IMPULSAR EL DESARROLLO TECNOLÓGICO</p>
-              <div class="about__text">
-                <p>Ingeniero en Redes y Telecomunicaciones graduado de <strong>UNICARIBE</strong>. Especialista certificado en infraestructura Cisco, ciberseguridad, desarrollo web y educación tecnológica.</p>
-                <p>Desde 2019 operando como <strong>Facilitador Tecnológico</strong> en CTC e <strong>Instructor Cisco Networking Academy</strong>. Más de 500 estudiantes capacitados en CCNA, CyberOps y habilitación digital.</p>
-                <p class="about__manifesto">No hablo en técnico cuando explico. La tecnología debe servir a las personas, no al revés.</p>
+          <div class="profile__body">
+            <div class="profile__block">
+              <h3 class="profile__subtitle"><i class="fa-solid fa-user-astronaut"></i> QUIÉN SOY</h3>
+              <p>Ingeniero en <strong>Redes y Telecomunicaciones</strong> graduado de <strong>UNICARIBE</strong>. Especialista certificado en infraestructura <strong>Cisco</strong>, ciberseguridad y educación tecnológica, con más de <strong>7 años</strong> de experiencia activa.</p>
+            </div>
+
+            <div class="profile__block">
+              <h3 class="profile__subtitle"><i class="fa-solid fa-microchip"></i> QUÉ HAGO</h3>
+              <ul class="profile__list">
+                <li><i class="fa-solid fa-network-wired"></i> Diseño e implementación de redes empresariales Cisco</li>
+                <li><i class="fa-solid fa-shield-halved"></i> Auditoría y protección de infraestructuras (Zero Trust)</li>
+                <li><i class="fa-solid fa-chalkboard-user"></i> Instructor oficial Cisco Networking Academy</li>
+                <li><i class="fa-solid fa-screwdriver-wrench"></i> Soporte técnico y optimización de sistemas</li>
+              </ul>
+            </div>
+
+            <div class="profile__block">
+              <h3 class="profile__subtitle"><i class="fa-solid fa-id-badge"></i> DATOS RÁPIDOS</h3>
+              <div class="profile__specs">
+                <div class="spec"><span class="spec__label">UBICACIÓN</span><span class="spec__value">República Dominicana</span></div>
+                <div class="spec"><span class="spec__label">DISPONIBILIDAD</span><span class="spec__value spec__value--active">HORARIA Y GEOGRÁFICA</span></div>
+                <div class="spec"><span class="spec__label">IDIOMAS</span><span class="spec__value">Español nativo</span></div>
+                <div class="spec"><span class="spec__label">EXPERIENCIA</span><span class="spec__value">7+ años activo</span></div>
+                <div class="spec"><span class="spec__label">ESTUDIANTES</span><span class="spec__value">10,000+ capacitados</span></div>
               </div>
             </div>
-            
-            <div class="about__values">
-              <h3 class="values__title"><i class="fa-solid fa-code-branch"></i> PROTOCOLOS DE TRABAJO</h3>
-              <div class="values__grid">
-                <div class="value-card cyber-panel">
-                  <div class="value-card__icon">
-                    <i class="fa-solid fa-shield-halved"></i>
-                  </div>
-                  <h4>SEGURIDAD PRIMERO</h4>
-                  <p>Cada implementación considera ciberseguridad desde el diseño inicial. Zero Trust mindset.</p>
-                </div>
-                <div class="value-card cyber-panel">
-                  <div class="value-card__icon">
-                    <i class="fa-solid fa-network-wired"></i>
-                  </div>
-                  <h4>ARQUITECTURA LIMPIA</h4>
-                  <p>Diseño de redes escalables, documentadas y mantenibles. Código limpio aplicado a infraestructura.</p>
-                </div>
-                <div class="value-card cyber-panel">
-                  <div class="value-card__icon">
-                    <i class="fa-solid fa-chalkboard-user"></i>
-                  </div>
-                  <h4>TRANSFERENCIA DE CONOCIMIENTO</h4>
-                  <p>No solo entrego proyectos. Capacito a tu equipo para operar y mantener la solución.</p>
-                </div>
-              </div>
+
+            <div class="profile__manifesto">
+              <i class="fa-solid fa-quote-left"></i>
+              No hablo en técnico cuando explico. La tecnología debe servir a las personas, no al revés.
+            </div>
+
+            <div class="profile__actions">
+              <a href="https://www.credly.com/users/jcdurancasado" target="_blank" rel="noopener" class="cyber-btn cyber-btn--primary">
+                <span>VER CREDENCIALES</span>
+                <i class="fa-solid fa-certificate"></i>
+              </a>
+              <a href="mailto:jcdurancasado@gmail.com?subject=SOLICITUD CV" class="cyber-btn cyber-btn--secondary">
+                <span>SOLICITAR CV</span>
+                <i class="fa-solid fa-download"></i>
+              </a>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- SERVICIOS 
+    <!-- SERVICIOS -->
     <section class="section" id="servicios" aria-labelledby="servicios-title">
       <div class="container">
         <header class="section__header" data-reveal>
-          <span class="section__eyebrow cyber-eyebrow">[ MÓDULOS DE SERVICIO ]</span>
-          <h2 id="servicios-title" class="section__title">CAPACIDADES OPERATIVAS</h2>
-          <p class="section__lead">Soluciones basadas en certificaciones Cisco, frameworks de seguridad y años de experiencia en producción.</p>
+          <span class="section__eyebrow">[ SERVICIOS ]</span>
+          <h2 id="servicios-title" class="section__title">ÁREAS DE ESPECIALIDAD</h2>
+          <p class="section__lead">Soluciones basadas en certificaciones Cisco y frameworks de seguridad.</p>
         </header>
 
-        <div class="services__grid">
-          <article class="service-module cyber-panel" data-service="networking" data-reveal="up">
-            <div class="service-module__corner service-module__corner--tl"></div>
-            <div class="service-module__corner service-module__corner--tr"></div>
-            <div class="service-module__corner service-module__corner--bl"></div>
-            <div class="service-module__corner service-module__corner--br"></div>
-            
-            <div class="service-module__header">
-              <div class="service-module__icon">
-                <i class="fa-solid fa-network-wired"></i>
-              </div>
-              <span class="service-module__tag">CCNA/CCNP</span>
-            </div>
-            <h3 class="service-module__title">DISEÑO E IMPLEMENTACIÓN DE RED</h3>
-            <p class="service-module__desc">Arquitectura de red empresarial Cisco. Routing, switching, VLANs, VPNs y documentación técnica completa.</p>
-            
-            <ul class="service-module__specs">
-              <li><i class="fa-solid fa-angle-right"></i> Topología eficiente</li>
-              <li><i class="fa-solid fa-angle-right"></i> Config Cisco Router/Switch</li>
-              <li><i class="fa-solid fa-angle-right"></i> VLANs, VPNs, ACLs</li>
-              <li><i class="fa-solid fa-angle-right"></i> Documentación técnica</li>
+        <div class="services-grid" data-reveal>
+          <article class="service-card">
+            <div class="service-card__icon"><i class="fa-solid fa-network-wired"></i></div>
+            <h3 class="service-card__title">Redes Empresariales</h3>
+            <p class="service-card__desc">Arquitectura de red Cisco, routing, switching, VLANs, VPNs y documentación técnica completa.</p>
+            <ul class="service-card__list">
+              <li><i class="fa-solid fa-check"></i> Topología eficiente</li>
+              <li><i class="fa-solid fa-check"></i> Config Router/Switch</li>
+              <li><i class="fa-solid fa-check"></i> VLANs, VPNs, ACLs</li>
             </ul>
-
-            <div class="service-module__footer">
-              <div class="service-module__price">
-                <span class="price__label">PRECIO BASE</span>
-                <span class="price__value">$800<span class="price__unit"> USD</span></span>
-              </div>
-              <button class="cyber-btn cyber-btn--primary cyber-btn--full" data-add-to-cart="networking">
-                <span class="cyber-btn__text">AGREGAR AL CARRITO</span>
-                <i class="fa-solid fa-plus"></i>
-              </button>
-            </div>
           </article>
 
-          <article class="service-module cyber-panel" data-service="training" data-reveal="up" data-reveal-delay="0.1">
-            <div class="service-module__corner service-module__corner--tl"></div>
-            <div class="service-module__corner service-module__corner--tr"></div>
-            <div class="service-module__corner service-module__corner--bl"></div>
-            <div class="service-module__corner service-module__corner--br"></div>
-            
-            <div class="service-module__header">
-              <div class="service-module__icon">
-                <i class="fa-solid fa-graduation-cap"></i>
-              </div>
-              <span class="service-module__tag">CISCO ACADEMY</span>
-            </div>
-            <h3 class="service-module__title">CAPACITACIÓN TECNOLÓGICA</h3>
-            <p class="service-module__desc">Instructor certificado Cisco desde 2019. Formación en CCNA, CyberOps Associate e IT Essentials con metodología Cisco probada.</p>
-            
-            <ul class="service-module__specs">
-              <li><i class="fa-solid fa-angle-right"></i> CCNA Complete Track</li>
-              <li><i class="fa-solid fa-angle-right"></i> CyberOps Associate</li>
-              <li><i class="fa-solid fa-angle-right"></i> IT Essentials</li>
-              <li><i class="fa-solid fa-angle-right"></i> Habilitación Digital</li>
+          <article class="service-card service-card--accent">
+            <div class="service-card__icon"><i class="fa-solid fa-shield-halved"></i></div>
+            <h3 class="service-card__title">Ciberseguridad</h3>
+            <p class="service-card__desc">Auditoría, análisis de riesgos y protección de infraestructuras críticas con enfoque Zero Trust.</p>
+            <ul class="service-card__list">
+              <li><i class="fa-solid fa-check"></i> Auditoría de red</li>
+              <li><i class="fa-solid fa-check"></i> Análisis de vulnerabilidades</li>
+              <li><i class="fa-solid fa-check"></i> Hardening de sistemas</li>
             </ul>
-
-            <div class="service-module__footer">
-              <div class="service-module__price">
-                <span class="price__label">TARIFA</span>
-                <span class="price__value">$150<span class="price__unit"> USD/H</span></span>
-              </div>
-              <button class="cyber-btn cyber-btn--primary cyber-btn--full" data-add-to-cart="training">
-                <span class="cyber-btn__text">AGREGAR AL CARRITO</span>
-                <i class="fa-solid fa-plus"></i>
-              </button>
-            </div>
           </article>
 
-          <article class="service-module cyber-panel" data-service="support" data-reveal="up">
-            <div class="service-module__corner service-module__corner--tl"></div>
-            <div class="service-module__corner service-module__corner--tr"></div>
-            <div class="service-module__corner service-module__corner--bl"></div>
-            <div class="service-module__corner service-module__corner--br"></div>
-            
-            <div class="service-module__header">
-              <div class="service-module__icon">
-                <i class="fa-solid fa-screwdriver-wrench"></i>
-              </div>
-              <span class="service-module__tag">SOPORTE</span>
-            </div>
-            <h3 class="service-module__title">SOPORTE TÉCNICO ESPECIALIZADO</h3>
-            <p class="service-module__desc">Diagnóstico, optimización y mantenimiento preventivo de infraestructura tecnológica. Resolución de incidentes informáticos.</p>
-            
-            <ul class="service-module__specs">
-              <li><i class="fa-solid fa-angle-right"></i> Diagnóstico avanzado</li>
-              <li><i class="fa-solid fa-angle-right"></i> Optimización de sistemas</li>
-              <li><i class="fa-solid fa-angle-right"></i> Mantenimiento preventivo</li>
-              <li><i class="fa-solid fa-angle-right"></i> Remoto y Presencial</li>
+          <article class="service-card">
+            <div class="service-card__icon"><i class="fa-solid fa-chalkboard-user"></i></div>
+            <h3 class="service-card__title">Capacitación Técnica</h3>
+            <p class="service-card__desc">Formación oficial Cisco Networking Academy en CCNA, CyberOps e IT Essentials.</p>
+            <ul class="service-card__list">
+              <li><i class="fa-solid fa-check"></i> CCNA Complete Track</li>
+              <li><i class="fa-solid fa-check"></i> CyberOps Associate</li>
+              <li><i class="fa-solid fa-check"></i> Habilitación digital</li>
             </ul>
-
-            <div class="service-module__footer">
-              <div class="service-module__price">
-                <span class="price__label">TARIFA</span>
-                <span class="price__value">$50<span class="price__unit"> USD/H</span></span>
-              </div>
-              <button class="cyber-btn cyber-btn--primary cyber-btn--full" data-add-to-cart="support">
-                <span class="cyber-btn__text">AGREGAR AL CARRITO</span>
-                <i class="fa-solid fa-plus"></i>
-              </button>
-            </div>
           </article>
         </div>
       </div>
-    </section>-->
+    </section>
 
-<!-- CERTIFICACIONES -->
-<section class="section section--cyber" id="certificaciones" aria-labelledby="certificaciones-title">
-  <div class="cyber-section__bg">
-    <div class="cyber-hexagons"></div>
-  </div>
-  
-  <div class="container">
-    <header class="section__header" data-reveal>
-      <span class="section__eyebrow cyber-eyebrow">[ CREDENCIALES VERIFICADAS ]</span>
-      <h2 id="certificaciones-title" class="section__title">CERTIFICACIONES Y ESPECIALIZACIONES</h2>
-    </header>
+    <!-- STACK TECNOLÓGICO -->
+    <section class="section section--cyber" id="stack" aria-labelledby="stack-title">
+      <div class="cyber-section__bg" aria-hidden="true"><div class="cyber-hexagons"></div></div>
 
-    <div class="certs__grid" data-reveal>
-      <div class="cert-card">
-        <span class="cert-card__badge">UNICARIBE</span>
-        <h3 class="cert-card__title">Ingeniero en Redes y Telecomunicaciones</h3>
-        <p class="cert-card__issuer">Universidad del Caribe</p>
-        <span class="cert-card__status">Activa</span>
-      </div>
-
-      <div class="cert-card">
-        <span class="cert-card__badge">ITLA</span>
-        <h3 class="cert-card__title">Diplomado de Auditoría en Ciberseguridad y Ciberriesgos</h3>
-        <p class="cert-card__issuer">Instituto Tecnológico de Las Américas</p>
-        <span class="cert-card__status">Activa</span>
-      </div>
-
-      <div class="cert-card">
-        <span class="cert-card__badge cert-card__badge">INFOTEP</span>
-        <h3 class="cert-card__title">Diplomado en Gestión de la Calidad Basada en Normas ISO</h3>
-        <p class="cert-card__issuer">Instituto Nacional de Formación Técnico Profesional</p>
-        <span class="cert-card__status">Activa</span>
-      </div>
-
-      <div class="cert-card">
-        <span class="cert-card__badge cert-card__badge">Microsoft</span>
-        <h3 class="cert-card__title">Diplomado en Aprendizaje híbrido: La transformación digital de las prácticas
-de la enseñanza.</h3>
-        <p class="cert-card__issuer">Microsoft / Red Qualitas
-</p>
-        <span class="cert-card__status">Activa</span>
-      </div>
-
-      <div class="cert-card">
-        <span class="cert-card__badge cert-card__badge">INFOTEP</span>
-        <h3 class="cert-card__title">Auditoría de Calidad y Auditor Interno</h3>
-        <p class="cert-card__issuer">Instituto Nacional de Formación Técnico Profesional</p>
-        <span class="cert-card__status">Activa</span>
-      </div>
-
-      <div class="cert-card">
-        <span class="cert-card__badge cert-card__badge">ITU-INICTEL-UNI
-</span>
-        <h3 class="cert-card__title">Gestión del Espectro - Tecnologías Inalámbricas en Telecomunicaciones
-</h3>
-        <p class="cert-card__issuer">Unión Internacional de Telecomunicaciones</p>
-        <span class="cert-card__status">Activa</span>
-      </div>
-      
-      <div class="cert-card">
-        <span class="cert-card__badge cert-card__badge">ITU-INICTEL-UNI</span>
-        <h3 class="cert-card__title">Informática Forense y Respuesta ante Incidentes</h3>
-        <p class="cert-card__issuer">Unión Internacional de Telecomunicaciones</p>
-        <span class="cert-card__status">Activa</span>
-      </div>
-      
-      <div class="cert-card">
-        <span class="cert-card__badge cert-card__badge">CCNP</span>
-        <h3 class="cert-card__title">Enterprise: Enrutamiento Avanzado</h3>
-        <p class="cert-card__issuer">Cisco Networking Academy</p>
-        <span class="cert-card__status">Verificada</span>
-      </div>
-      
-      <div class="cert-card">
-        <span class="cert-card__badge cert-card__badge">CCNP</span>
-        <h3 class="cert-card__title">Enterprise: Redes Básicas</h3>
-        <p class="cert-card__issuer">Cisco Networking Academy</p>
-        <span class="cert-card__status">Verificada</span>
-      </div>
-      
-      <div class="cert-card">
-        <span class="cert-card__badge cert-card__badge">CCNA</span>
-        <h3 class="cert-card__title">Introducción a Redes (1/3)</h3>
-        <p class="cert-card__issuer">Cisco Networking Academy</p>
-        <span class="cert-card__status">Verificada</span>
-      </div>
-      
-      <div class="cert-card">
-        <span class="cert-card__badge cert-card__badge">CCNA</span>
-        <h3 class="cert-card__title">Conmutación, Enrutamiento e Inalámbricos (2/3)</h3>
-        <p class="cert-card__issuer">Cisco Networking Academy</p>
-        <span class="cert-card__status">Verificada</span>
-      </div>
-      
-      <div class="cert-card">
-        <span class="cert-card__badge cert-card__badge">CCNA</span>
-        <h3 class="cert-card__title">Redes Empresariales, Seguridad y Automatización (3/3)</h3>
-        <p class="cert-card__issuer">Cisco Networking Academy</p>
-        <span class="cert-card__status">Verificada</span>
-      </div>
-      
-      <div class="cert-card">
-        <span class="cert-card__badge cert-card__badge">CYBEROPS</span>
-        <h3 class="cert-card__title">Associate in CyberOps</h3>
-        <p class="cert-card__issuer">Cisco Networking Academy</p>
-        <span class="cert-card__status">Verificada</span>
-      </div>
-      
-      <div class="cert-card">
-        <span class="cert-card__badge cert-card__badge">SECURITY</span>
-        <h3 class="cert-card__title">Networking Security</h3>
-        <p class="cert-card__issuer">Cisco Networking Academy</p>
-        <span class="cert-card__status">Verificada</span>
-      </div>
-
-      <div class="cert-card">
-        <span class="cert-card__badge cert-card__badge">AWS</span>
-        <h3 class="cert-card__title">Cloud Computing 101 - Educate</h3>
-        <p class="cert-card__issuer">Amazon Web Services</p>
-        <span class="cert-card__status">Activa</span>
-      </div>
-
-    </div>
-
-    <!-- Skills -->
-    <div class="skills-section" data-reveal>
-      <h3 class="section__title" style="font-size: 1.5rem; margin-bottom: var(--space-xl); text-align: center;">MAPA DE HABILIDADES</h3>
-      <div class="skills__grid">
-        <div class="skill-card">
-          <div class="skill-card__header">
-            <span class="skill-card__name">REDES CISCO</span>
-            <span class="skill-card__value">95%</span>
-          </div>
-          <div class="skill-card__bar">
-            <div class="skill-card__fill" data-width="95"></div>
-          </div>
-        </div>
-        
-        <div class="skill-card">
-          <div class="skill-card__header">
-            <span class="skill-card__name">CIBERSEGURIDAD</span>
-            <span class="skill-card__value">90%</span>
-          </div>
-          <div class="skill-card__bar">
-            <div class="skill-card__fill" data-width="90"></div>
-          </div>
-        </div>
-        
-        <div class="skill-card">
-          <div class="skill-card__header">
-            <span class="skill-card__name">SOPORTE TÉCNICO</span>
-            <span class="skill-card__value">88%</span>
-          </div>
-          <div class="skill-card__bar">
-            <div class="skill-card__fill" data-width="88"></div>
-          </div>
-        </div>
-        
-        <div class="skill-card">
-          <div class="skill-card__header">
-            <span class="skill-card__name">DOCENCIA</span>
-            <span class="skill-card__value">92%</span>
-          </div>
-          <div class="skill-card__bar">
-            <div class="skill-card__fill" data-width="92"></div>
-          </div>
-        </div>
-        
-        <div class="skill-card">
-          <div class="skill-card__header">
-            <span class="skill-card__name">CLOUD AWS</span>
-            <span class="skill-card__value">75%</span>
-          </div>
-          <div class="skill-card__bar">
-            <div class="skill-card__fill" data-width="75"></div>
-          </div>
-        </div>
-        
-        <div class="skill-card">
-          <div class="skill-card__header">
-            <span class="skill-card__name">FORENSE DIGITAL</span>
-            <span class="skill-card__value">85%</span>
-          </div>
-          <div class="skill-card__bar">
-            <div class="skill-card__fill" data-width="85"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-    <!-- EXPERIENCIA -->
-    <section class="section" id="experiencia" aria-labelledby="experiencia-title">
       <div class="container">
         <header class="section__header" data-reveal>
-          <span class="section__eyebrow cyber-eyebrow">[ REGISTRO DE OPERACIONES ]</span>
-          <h2 id="experiencia-title" class="section__title">TRAYECTORIA PROFESIONAL</h2>
+          <span class="section__eyebrow">[ STACK TECNOLÓGICO ]</span>
+          <h2 id="stack-title" class="section__title">HERRAMIENTAS Y TECNOLOGÍAS</h2>
         </header>
 
-        <div class="timeline cyber-timeline" data-reveal>
-          <div class="timeline__track" aria-hidden="true">
-            <div class="timeline__progress"></div>
-          </div>
-          
-          <div class="timeline__item" data-timeline-item>
-            <div class="timeline__node timeline__node--active">
-              <div class="node__pulse"></div>
-              <div class="node__core"></div>
+        <div class="stack-grid" data-reveal>
+          <div class="stack-chip"><i class="fa-solid fa-network-wired"></i><span>Cisco IOS</span></div>
+          <div class="stack-chip"><i class="fa-solid fa-diagram-project"></i><span>Packet Tracer</span></div>
+          <div class="stack-chip"><i class="fa-solid fa-shield-halved"></i><span>Wireshark</span></div>
+          <div class="stack-chip"><i class="fa-solid fa-bullseye"></i><span>Nmap</span></div>
+          <div class="stack-chip"><i class="fa-solid fa-terminal"></i><span>Kali Linux</span></div>
+          <div class="stack-chip"><i class="fa-brands fa-linux"></i><span>Linux</span></div>
+          <div class="stack-chip"><i class="fa-brands fa-windows"></i><span>Windows Server</span></div>
+          <div class="stack-chip"><i class="fa-solid fa-cloud"></i><span>AWS Cloud</span></div>
+          <div class="stack-chip"><i class="fa-brands fa-python"></i><span>Python</span></div>
+          <div class="stack-chip"><i class="fa-solid fa-database"></i><span>SQL / Oracle</span></div>
+          <div class="stack-chip"><i class="fa-brands fa-git-alt"></i><span>Git</span></div>
+          <div class="stack-chip"><i class="fa-brands fa-html5"></i><span>HTML/CSS</span></div>
+          <div class="stack-chip"><i class="fa-brands fa-js"></i><span>JavaScript</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRAYECTORIA -->
+    <section class="section" id="trayectoria" aria-labelledby="trayectoria-title">
+      <div class="container">
+        <header class="section__header" data-reveal>
+          <span class="section__eyebrow">[ REGISTRO DE OPERACIONES ]</span>
+          <h2 id="trayectoria-title" class="section__title">TRAYECTORIA PROFESIONAL</h2>
+        </header>
+
+        <div class="timeline" data-reveal>
+          <article class="tl-item">
+            <div class="tl-item__marker">
+              <span class="tl-item__dot tl-item__dot--active"></span>
             </div>
-            <div class="timeline__date">2019 - PRESENTE</div>
-            <div class="timeline__card cyber-panel">
-              <div class="timeline__header">
-                <h3>FACILITADOR TECNOLÓGICO</h3>
-                <span class="timeline__org">CTC - CENTROS TECNOLÓGICOS COMUNITARIOS</span>
+            <div class="tl-item__body">
+              <div class="tl-item__head">
+                <span class="tl-item__date">2019 — PRESENTE</span>
+                <span class="tl-item__badge">ACTIVO</span>
               </div>
-              <p>Facilitación tecnológica y capacitación en habilidades digitales para comunidades. Impulso del desarrollo tecnológico local mediante formación práctica.</p>
-              <div class="timeline__metrics">
-                <div class="metric">
-                  <span class="metric__value">+500</span>
-                  <span class="metric__label">PERSONAS CAPACITADAS</span>
-                </div>
-                <div class="metric">
-                  <span class="metric__value">7+</span>
-                  <span class="metric__label">AÑOS ACTIVO</span>
-                </div>
+              <h3 class="tl-item__title">Facilitador Tecnológico</h3>
+              <span class="tl-item__org">CTC · Centros Tecnológicos Comunitarios</span>
+              <p class="tl-item__desc">Facilitación tecnológica y capacitación en habilidades digitales para comunidades. Impulso del desarrollo tecnológico local mediante formación práctica.</p>
+              <div class="tl-item__meta">
+                <span class="tl-item__metric"><strong>+10,000</strong> personas capacitadas</span>
+                <span class="tl-item__metric"><strong>7+</strong> años activo</span>
               </div>
-              <div class="timeline__tags">
+              <div class="tl-item__tags">
                 <span class="tag">HABILITACIÓN DIGITAL</span>
                 <span class="tag">FORMACIÓN DE FORMADORES</span>
                 <span class="tag">CTC</span>
               </div>
             </div>
-          </div>
+          </article>
 
-          <div class="timeline__item" data-timeline-item>
-            <div class="timeline__node timeline__node--active">
-              <div class="node__pulse"></div>
-              <div class="node__core"></div>
+          <article class="tl-item">
+            <div class="tl-item__marker">
+              <span class="tl-item__dot tl-item__dot--active"></span>
             </div>
-            <div class="timeline__date">2019 - PRESENTE</div>
-            <div class="timeline__card cyber-panel">
-              <div class="timeline__header">
-                <h3>INSTRUCTOR CERTIFICADO</h3>
-                <span class="timeline__org">CISCO NETWORKING ACADEMY</span>
+            <div class="tl-item__body">
+              <div class="tl-item__head">
+                <span class="tl-item__date">2019 — PRESENTE</span>
+                <span class="tl-item__badge">ACTIVO</span>
               </div>
-              <p>Instructor oficial Cisco. Formación de profesionales en CCNA, CyberOps Associate e IT Essentials con metodología Cisco probada.</p>
-              <div class="timeline__metrics">
-                <div class="metric">
-                  <span class="metric__value">CCNA</span>
-                  <span class="metric__label">COMPLETE TRACK</span>
-                </div>
-                <div class="metric">
-                  <span class="metric__value">CYBEROPS</span>
-                  <span class="metric__label">ASSOCIATE</span>
-                </div>
-              </div>
-              <div class="timeline__tags">
+              <h3 class="tl-item__title">Instructor Certificado</h3>
+              <span class="tl-item__org">Cisco Networking Academy</span>
+              <p class="tl-item__desc">Instructor oficial Cisco. Formación de profesionales en CCNA, CyberOps Associate e IT Essentials con metodología Cisco probada.</p>
+              <div class="tl-item__tags">
                 <span class="tag">CCNA</span>
                 <span class="tag">CYBEROPS</span>
                 <span class="tag">IT ESSENTIALS</span>
                 <span class="tag">NETWORKING</span>
               </div>
             </div>
-          </div>
+          </article>
 
-          <div class="timeline__item" data-timeline-item>
-            <div class="timeline__node">
-              <div class="node__core"></div>
+          <article class="tl-item">
+            <div class="tl-item__marker">
+              <span class="tl-item__dot"></span>
             </div>
-            <div class="timeline__date">2019 - 2023</div>
-            <div class="timeline__card cyber-panel">
-              <div class="timeline__header">
-                <h3>INSTRUCTOR</h3>
-                <span class="timeline__org">ORACLE ACADEMY</span>
+            <div class="tl-item__body">
+              <div class="tl-item__head">
+                <span class="tl-item__date">2019 — 2023</span>
               </div>
-              <p>Docencia en tecnologías Oracle, bases de datos y fundamentos de programación para estudiantes técnicos y universitarios.</p>
-              <div class="timeline__tags">
+              <h3 class="tl-item__title">Instructor</h3>
+              <span class="tl-item__org">Oracle Academy</span>
+              <p class="tl-item__desc">Docencia en tecnologías Oracle, bases de datos y fundamentos de programación para estudiantes técnicos y universitarios.</p>
+              <div class="tl-item__tags">
                 <span class="tag">ORACLE DB</span>
                 <span class="tag">SQL</span>
                 <span class="tag">PROGRAMACIÓN</span>
               </div>
             </div>
-          </div>
+          </article>
 
-          <div class="timeline__item" data-timeline-item>
-            <div class="timeline__node">
-              <div class="node__core"></div>
+          <article class="tl-item">
+            <div class="tl-item__marker">
+              <span class="tl-item__dot"></span>
             </div>
-            <div class="timeline__date">2017 - 2019</div>
-            <div class="timeline__card cyber-panel">
-              <div class="timeline__header">
-                <h3>DIGITADOR TÉCNICO</h3>
-                <span class="timeline__org">ESCUELA VOCACIONAL FF.AA. Y P.N.</span>
+            <div class="tl-item__body">
+              <div class="tl-item__head">
+                <span class="tl-item__date">2017 — 2019</span>
               </div>
-              <p>Soporte técnico informático, gestión de sistemas de información y mantenimiento de infraestructura tecnológica institucional.</p>
-              <div class="timeline__tags">
+              <h3 class="tl-item__title">Digitador Técnico</h3>
+              <span class="tl-item__org">Escuela Vocacional FF.AA. y P.N.</span>
+              <p class="tl-item__desc">Soporte técnico informático, gestión de sistemas de información y mantenimiento de infraestructura tecnológica institucional.</p>
+              <div class="tl-item__tags">
                 <span class="tag">SOPORTE TÉCNICO</span>
                 <span class="tag">SISTEMAS DE INFORMACIÓN</span>
                 <span class="tag">MANTENIMIENTO</span>
               </div>
             </div>
-          </div>
+          </article>
         </div>
       </div>
     </section>
 
-<!-- CONTACTO -->
-<section class="section section--cta cyber-cta" id="contacto" aria-labelledby="contacto-title">
-  <div class="cta__bg">
-    <div class="cta__grid"></div>
-  </div>
-  
-  <div class="container">
-<header class="section__header" data-reveal>
-  <span class="section__eyebrow cyber-eyebrow">
-    [ ESTABLECER CONEXIÓN ]
-  </span>
-  <h2 id="contacto-title" class="section__title">
-    INICIAR COMUNICACIÓN
-  </h2>
-</header>
+    <!-- CERTIFICACIONES -->
+    <section class="section section--cyber" id="certificaciones" aria-labelledby="certificaciones-title">
+      <div class="cyber-section__bg" aria-hidden="true"><div class="cyber-lines"></div></div>
 
-<div class="contact__wrapper" data-reveal>
+      <div class="container">
+        <header class="section__header" data-reveal>
+          <span class="section__eyebrow">[ CREDENCIALES VERIFICADAS ]</span>
+          <h2 id="certificaciones-title" class="section__title">CERTIFICACIONES Y CURSOS</h2>
+          <p class="section__lead">Formación continua respaldada por instituciones y organismos internacionales.</p>
+        </header>
 
-      <div class="contact__info">
+        <div class="cert-groups" data-reveal>
+          <div class="cert-group">
+            <div class="cert-group__head">
+              <span class="cert-group__badge cert-group__badge--cisco">CISCO</span>
+              <span class="cert-group__count">7 credenciales</span>
+            </div>
+            <div class="cert-group__list">
+              <span class="cert-pill">CCNA: Introducción a Redes (1/3)</span>
+              <span class="cert-pill">CCNA: Conmutación, Enrutamiento e Inalámbricos (2/3)</span>
+              <span class="cert-pill">CCNA: Redes Empresariales, Seguridad y Automatización (3/3)</span>
+              <span class="cert-pill">CCNP Enterprise: Redes Básicas (1/2)</span>
+              <span class="cert-pill">CCNP Enterprise: Enrutamiento Avanzado (2/2)</span>
+              <span class="cert-pill">CyberOps Associate</span>
+              <span class="cert-pill">Networking Security</span>
+            </div>
+          </div>
 
-        <!-- REDES SOCIALES - NUEVO DISEÑO GRID -->
-        <div class="contact__social">
-          <p class="social__label">REDES PROFESIONALES</p>
-            <div class="social-grid">
+          <div class="cert-group">
+            <div class="cert-group__head">
+              <span class="cert-group__badge cert-group__badge--uni">NACIONAL</span>
+              <span class="cert-group__count">9 credenciales</span>
+            </div>
+            <div class="cert-group__list">
+              <span class="cert-pill">Ingeniería en Redes y Telecomunicaciones — UNICARIBE</span>
+              <span class="cert-pill">Certificado de Aptitud Profesional en Secretariado Ejecutivo — INFOTEP</span>
+              <span class="cert-pill">Diplomado de Auditoría en Ciberseguridad y Ciberriesgos — ITLA</span>
+              <span class="cert-pill">Diplomado en Gestión de la Calidad Basada en Normas ISO — INFOTEP</span>
+              <span class="cert-pill">Diplomado de Desarrollo de Mandos Medios — INFOTEP</span>
+              <span class="cert-pill">Manejo de Buenas Prácticas Frente a Incidentes Tecnológicos — INFOTEP</span>
+              <span class="cert-pill">Auditoria de Calidad y Auditor Interno — INFOTEP</span>
+              <span class="cert-pill">Tutor Para la Formación en Ambiente Virtuales — INFOTEP</span>
+              <span class="cert-pill">Habilitación Digital — INFOTEP</span>
+            </div>
+          </div>
 
-            <a href="https:" target="_blank" class="social-card" data-social="whatsapp">
-              <i class="fa-brands fa-whatsapp"></i>
-              <span>WHATSAPP</span> 
-            </a>
-              
-            <a href="https://t.me/jcdurancasado" target="_blank" class="social-card" data-social="telegram">
-              <i class="fa-brands fa-telegram"></i>
-              <span>TELEGRAM</span>
-            </a>
+          <div class="cert-group">
+            <div class="cert-group__head">
+              <span class="cert-group__badge cert-group__badge--int">INTERNACIONAL</span>
+              <span class="cert-group__count">5 credenciales</span>
+            </div>
+            <div class="cert-group__list">
+              <span class="cert-pill">Diplomado en Liderazgo y Habilidades Gerenciales con Inteligencia Artificial Aplicada — Universidad Santander</span>
+              <span class="cert-pill">Diplomado en Aprendizaje híbrido: La transformación digital de las prácticas de la enseñanza. — Microsoft / Red Qualitas</span>
+              <span class="cert-pill">Políticas y regulación en telecomunicaciones: adaptación a nuevas tendencias globales — ITU / INICTEL-UNI</span>
+              <span class="cert-pill">Gestión del espectro: tecnologías inalámbricas en telecomunicaciones — ITU / INICTEL-UNI</span>
+              <span class="cert-pill">Informática Forense y Respuesta ante Incidentes — ITU / INICTEL-UNI</span>
+            </div>
+          </div>
+        </div>
 
-            <a href="https://instagram.com/jcdurancasado" target="_blank" class="social-card" data-social="instagram">
-              <i class="fa-brands fa-instagram"></i>
-              <span>INSTAGRAM</span>
-            </a>
+        <div class="cert-actions" data-reveal>
+          <a href="https://www.credly.com/users/jcdurancasado" target="_blank" rel="noopener" class="cyber-btn cyber-btn--primary cyber-btn--large">
+            <span>VER BADGES EN CREDLY</span>
+            <i class="fa-solid fa-certificate"></i>
+          </a>
+          <a href="https://eu.credential.net/profile/jcdurancasado" target="_blank" rel="noopener" class="cyber-btn cyber-btn--secondary cyber-btn--large">
+            <span>VER CREDENCIALES VERIFICADAS</span>
+            <i class="fa-solid fa-award"></i>
+          </a>
+        </div>
+      </div>
+    </section>
 
-            <a href="https://facebook.com/jcdurancasado" target="_blank" class="social-card" data-social="facebook">
-              <i class="fa-brands fa-facebook"></i>
-              <span>FACEBOOK</span>
-            </a>
+    <!-- ENLACES -->
+    <section class="section" id="enlaces" aria-labelledby="enlaces-title">
+      <div class="container">
+        <header class="section__header" data-reveal>
+          <span class="section__eyebrow">[ GESTOR DE ENLACES ]</span>
+          <h2 id="enlaces-title" class="section__title">CONECTA CONMIGO</h2>
+          <p class="section__lead">Todos mis canales profesionales, redes y recursos en un solo lugar.</p>
+        </header>
 
-            <a href="https://linkedin.com/in/jcdurancasado" target="_blank" class="social-card" data-social="linkedin">
-              <i class="fa-brands fa-linkedin"></i>
-              <span>LINKEDIN</span>
-            </a>
-            
-            <a href="https://youtube.com/@jcdurancasado" target="_blank" class="social-card" data-social="youtube">
-              <i class="fa-brands fa-youtube"></i>
-              <span>YOUTUBE</span>
-            </a>
+        <div class="links-grid" data-reveal>
+          <a href="https://wa.me/@jcdurancasado" target="_blank" rel="noopener" class="link-card" data-net="whatsapp">
+            <i class="fa-brands fa-whatsapp"></i>
+            <span class="link-card__name">WhatsApp</span>
+            <span class="link-card__desc">Respuesta directa</span>
+          </a>
 
-            <a href="https://github.com/jcdurancasado" target="_blank" class="social-card" data-social="github">
-              <i class="fa-brands fa-github"></i>
-              <span>GITHUB</span>
-            </a>
-            
-            <a href="https://twitter.com/jcdurancasado" target="_blank" class="social-card" data-social="twitter">
-              <i class="fa-brands fa-x-twitter"></i>
-              <span>TWITTER</span>
-            </a>
-            
-            <a href="https://tiktok.com/@jcdurancasado" target="_blank" class="social-card" data-social="tiktok">
-              <i class="fa-brands fa-tiktok"></i>
-              <span>TIKTOK</span>
-            </a>
-          
-            <a href="https://threads.net/@jcdurancasado" target="_blank" class="social-card" data-social="threads">
-              <i class="fa-brands fa-threads"></i>
-              <span>THREADS</span>
-            </a>
-            
-            <a href="https://www.twitch.tv/jcdurancasado" target="_blank" class="social-card" data-social="twitch">
-              <i class="fa-brands fa-twitch"></i>
-              <span>TWITCH</span>
-            </a>
+          <a href="https://t.me/jcdurancasado" target="_blank" rel="noopener" class="link-card" data-net="telegram">
+            <i class="fa-brands fa-telegram"></i>
+            <span class="link-card__name">Telegram</span>
+            <span class="link-card__desc">Mensajería directa</span>
+          </a>
 
-            <a href="https://discord.com/users/jcdurancasado" target="_blank" class="social-card" data-social="discord">
-              <i class="fa-brands fa-discord"></i>
-              <span>DISCORD</span>
-            </a>
+          <a href="https://instagram.com/jcdurancasado" target="_blank" rel="noopener" class="link-card" data-net="instagram">
+            <i class="fa-brands fa-instagram"></i>
+            <span class="link-card__name">Instagram</span>
+            <span class="link-card__desc">Contenido diario</span>
+          </a>
 
-            <a href="https://www.credly.com/users/jcdurancasado" target="_blank" class="social-card" data-social="credly">
-              <i class="fa-solid fa-certificate"></i>
-              <span>CREDLY</span>
-            </a>
+          <a href="https://facebook.com/jcdurancasado" target="_blank" rel="noopener" class="link-card" data-net="facebook">
+            <i class="fa-brands fa-facebook"></i>
+            <span class="link-card__name">Facebook</span>
+            <span class="link-card__desc">Comunidad</span>
+          </a>
 
-            <a href="https://eu.credential.net/profile/jcdurancasado" target="_blank" class="social-card" data-social="accesible">
-              <i class="fa-solid fa-award"></i>
-              <span>CREDENCIALES</span>
-            </a>
+          <a href="https://linkedin.com/in/jcdurancasado" target="_blank" rel="noopener" class="link-card" data-net="linkedin">
+            <i class="fa-brands fa-linkedin"></i>
+            <span class="link-card__name">LinkedIn</span>
+            <span class="link-card__desc">Perfil profesional</span>
+          </a>
+
+          <a href="https://youtube.com/@jcdurancasado" target="_blank" rel="noopener" class="link-card" data-net="youtube">
+            <i class="fa-brands fa-youtube"></i>
+            <span class="link-card__name">YouTube</span>
+            <span class="link-card__desc">Tutoriales técnicos</span>
+          </a>
+
+          <a href="https://github.com/jcdurancasado" target="_blank" rel="noopener" class="link-card" data-net="github">
+            <i class="fa-brands fa-github"></i>
+            <span class="link-card__name">GitHub</span>
+            <span class="link-card__desc">Repositorios</span>
+          </a>
+
+          <a href="https://twitter.com/jcdurancasado" target="_blank" rel="noopener" class="link-card" data-net="twitter">
+            <i class="fa-brands fa-x-twitter"></i>
+            <span class="link-card__name">X / Twitter</span>
+            <span class="link-card__desc">Novedades tech</span>
+          </a>
+
+          <a href="https://tiktok.com/@jcdurancasado" target="_blank" rel="noopener" class="link-card" data-net="tiktok">
+            <i class="fa-brands fa-tiktok"></i>
+            <span class="link-card__name">TikTok</span>
+            <span class="link-card__desc">Tips rápidos</span>
+          </a>
+
+          <a href="https://threads.net/@jcdurancasado" target="_blank" rel="noopener" class="link-card" data-net="threads">
+            <i class="fa-brands fa-threads"></i>
+            <span class="link-card__name">Threads</span>
+            <span class="link-card__desc">Reflexiones</span>
+          </a>
+
+          <a href="https://www.twitch.tv/jcdurancasado" target="_blank" rel="noopener" class="link-card" data-net="twitch">
+            <i class="fa-brands fa-twitch"></i>
+            <span class="link-card__name">Twitch</span>
+            <span class="link-card__desc">Streams en vivo</span>
+          </a>
+ 
+          <a href="https://discord.com/users/jcdurancasado" target="_blank" rel="noopener" class="link-card" data-net="discord">
+            <i class="fa-brands fa-discord"></i>
+            <span class="link-card__name">Discord</span>
+            <span class="link-card__desc">Comunidad tech</span>
+          </a>
+
+          <a href="https://www.credly.com/users/jcdurancasado" target="_blank" rel="noopener" class="link-card" data-net="credly">
+            <i class="fa-solid fa-certificate"></i>
+            <span class="link-card__name">Credly</span>
+            <span class="link-card__desc">Badges Cisco</span>
+          </a>
+
+          <a href="https://eu.credential.net/profile/jcdurancasado" target="_blank" rel="noopener" class="link-card" data-net="credential">
+            <i class="fa-solid fa-award"></i>
+            <span class="link-card__name">Credenciales</span>
+            <span class="link-card__desc">Perfil verificado</span>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- TESTIMONIOS -->
+    <section class="section section--cyber" id="testimonios" aria-labelledby="testimonios-title">
+      <div class="cyber-section__bg" aria-hidden="true"><div class="cyber-hexagons"></div></div>
+
+      <div class="container">
+        <header class="section__header" data-reveal>
+          <span class="section__eyebrow">[ TESTIMONIOS ]</span>
+          <h2 id="testimonios-title" class="section__title">LO QUE DICEN</h2>
+        </header>
+
+        <div class="testimonials" data-reveal>
+          <figure class="testimonial">
+            <i class="fa-solid fa-quote-left testimonial__quote"></i>
+            <blockquote class="testimonial__text">
+              Excelente instructor. Explica conceptos complejos de redes de manera clara y práctica. Gracias a su metodología pude aprobar mi CCNA al primer intento.
+            </blockquote>
+            <figcaption class="testimonial__author">
+              <div class="testimonial__avatar"><i class="fa-solid fa-user"></i></div>
+              <div class="testimonial__info">
+                <strong>Estudiante CCNA</strong>
+                <span>Cisco Networking Academy</span>
+              </div>
+            </figcaption>
+          </figure>
+
+          <figure class="testimonial">
+            <i class="fa-solid fa-quote-left testimonial__quote"></i>
+            <blockquote class="testimonial__text">
+              Profesional confiable y detallado. Su diagnóstico de nuestra infraestructura de red fue preciso y las soluciones implementadas mejoraron notablemente el rendimiento.
+            </blockquote>
+            <figcaption class="testimonial__author">
+              <div class="testimonial__avatar"><i class="fa-solid fa-building"></i></div>
+              <div class="testimonial__info">
+                <strong>Cliente Corporativo</strong>
+                <span>Soporte Técnico Empresarial</span>
+              </div>
+            </figcaption>
+          </figure>
+
+          <figure class="testimonial">
+            <i class="fa-solid fa-quote-left testimonial__quote"></i>
+            <blockquote class="testimonial__text">
+              Transmite pasión por la tecnología. Sus clases de ciberseguridad motivaron a toda mi generación a especializarse en el área. Un referente real.
+            </blockquote>
+            <figcaption class="testimonial__author">
+              <div class="testimonial__avatar"><i class="fa-solid fa-user-graduate"></i></div>
+              <div class="testimonial__info">
+                <strong>Estudiante CyberOps</strong>
+                <span>CTC · República Dominicana</span>
+              </div>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section" id="faq" aria-labelledby="faq-title">
+      <div class="container">
+        <header class="section__header" data-reveal>
+          <span class="section__eyebrow">[ PREGUNTAS FRECUENTES ]</span>
+          <h2 id="faq-title" class="section__title">¿DUDAS? TE RESPONDO</h2>
+        </header>
+
+        <div class="faq" data-reveal>
+          <details class="faq__item">
+            <summary class="faq__question">
+              <span>¿Qué tipos de proyectos aceptas?</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </summary>
+            <div class="faq__answer">
+              <p>Diseño e implementación de redes Cisco, auditorías de ciberseguridad, capacitación técnica (CCNA, CyberOps) y soporte especializado, tanto en modalidad remota como presencial en República Dominicana.</p>
+            </div>
+          </details>
+
+          <details class="faq__item">
+            <summary class="faq__question">
+              <span>¿Cuál es tu disponibilidad?</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </summary>
+            <div class="faq__answer">
+              <p>Disponibilidad horaria y geográfica. Atiendo proyectos tanto locales como internacionales en modalidad remota, con horarios flexibles adaptados a cada cliente.</p>
+            </div>
+          </details>
+
+          <details class="faq__item">
+            <summary class="faq__question">
+              <span>¿Ofreces capacitación a empresas?</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </summary>
+            <div class="faq__answer">
+              <p>Sí. Imparto formación corporativa personalizada en redes, ciberseguridad y tecnologías Cisco, adaptada al nivel y necesidades del equipo. Metodología oficial Cisco Networking Academy.</p>
+            </div>
+          </details>
+
+          <details class="faq__item">
+            <summary class="faq__question">
+              <span>¿Cuánto tardas en responder?</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </summary>
+            <div class="faq__answer">
+              <p>Generalmente entre 24 y 48 horas. Para consultas urgentes puedes escribirme directamente por WhatsApp o Telegram.</p>
+            </div>
+          </details>
+
+          <details class="faq__item">
+            <summary class="faq__question">
+              <span>¿Cómo puedo solicitar tu CV completo?</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </summary>
+            <div class="faq__answer">
+              <p>Usa el formulario de contacto o envíame un correo directamente. Incluye el motivo de tu solicitud y te compartiré mi CV actualizado junto con las certificaciones verificables.</p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACTO -->
+    <section class="section section--cyber cyber-cta" id="contacto" aria-labelledby="contacto-title">
+      <div class="cyber-section__bg" aria-hidden="true"><div class="cyber-hexagons"></div></div>
+
+      <div class="container">
+        <header class="section__header" data-reveal>
+          <span class="section__eyebrow">[ ESTABLECER CONEXIÓN ]</span>
+          <h2 id="contacto-title" class="section__title">INICIAR COMUNICACIÓN</h2>
+          <p class="section__lead">Envíame un mensaje y te responderé a la brevedad posible.</p>
+        </header>
+
+        <div class="contact" data-reveal>
+          <div class="form-terminal">
+            <div class="terminal__bar">
+              <span class="terminal__btn terminal__btn--red"></span>
+              <span class="terminal__btn terminal__btn--yellow"></span>
+              <span class="terminal__btn terminal__btn--green"></span>
+              <span class="terminal__title">guest@jcdc:~# transmit_message</span>
+            </div>
+
+            <form class="form-terminal__body" action="https://jcdurancasado.vercel.app/api/contacto" method="POST" enctype="multipart/form-data" id="contactForm">
+              <div class="input-group">
+                <input type="text" id="contact-name" name="nombre" class="cyber-input" required placeholder=" " />
+                <label class="cyber-label" for="contact-name">NOMBRE COMPLETO</label>
+              </div>
+
+              <div class="input-group">
+                <input type="tel" id="contact-phone" name="telefono" class="cyber-input" required placeholder=" " />
+                <label class="cyber-label" for="contact-phone">TELÉFONO</label>
+              </div>
+
+              <div class="input-group">
+                <input type="email" id="contact-email" name="correo" class="cyber-input" required placeholder=" " />
+                <label class="cyber-label" for="contact-email">CORREO ELECTRÓNICO</label>
+              </div>
+
+              <div class="input-group">
+                <textarea id="contact-message" name="mensaje" class="cyber-input cyber-textarea" rows="4" placeholder=" "></textarea>
+                <label class="cyber-label" for="contact-message">MENSAJE</label>
+              </div>
+
+              <div class="input-group">
+                <input type="file" id="contact-files" name="archivos" class="cyber-input cyber-file" multiple />
+                <label class="cyber-label" for="contact-files">ADJUNTAR ARCHIVOS (máx. 5 · 5 MB total)</label>
+              </div>
+
+              <button type="submit" id="submitBtn" class="cyber-btn cyber-btn--primary cyber-btn--full cyber-btn--large">
+                <span class="cyber-btn__text">ENVIAR MENSAJE</span>
+                <i class="fa-solid fa-paper-plane"></i>
+              </button>
+
+              <p id="formResponse" class="form-response"></p>
+
+              <p class="form-note">
+                <strong>Nota:</strong> El envío de este formulario no garantiza una respuesta. Me reservo el derecho de atender o no las solicitudes recibidas, según mi disponibilidad y criterio profesional.
+              </p>
+            </form>
           </div>
         </div>
       </div>
-
-      <div class="contact__form-container">
-        <div class="form-terminal">
-          <div class="terminal__bar">
-            <span class="terminal__btn terminal__btn--red"></span>
-            <span class="terminal__btn terminal__btn--yellow"></span>
-            <span class="terminal__btn terminal__btn--green"></span>
-            <span class="terminal__title">guest@jcdc:~# transmit_message</span>
-          </div>
-          
-          <form 
-            class="form-terminal__body" 
-            action="https://jcdurancasado.vercel.app/api/contacto" 
-            method="POST" 
-            enctype="multipart/form-data"
-            id="contactForm"
-          >
-            <div class="cyber-input-group">
-              <input type="text" id="contact-name" name="nombre" class="cyber-input" required placeholder=" " />
-              <label class="cyber-label">NOMBRE COMPLETO</label>
-            </div>
-          
-            <div class="cyber-input-group">
-              <input type="tel" id="contact-phone" name="telefono" class="cyber-input" required placeholder=" " />
-              <label class="cyber-label">TELÉFONO</label>
-            </div>
-          
-            <div class="cyber-input-group">
-              <input type="email" id="contact-email" name="correo" class="cyber-input" required placeholder=" " />
-              <label class="cyber-label">CORREO ELECTRÓNICO</label>
-            </div>
-          
-            <div class="cyber-input-group">
-              <textarea id="contact-message" name="mensaje" class="cyber-input cyber-textarea" rows="4" placeholder=" "></textarea>
-              <label class="cyber-label">MENSAJE</label>
-            </div>
-          
-            <div class="cyber-input-group">
-              <input type="file" id="contact-files" name="archivos" class="cyber-input" multiple />
-              <label class="cyber-label">ADJUNTAR ARCHIVOS (máx. 5, total 5 MB)</label>
-            </div>
-          
-            <!-- Campo oculto para el código del modal -->
-            <input type="hidden" name="codigoAcceso" id="codigoAcceso" />
-          
-            <button type="submit" id="submitBtn" class="cyber-btn cyber-btn--primary cyber-btn--full cyber-btn--large">
-              <span class="cyber-btn__text">ENVIAR MENSAJE</span>
-              <i class="fa-solid fa-paper-plane"></i>
-            </button>
-            <!-- Mensajes dinámicos -->
-            <p id="formResponse" class="form-response"></p>
-          
-            <!-- Nota centrada -->
-            <p class="form-note">
-              <strong>Nota:</strong> El envío de este formulario no garantiza una respuesta.  
-              Me reservo el derecho de atender o no las solicitudes recibidas,  
-              según mi disponibilidad y criterio profesional.
-            </p>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+    </section>
   </main>
 
-
   <!-- FOOTER -->
-  <footer class="footer cyber-footer">
+  <footer class="footer">
     <div class="footer__grid-lines" aria-hidden="true"></div>
     <div class="container">
       <div class="footer__main">
         <div class="footer__brand">
-          <!-- MISMO LOGO QUE HEADER -->
-          <a href="#inicio" class="logo logo--footer cyber-logo" aria-label="Inicio">
+          <a href="#inicio" class="logo logo--footer" aria-label="Inicio">
             <div class="logo__symbol">
               <svg viewBox="0 0 100 100" class="logo__svg">
-                <path d="M50 5 L90 25 L90 60 Q90 85 50 95 Q10 85 10 60 L10 25 Z" 
-                      fill="none" stroke="currentColor" stroke-width="2"/>
+                <path d="M50 5 L90 25 L90 60 Q90 85 50 95 Q10 85 10 60 L10 25 Z" fill="none" stroke="currentColor" stroke-width="2"/>
                 <circle cx="50" cy="45" r="25" fill="none" stroke="currentColor" stroke-width="1.5"/>
                 <circle cx="50" cy="45" r="15" fill="none" stroke="currentColor" stroke-width="1"/>
                 <circle cx="50" cy="45" r="5" fill="currentColor"/>
-                <circle cx="50" cy="20" r="4" fill="currentColor"/>
-                <circle cx="75" cy="35" r="4" fill="currentColor"/>
-                <circle cx="75" cy="65" r="4" fill="currentColor"/>
-                <circle cx="50" cy="80" r="4" fill="currentColor"/>
-                <circle cx="25" cy="65" r="4" fill="currentColor"/>
-                <circle cx="25" cy="35" r="4" fill="currentColor"/>
-                <line x1="50" y1="45" x2="50" y2="20" stroke="currentColor" stroke-width="1"/>
-                <line x1="50" y1="45" x2="75" y2="35" stroke="currentColor" stroke-width="1"/>
-                <line x1="50" y1="45" x2="75" y2="65" stroke="currentColor" stroke-width="1"/>
-                <line x1="50" y1="45" x2="50" y2="80" stroke="currentColor" stroke-width="1"/>
-                <line x1="50" y1="45" x2="25" y2="65" stroke="currentColor" stroke-width="1"/>
-                <line x1="50" y1="45" x2="25" y2="35" stroke="currentColor" stroke-width="1"/>
-                <path d="M20 30 L30 30 L35 40" fill="none" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-                <path d="M80 30 L70 30 L65 40" fill="none" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-                <path d="M20 70 L30 70 L35 60" fill="none" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-                <path d="M80 70 L70 70 L65 60" fill="none" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-                <circle cx="30" cy="30" r="2" fill="currentColor" opacity="0.8"/>
-                <circle cx="70" cy="30" r="2" fill="currentColor" opacity="0.8"/>
-                <circle cx="30" cy="70" r="2" fill="currentColor" opacity="0.8"/>
-                <circle cx="70" cy="70" r="2" fill="currentColor" opacity="0.8"/>
               </svg>
             </div>
           </a>
-          
           <div class="footer__status">
-            <!--<span class="status-indicator status-indicator--online"></span> -->
-            <span class="badge__text">
-              <i class="fa-solid fa-signal"></i>
-              DISPONIBLE PARA PROYECTOS
-            </span>
+            <span class="badge__text"><i class="fa-solid fa-signal"></i> DISPONIBLE PARA PROYECTOS</span>
           </div>
         </div>
-        
+
         <div class="footer__nav">
           <div class="footer__col">
             <h4>[ NAVEGACIÓN ]</h4>
             <ul>
-              <li><a href="#sobre-mi">PERFIL</a></li>
-              <li><a href="#certificaciones">CERTIFICACIONES</a></li>
-              <li><a href="#experiencia">EXPERIENCIA</a></li>
+              <li><a href="#inicio">Inicio</a></li>
+              <li><a href="#perfil">Perfil</a></li>
+              <li><a href="#servicios">Servicios</a></li>
+              <li><a href="#enlaces">Enlaces</a></li>
             </ul>
           </div>
           <div class="footer__col">
-            <h4>[ SERVICIOS ]</h4>
+            <h4>[ RECURSOS ]</h4>
             <ul>
-              <li><a href="#servicios">REDES CISCO</a></li>
-              <li><a href="#servicios">CIBERSEGURIDAD</a></li>
-              <li><a href="#servicios">CAPACITACIÓN</a></li>
+              <li><a href="#trayectoria">Trayectoria</a></li>
+              <li><a href="#certificaciones">Credenciales</a></li>
+              <li><a href="#faq">FAQ</a></li>
+              <li><a href="#contacto">Contacto</a></li>
+            </ul>
+          </div>
+          <div class="footer__col">
+            <h4>[ REDES ]</h4>
+            <ul>
+              <li><a href="https://wa.me/18090000000" target="_blank" rel="noopener">WhatsApp</a></li>
+              <li><a href="https://linkedin.com/in/jcdurancasado" target="_blank" rel="noopener">LinkedIn</a></li>
+              <li><a href="https://github.com/jcdurancasado" target="_blank" rel="noopener">GitHub</a></li>
+              <li><a href="https://www.credly.com/users/jcdurancasado" target="_blank" rel="noopener">Credly</a></li>
             </ul>
           </div>
           <div class="footer__col">
             <h4>[ CONTACTO ]</h4>
             <ul>
-              <li><a href="mailto:00000000000000@gmail.com">00000000000000@gmail.com</a></li>
-              <li><a href="tel:+10000000000">+1 000-000-0000</a></li>
-              <li><a href="tel:+10000000000">+1 000-000-0000</a></li>
+              <li><a href="mailto:jcdurancasado@gmail.com">Email</a></li>
+              <li><a href="https://t.me/jcdurancasado" target="_blank" rel="noopener">Telegram</a></li>
+              <li><a href="https://eu.credential.net/profile/jcdurancasado" target="_blank" rel="noopener">Credenciales</a></li>
+              <li><a href="https://github.com/jcdurancasado" target="_blank" rel="noopener">Portafolio</a></li>
             </ul>
           </div>
         </div>
       </div>
 
       <div class="footer__bottom">
-        <div class="footer__copy">
-          <p>&copy; <span data-year>2024</span> JCDURANCASADO - TODOS LOS DERECHOS RESERVADOS.</p>
-        </div>
+        <p>&copy; <span data-year>2024</span> JCDURANCASADO · TODOS LOS DERECHOS RESERVADOS.</p>
+      </div>
     </div>
   </footer>
-  
-  <!-- BOTÓN SUBIR -->
+
   <button class="scroll-top" id="scrollTop" aria-label="Subir al inicio">
     <i class="fa-solid fa-arrow-up"></i>
   </button>
 
   <script src="js/main.js"></script>
-
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-  const form = document.getElementById("contactForm");
-  const responseEl = document.getElementById("formResponse");
-  const submitBtn = document.getElementById("submitBtn");
-
-  if (!form || !responseEl || !submitBtn) {
-    console.error("Elementos del formulario no encontrados");
-    return;
-  }
-
-  form.addEventListener("submit", function(e) {
-    e.preventDefault();
-
-    // Limpiar mensajes previos
-    responseEl.textContent = "";
-    responseEl.className = "form-response";
-
-    // Validar campos
-    const nombre = document.getElementById("contact-name").value.trim();
-    const telefono = document.getElementById("contact-phone").value.trim();
-    const correo = document.getElementById("contact-email").value.trim();
-    const mensaje = document.getElementById("contact-message").value.trim();
-    const files = document.getElementById("contact-files").files;
-
-    if (!nombre || !telefono || !correo) {
-      responseEl.textContent = "❌ Todos los campos son obligatorios (excepto mensaje y archivos).";
-      responseEl.classList.add("error");
-      return;
-    }
-
-    const minCaracteres = 30;
-    if (mensaje.length < minCaracteres && files.length === 0) {
-      responseEl.textContent = `❌ Debes escribir un mensaje (mínimo ${minCaracteres} caracteres) o adjuntar al menos un archivo.`;
-      responseEl.classList.add("error");
-      return;
-    }
-
-    if (files.length > 5) {
-      responseEl.textContent = "❌ Máximo 5 archivos permitidos.";
-      responseEl.classList.add("error");
-      return;
-    }
-
-    const totalSize = Array.from(files).reduce((acc, f) => acc + f.size, 0);
-    if (totalSize > 5 * 1024 * 1024) {
-      responseEl.textContent = "❌ El total de archivos no debe superar 5 MB.";
-      responseEl.classList.add("error");
-      return;
-    }
-
-    // Deshabilitar botón y cambiar texto
-    submitBtn.disabled = true;
-    const btnText = submitBtn.querySelector(".cyber-btn__text");
-    if (btnText) btnText.textContent = "ENVIANDO...";
-
-    // Crear FormData
-    const formData = new FormData(form);
-
-    // Enviar con fetch
-    fetch(form.action, {
-      method: "POST",
-      body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-      responseEl.textContent = data.message || "✅ Mensaje enviado con éxito";
-      responseEl.classList.add("ok");
-      form.reset();
-    })
-    .catch(error => {
-      console.error("Error:", error);
-      responseEl.textContent = "❌ Error al enviar. Intenta de nuevo.";
-      responseEl.classList.add("error");
-    })
-    .finally(() => {
-      submitBtn.disabled = false;
-      if (btnText) btnText.textContent = "ENVIAR MENSAJE";
-
-      // Ocultar mensaje después de 15 segundos
-      setTimeout(() => {
-        responseEl.textContent = "";
-        responseEl.className = "form-response";
-      }, 15000);
-    });
-  });
-});
-</script>
-
-
 </body>
 </html>

@@ -1282,3 +1282,299 @@ ul { list-style: none; }
   .scanlines, .vignette, .particles { display: none !important; }
   [data-reveal] { opacity: 1; transform: none; }
 }
+
+/* ============ MÉTODOS DE PAGO ============ */
+.payments {
+  position: relative;
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border-subtle);
+  padding: var(--space-xl) 0;
+  overflow: hidden;
+}
+
+.payments::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--neon-cyan), var(--neon-purple), transparent);
+  opacity: 0.4;
+}
+
+/* HEADER PRINCIPAL */
+.payments__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: var(--space-xl);
+  text-align: center;
+}
+
+.payments__lock {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(0,255,136,0.06);
+  border: 1px solid rgba(0,255,136,0.2);
+  color: var(--neon-green);
+  font-size: 0.9rem;
+}
+
+.payments__title {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 2.2vw, 1.25rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.15em;
+  margin: 0;
+}
+
+.payments__hint {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  padding: 0.3rem 0.8rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 100px;
+  background: rgba(0,240,255,0.03);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* GRUPOS (categorías) */
+.payments__group {
+  max-width: 1050px;
+  margin: 0 auto var(--space-lg);
+}
+.payments__group:last-child { margin-bottom: 0; }
+
+.payments__group-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+  position: relative;
+}
+
+.payments__group-head::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 60px;
+  height: 1px;
+  background: var(--neon-cyan);
+}
+
+.payments__group-title {
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--neon-cyan);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.payments__group-count {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  padding: 0.15rem 0.6rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 100px;
+  background: rgba(0,240,255,0.03);
+  letter-spacing: 0.05em;
+  margin-left: auto;
+}
+
+/* GRID de tarjetas */
+.payments__grid {
+  display: grid;
+  gap: 0.75rem;
+}
+.payments__grid--national      { grid-template-columns: repeat(6, 1fr); }
+.payments__grid--electronic    { grid-template-columns: repeat(6, 1fr); }
+.payments__grid--international { grid-template-columns: repeat(6, 1fr); }
+
+/* TARJETA compacta */
+.pay-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: var(--space-md) 0.5rem;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  text-align: center;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+  min-height: 120px;
+  justify-content: center;
+}
+
+.pay-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--accent, var(--neon-cyan));
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.35s ease;
+  box-shadow: 0 0 10px var(--accent);
+}
+
+/* Hover SOLO en dispositivos con puntero real (no touch) */
+@media (hover: hover) and (pointer: fine) {
+  .pay-card:hover {
+    border-color: var(--accent, var(--neon-cyan));
+    outline: 1.5px solid var(--accent, var(--neon-cyan));
+    outline-offset: -1.5px;
+    transform: translateY(-3px);
+    box-shadow:
+      0 10px 25px rgba(0,0,0,0.35),
+      0 0 22px color-mix(in srgb, var(--accent) 45%, transparent),
+      inset 0 0 12px color-mix(in srgb, var(--accent) 8%, transparent);
+  }
+
+  .pay-card:hover::before { transform: scaleX(1); }
+
+  .pay-card:hover .pay-card__logo {
+    transform: scale(1.06);
+    box-shadow: 0 0 0 2px var(--accent), 0 4px 16px color-mix(in srgb, var(--accent) 40%, transparent);
+  }
+}
+
+/* Feedback en móvil (solo color, sin deformar) */
+@media (hover: none) {
+  .pay-card:active {
+    border-color: var(--accent, var(--neon-cyan));
+  }
+  .pay-card:active::before { transform: scaleX(1); }
+}
+
+/* LOGO 56x56 fijo */
+.pay-card__logo {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border-radius: var(--radius-md);
+  padding: 8px;
+  flex-shrink: 0;
+  transition: var(--transition);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.05), 0 3px 10px rgba(0,0,0,0.2);
+  overflow: hidden;
+}
+
+.pay-card__logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  transition: var(--transition);
+}
+
+.pay-card__name {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+}
+
+/* COLORES DE MARCA OFICIALES */
+.pay-card[data-pay="banreservas"]   { --accent: #4A8BD1; }  /* Azul oficial #264E72, aclarado para fondo oscuro */
+.pay-card[data-pay="bhd"]           { --accent: #00A651; }  /* Verde característico BHD */
+.pay-card[data-pay="popular"]       { --accent: #0082CA; }  /* Azul Lochmara oficial */
+.pay-card[data-pay="mio"]           { --accent: #FF6B00; }  /* Naranja del logo MIO */
+.pay-card[data-pay="qik"]           { --accent: #61B3E5; }  /* Azul Picton oficial */
+.pay-card[data-pay="asopopular"]    { --accent: #205BA8; }  /* Azul Fun Blue oficial */
+.pay-card[data-pay="paypal"]        { --accent: #0070BA; }  /* Azul accesible oficial */
+.pay-card[data-pay="airtm"]         { --accent: #00C389; }  /* Azul de marca Airtm */
+.pay-card[data-pay="payoneer"]      { --accent: #FF4800; }  /* Naranja oficial */
+.pay-card[data-pay="leadbank"]      { --accent: #1A73E8; }  /* Azul Royal oficial */
+.pay-card[data-pay="bankingcircle"] { --accent: #257189; }  /* Azul Jelly Bean oficial */
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .payments__grid--national      { grid-template-columns: repeat(3, 1fr); }
+  .payments__grid--electronic    { grid-template-columns: repeat(3, 1fr); }
+  .payments__grid--international { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .payments { padding: var(--space-lg) 0; }
+  .payments__header { margin-bottom: var(--space-lg); }
+  .payments__group { margin-bottom: var(--space-md); }
+  .payments__group-title { font-size: 0.75rem; }
+
+  .pay-card {
+    padding: var(--space-sm) 0.4rem;
+    min-height: 105px;
+    gap: 0.4rem;
+  }
+  .pay-card__logo {
+    width: 46px;
+    height: 46px;
+    padding: 6px;
+  }
+  .pay-card__name { font-size: 0.68rem; }
+}
+
+@media (max-width: 480px) {
+  .payments__grid--national,
+  .payments__grid--electronic,
+  .payments__grid--international {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+  .payments__group-count { display: none; }
+  .pay-card {
+    padding: 0.75rem 0.25rem 0.6rem;
+    min-height: 100px;
+  }
+  .pay-card__logo {
+    width: 42px;
+    height: 42px;
+    padding: 6px;
+  }
+  .pay-card__name { font-size: 0.62rem; }
+}
+
+.pay-float {
+  position: fixed;
+  bottom: 90px;
+  right: 30px;
+  width: 50px;
+  height: 50px;
+  background: var(--bg-panel);
+  border: 2px solid var(--neon-green);
+  border-radius: 50%;
+  color: var(--neon-green);
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 15px rgba(0,255,136,0.3);
+  z-index: 999;
+  transition: var(--transition);
+}
+.pay-float:hover {
+  background: var(--neon-green);
+  color: var(--bg-primary);
+  transform: translateY(-5px);
+}
+

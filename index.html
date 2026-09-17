@@ -85,8 +85,8 @@
         <ul class="nav__list">
           <li><a href="#inicio" class="nav__link" data-nav-link>INICIO</a></li>
           <li><a href="#perfil" class="nav__link" data-nav-link>PERFIL</a></li>
+          <li><a href="#servicios" class="nav__link" data-nav-link>SERVICIOS</a></li>
           <li><a href="#trayectoria" class="nav__link" data-nav-link>TRAYECTORIA</a></li>
-          <li><a href="#certificaciones" class="nav__link" data-nav-link>CREDENCIALES</a></li>
           <li><a href="#enlaces" class="nav__link" data-nav-link>ENLACES</a></li>
           <li><a href="#contacto" class="nav__link nav__link--cta" data-nav-link>CONTACTO</a></li>
         </ul>
@@ -675,6 +675,16 @@
 
           <details class="faq__item">
             <summary class="faq__question">
+              <span>¿Qué métodos de pago aceptas?</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </summary>
+            <div class="faq__answer">
+              <p>Acepto métodos <strong>nacionales</strong> (BanReservas, BHD, Popular, MIO, Qik, Asociación Popular), <strong>electrónicos</strong> (PayPal, Airtm, Payoneer) e <strong>internacionales</strong> (LeadBank, Banking Circle). <a href="#payments" style="color: var(--neon-cyan); font-weight: 600;">Ver métodos disponibles →</a></p>
+            </div>
+          </details>
+
+          <details class="faq__item">
+            <summary class="faq__question">
               <span>¿Cómo puedo solicitar tu CV completo?</span>
               <i class="fa-solid fa-chevron-down"></i>
             </summary>
@@ -749,6 +759,107 @@
     </section>
   </main>
 
+  <!-- MÉTODOS DE PAGO -->
+  <section class="payments" id="payments" aria-label="Métodos de pago aceptados">
+    <div class="container">
+
+      <header class="payments__header">
+        <span class="payments__lock"><i class="fa-solid fa-lock"></i></span>
+        <h3 class="payments__title">MÉTODOS DE PAGO ACEPTADOS</h3>
+        <span class="payments__hint">Requiere código de acceso</span>
+      </header>
+
+      <!-- GRUPO: NACIONALES -->
+      <div class="payments__group">
+        <div class="payments__group-head">
+          <span class="payments__group-title">Nacionales · RD</span>
+          <span class="payments__group-count">6 métodos</span>
+        </div>
+        <div class="payments__grid payments__grid--national">
+
+          <a href="https://jcdurancasado.vercel.app/pagos" target="_blank" rel="noopener" class="pay-card" data-pay="banreservas" aria-label="BanReservas">
+            <div class="pay-card__logo"><img src="img/pagos/banreservas.png" alt="BanReservas" loading="lazy" /></div>
+            <span class="pay-card__name">BanReservas</span>
+          </a>
+
+          <a href="https://jcdurancasado.vercel.app/pagos" target="_blank" rel="noopener" class="pay-card" data-pay="bhd" aria-label="Banco BHD">
+            <div class="pay-card__logo"><img src="img/pagos/bhd.png" alt="BHD" loading="lazy" /></div>
+            <span class="pay-card__name">BHD</span>
+          </a>
+
+          <a href="https://jcdurancasado.vercel.app/pagos" target="_blank" rel="noopener" class="pay-card" data-pay="popular" aria-label="Banco Popular">
+            <div class="pay-card__logo"><img src="img/pagos/popular.png" alt="Popular" loading="lazy" /></div>
+            <span class="pay-card__name">Popular</span>
+          </a>
+
+          <a href="https://jcdurancasado.vercel.app/pagos" target="_blank" rel="noopener" class="pay-card" data-pay="mio" aria-label="MIO BanReservas">
+            <div class="pay-card__logo"><img src="img/pagos/mio.png" alt="MIO" loading="lazy" /></div>
+            <span class="pay-card__name">MIO</span>
+          </a>
+
+          <a href="https://jcdurancasado.vercel.app/pagos" target="_blank" rel="noopener" class="pay-card" data-pay="qik" aria-label="Qik Banco Digital">
+            <div class="pay-card__logo"><img src="img/pagos/qik.png" alt="Qik" loading="lazy" /></div>
+            <span class="pay-card__name">Qik</span>
+          </a>
+
+          <a href="https://jcdurancasado.vercel.app/pagos" target="_blank" rel="noopener" class="pay-card" data-pay="asopopular" aria-label="Asociación Popular">
+            <div class="pay-card__logo"><img src="img/pagos/asopopular.png" alt="Asoc. Popular" loading="lazy" /></div>
+            <span class="pay-card__name">Asoc. Popular</span>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- GRUPO: ELECTRÓNICOS -->
+      <div class="payments__group">
+        <div class="payments__group-head">
+          <span class="payments__group-title">Electrónicos</span>
+          <span class="payments__group-count">3 métodos</span>
+        </div>
+        <div class="payments__grid payments__grid--electronic">
+
+          <a href="https://jcdurancasado.vercel.app/pagos" target="_blank" rel="noopener" class="pay-card" data-pay="paypal" aria-label="PayPal">
+            <div class="pay-card__logo"><img src="img/pagos/paypal.png" alt="PayPal" loading="lazy" /></div>
+            <span class="pay-card__name">PayPal</span>
+          </a>
+
+          <a href="https://jcdurancasado.vercel.app/pagos" target="_blank" rel="noopener" class="pay-card" data-pay="airtm" aria-label="Airtm">
+            <div class="pay-card__logo"><img src="img/pagos/airtm.png" alt="Airtm" loading="lazy" /></div>
+            <span class="pay-card__name">Airtm</span>
+          </a>
+
+          <a href="https://jcdurancasado.vercel.app/pagos" target="_blank" rel="noopener" class="pay-card" data-pay="payoneer" aria-label="Payoneer">
+            <div class="pay-card__logo"><img src="img/pagos/payoneer.png" alt="Payoneer" loading="lazy" /></div>
+            <span class="pay-card__name">Payoneer</span>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- GRUPO: INTERNACIONALES -->
+      <div class="payments__group">
+        <div class="payments__group-head">
+          <span class="payments__group-title">Internacionales</span>
+          <span class="payments__group-count">2 métodos</span>
+        </div>
+        <div class="payments__grid payments__grid--international">
+
+          <a href="https://jcdurancasado.vercel.app/pagos" target="_blank" rel="noopener" class="pay-card" data-pay="leadbank" aria-label="LeadBank">
+            <div class="pay-card__logo"><img src="img/pagos/leadbank.png" alt="LeadBank" loading="lazy" /></div>
+            <span class="pay-card__name">LeadBank</span>
+          </a>
+
+          <a href="https://jcdurancasado.vercel.app/pagos" target="_blank" rel="noopener" class="pay-card" data-pay="bankingcircle" aria-label="Banking Circle">
+            <div class="pay-card__logo"><img src="img/pagos/bankingcircle.png" alt="Banking Circle" loading="lazy" /></div>
+            <span class="pay-card__name">Banking Circle</span>
+          </a>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+  
   <!-- FOOTER -->
   <footer class="footer">
     <div class="footer__grid-lines" aria-hidden="true"></div>
@@ -819,6 +930,10 @@
   <button class="scroll-top" id="scrollTop" aria-label="Subir al inicio">
     <i class="fa-solid fa-arrow-up"></i>
   </button>
+
+  <a href="#payments" class="pay-float" aria-label="Ver métodos de pago">
+    <i class="fa-solid fa-credit-card"></i>
+  </a>
 
   <script src="js/main.js"></script>
 </body>

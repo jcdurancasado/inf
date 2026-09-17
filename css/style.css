@@ -1145,7 +1145,9 @@ ul { list-style: none; }
 
 /* ============ SCROLL TOP ============ */
 .scroll-top {
-  position: fixed; bottom: 30px; right: 30px;
+  position: fixed;
+  bottom: 90px;          /* ⬅️ Sube el botón (antes era 30px) */
+  right: 30px;
   width: 50px; height: 50px;
   background: var(--bg-panel); border: 2px solid var(--neon-cyan);
   border-radius: 50%; color: var(--neon-cyan); font-size: 1.1rem;
@@ -1556,7 +1558,7 @@ ul { list-style: none; }
 
 .pay-float {
   position: fixed;
-  bottom: 90px;
+  bottom: 30px;          /* ⬅️ Baja el botón a la esquina (antes era 90px) */
   right: 30px;
   width: 50px;
   height: 50px;
@@ -1571,10 +1573,17 @@ ul { list-style: none; }
   box-shadow: 0 0 15px rgba(0,255,136,0.3);
   z-index: 999;
   transition: var(--transition);
+  opacity: 0;                    /* ⬅️ NUEVO: oculto por defecto */
+  visibility: hidden;            /* ⬅️ NUEVO */
+  transform: translateY(20px);   /* ⬅️ NUEVO */
+}
+.pay-float.visible {             /* ⬅️ NUEVO: aparece al hacer scroll */
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
 }
 .pay-float:hover {
   background: var(--neon-green);
   color: var(--bg-primary);
   transform: translateY(-5px);
 }
-

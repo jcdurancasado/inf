@@ -281,15 +281,24 @@ const Reveal = {
 };
 
 // ==========================================
-// SCROLL TOP
+// SCROLL TOP + PAY FLOAT
 // ==========================================
 const ScrollTop = {
   init() {
     const btn = document.getElementById('scrollTop');
+    const payBtn = document.querySelector('.pay-float');
     if (!btn) return;
+
     window.addEventListener('scroll', () => {
-      btn.classList.toggle('visible', window.pageYOffset > 500);
+      const scrollY = window.pageYOffset;
+      const shouldShow = scrollY > 500;
+
+      btn.classList.toggle('visible', shouldShow);
+
+      // El botón de pagos aparece y desaparece junto con el de subir
+      if (payBtn) payBtn.classList.toggle('visible', shouldShow);
     }, { passive: true });
+
     btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
   }
 };

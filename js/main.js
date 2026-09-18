@@ -335,7 +335,21 @@ const ScrollTop = {
     btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
   }
 };
+// ==========================================
+// CERT COUNTER (auto)
+// ==========================================
+const CertCounter = {
+  init() {
+    document.querySelectorAll('.cert-group').forEach(group => {
+      const pills = group.querySelectorAll('.cert-pill');
+      const countEl = group.querySelector('.cert-group__count');
+      if (!countEl) return;
 
+      const n = pills.length;
+      countEl.textContent = `${n} ${n === 1 ? 'credencial' : 'credenciales'}`;
+    });
+  }
+};
 // ==========================================
 // YEAR
 // ==========================================
@@ -479,7 +493,7 @@ document.addEventListener('DOMContentLoaded', () => {
   AutoScroll.init();
   FAQ.init();
   ContactForm.init();
-
+  CertCounter.init();
   console.log('%cJCDURANCASADO · v8.0', 'color: #00f0ff; font-family: Orbitron; font-size: 18px;');
   console.log('%c"No hablo en técnico cuando explico. La tecnología debe servir a las personas, no al revés."', 'color: #b829dd; font-style: italic;');
 });

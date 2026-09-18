@@ -244,7 +244,7 @@ ul { list-style: none; }
 
 .hero__subtitle {
   font-family: var(--font-mono); font-size: 1rem;
-  color: var(--neon-cyan); margin-bottom: var(--space-xl);
+  color: var(--neon-cyan); margin-bottom: var(--space-md);
   min-height: 120px; max-width: 90%; line-height: 1.6;
 }
 .typing-text::after { content: '|'; animation: blink 1s infinite; color: var(--neon-cyan); }
@@ -1146,7 +1146,7 @@ ul { list-style: none; }
 /* ============ SCROLL TOP ============ */
 .scroll-top {
   position: fixed;
-  bottom: 90px;          /* ⬅️ Sube el botón (antes era 30px) */
+  bottom: 150px;              /* ⬅️ Ahora está arriba del pago y del tema */
   right: 30px;
   width: 50px; height: 50px;
   background: var(--bg-panel); border: 2px solid var(--neon-cyan);
@@ -1558,7 +1558,7 @@ ul { list-style: none; }
 
 .pay-float {
   position: fixed;
-  bottom: 30px;          /* ⬅️ Baja el botón a la esquina (antes era 90px) */
+  bottom: 90px;               /* ⬅️ Ahora está en medio */
   right: 30px;
   width: 50px;
   height: 50px;
@@ -1573,11 +1573,11 @@ ul { list-style: none; }
   box-shadow: 0 0 15px rgba(0,255,136,0.3);
   z-index: 999;
   transition: var(--transition);
-  opacity: 0;                    /* ⬅️ NUEVO: oculto por defecto */
-  visibility: hidden;            /* ⬅️ NUEVO */
-  transform: translateY(20px);   /* ⬅️ NUEVO */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
 }
-.pay-float.visible {             /* ⬅️ NUEVO: aparece al hacer scroll */
+.pay-float.visible {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
@@ -1586,4 +1586,229 @@ ul { list-style: none; }
   background: var(--neon-green);
   color: var(--bg-primary);
   transform: translateY(-5px);
+  box-shadow: 0 0 25px rgba(0,255,136,0.5);
+}
+
+/* Icono: gira ligeramente + crece al hover */
+.pay-float i {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.pay-float:hover i {
+  transform: rotate(-15deg) scale(1.15);
+}
+
+/* Pulso suave continuo para llamar la atención */
+.pay-float::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid var(--neon-green);
+  opacity: 0;
+  animation: pay-pulse 2.5s ease-out infinite;
+  pointer-events: none;
+}
+@keyframes pay-pulse {
+  0%   { transform: scale(1);   opacity: 0.6; }
+  100% { transform: scale(1.4); opacity: 0;   }
+}
+
+/* ============ THEME TOGGLE FLOTANTE ============ */
+.theme-toggle-float {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 50px;
+  height: 50px;
+  background: var(--bg-panel);
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  color: #ffffff;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 15px rgba(255,255,255,0.25);
+  z-index: 999;
+  transition: var(--transition);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  padding: 0;
+  cursor: pointer;
+}
+.theme-toggle-float.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.theme-toggle-float:hover {
+  background: #ffffff;
+  color: var(--bg-primary);
+  transform: translateY(-5px);
+  box-shadow: 0 0 25px rgba(255,255,255,0.5);
+}
+.theme-toggle-float i {
+  font-size: 1.15rem;
+  transition: transform 0.4s ease;
+}
+.theme-toggle-float:hover i {
+  transform: rotate(180deg);
+}
+
+/* En modo claro: botón negro */
+[data-theme="light"] .theme-toggle-float {
+  border-color: #1a1a1a;
+  color: #1a1a1a;
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+}
+[data-theme="light"] .theme-toggle-float:hover {
+  background: #1a1a1a;
+  color: #ffffff;
+  box-shadow: 0 0 25px rgba(0,0,0,0.35);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .scroll-top         { width: 44px; height: 44px; bottom: 140px; right: 20px; }
+  .pay-float          { width: 44px; height: 44px; bottom: 84px;  right: 20px; }
+  .theme-toggle-float { width: 44px; height: 44px; bottom: 28px;  right: 20px; }
+}
+/* ============ MODO CLARO (LIGHT THEME) ============ */
+[data-theme="light"] {
+  --neon-cyan: #0088cc;
+  --neon-blue: #0055bb;
+  --neon-purple: #7c3aed;
+  --neon-pink: #d6006e;
+  --neon-green: #059669;
+  --neon-yellow: #d97706;
+  --neon-red: #dc2626;
+  --neon-orange: #ea580c;
+
+  --bg-primary: #f5f7fa;
+  --bg-secondary: #eaeef3;
+  --bg-tertiary: #dee3ea;
+  --bg-panel: #ffffff;
+  --bg-hover: #e8ebf0;
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+
+  --border-subtle: rgba(0, 100, 180, 0.15);
+  --border-medium: rgba(0, 100, 180, 0.3);
+  --border-bright: rgba(0, 100, 180, 0.6);
+
+  --glow-cyan: 0 0 15px rgba(0, 136, 204, 0.2);
+  --glow-purple: 0 0 15px rgba(124, 58, 237, 0.2);
+}
+
+/* Header claro */
+[data-theme="light"] .header {
+  background: rgba(245, 247, 250, 0.9);
+  border-bottom: 1px solid var(--border-subtle);
+}
+[data-theme="light"] .header--scrolled {
+  background: rgba(245, 247, 250, 0.98);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* Boot claro */
+[data-theme="light"] .boot-sequence {
+  background: var(--bg-primary);
+}
+[data-theme="light"] .boot-content {
+  background: var(--bg-panel);
+  border-color: var(--border-subtle);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* Overlays atenuados en modo claro */
+[data-theme="light"] .scanlines {
+  opacity: 0.08;
+}
+[data-theme="light"] .vignette {
+  background: radial-gradient(ellipse at center, transparent 70%, rgba(0,0,0,0.06) 100%);
+}
+[data-theme="light"] .cyber-grid {
+  background-image:
+    linear-gradient(rgba(0, 100, 180, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 100, 180, 0.05) 1px, transparent 1px);
+}
+
+/* Hero en modo claro */
+[data-theme="light"] .hero__gradient {
+  background:
+    radial-gradient(ellipse at 20% 30%, rgba(0, 136, 204, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(124, 58, 237, 0.05) 0%, transparent 50%);
+}
+[data-theme="light"] .hero__grid-perspective {
+  background-image:
+    linear-gradient(rgba(0, 100, 180, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 100, 180, 0.05) 1px, transparent 1px);
+}
+
+/* Badge "Disponible para proyectos" en claro */
+[data-theme="light"] .hero__badge {
+  background: rgba(5, 150, 105, 0.08);
+  border-color: rgba(5, 150, 105, 0.25);
+  color: #047857;
+}
+
+/* Hologram data */
+[data-theme="light"] .hologram-data {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: var(--border-medium);
+  color: var(--neon-cyan);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+}
+
+/* Tarjetas de pago en claro */
+[data-theme="light"] .pay-card__logo {
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 3px 10px rgba(0, 0, 0, 0.06);
+}
+
+/* Toast claro */
+[data-theme="light"] .toast {
+  background: var(--bg-panel);
+  color: var(--text-primary);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* Botón CTA del header en claro */
+[data-theme="light"] .nav__link--cta {
+  background: linear-gradient(135deg, rgba(0, 136, 204, 0.08), rgba(124, 58, 237, 0.08));
+}
+
+/* Footer status */
+[data-theme="light"] .footer__status {
+  background: rgba(5, 150, 105, 0.06);
+  border-color: rgba(5, 150, 105, 0.2);
+  color: #047857;
+}
+
+/* Botones cyber-btn en claro */
+[data-theme="light"] .cyber-btn {
+  color: var(--neon-cyan);
+  border-color: var(--neon-cyan);
+}
+[data-theme="light"] .cyber-btn::before {
+  background: linear-gradient(45deg, transparent 30%, rgba(0, 136, 204, 0.08) 50%, transparent 70%);
+}
+[data-theme="light"] .cyber-btn--secondary {
+  border-color: var(--neon-purple);
+  color: var(--neon-purple);
+}
+
+/* CTAs de tarjetas de servicio en claro */
+[data-theme="light"] .service-card__icon,
+[data-theme="light"] .link-card i,
+[data-theme="light"] .value-card__icon,
+[data-theme="light"] .testimonial__avatar {
+  background: rgba(0, 136, 204, 0.06);
+}
+
+/* Terminal contacto en claro */
+[data-theme="light"] .terminal__bar {
+  background: var(--bg-tertiary);
 }

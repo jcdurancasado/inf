@@ -1398,10 +1398,6 @@ ul { list-style: none; }
   .tl-item__title { font-size: 0.95rem; }
   .tl-item__meta { gap: var(--space-md); }
 
-  .cert-group { padding: var(--space-md) var(--space-lg); }
-  .cert-group__list { gap: 0.5rem; }
-  .cert-pill { font-size: 0.72rem; padding: 0.5rem 0.9rem 0.5rem 1.5rem; }
-
   .profile__actions { justify-content: center; }
   .profile__actions .cyber-btn { flex: 1; min-width: 180px; }
 

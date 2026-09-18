@@ -43,7 +43,31 @@ const Toast = {
     }, duration);
   }
 };
+// ==========================================
+// THEME TOGGLE
+// ==========================================
+const Theme = {
+  init() {
+    const toggle = document.getElementById('themeToggle');
+    const html = document.documentElement;
 
+    // Cargar tema guardado o preferencia del sistema
+    const saved = localStorage.getItem('jcdc_theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const theme = saved || (prefersDark ? 'dark' : 'dark'); // default dark
+    html.setAttribute('data-theme', theme);
+
+    if (!toggle) return;
+
+    toggle.addEventListener('click', () => {
+      const current = html.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('jcdc_theme', next);
+      Toast.show(`Modo ${next === 'dark' ? 'oscuro' : 'claro'} activado`, 'info');
+    });
+  }
+};
 // ==========================================
 // BOOT SEQUENCE
 // ==========================================
@@ -85,7 +109,7 @@ const Boot = {
         status.textContent = 'SISTEMA LISTO';
         setTimeout(() => {
           screen.classList.add('booted');
-          Toast.show('Bienvenido al sistema', 'success');
+          Toast.show('Acceso concedido', 'success');
         }, 400);
       }
     };
@@ -281,22 +305,31 @@ const Reveal = {
 };
 
 // ==========================================
-// SCROLL TOP + PAY FLOAT
+// SCROLL TOP + PAY FLOAT + THEME TOGGLE
 // ==========================================
 const ScrollTop = {
   init() {
     const btn = document.getElementById('scrollTop');
     const payBtn = document.querySelector('.pay-float');
+    const themeBtn = document.getElementById('themeToggle');
     if (!btn) return;
 
+    const toggleAll = (show) => {
+      btn.classList.toggle('visible', show);
+      if (payBtn) payBtn.classList.toggle('visible', show);
+      if (themeBtn) themeBtn.classList.toggle('visible', show);
+    };
+
+    // Aparecen apenas el usuario baja un poco (10% del viewport, mín. 100px)
+    const getThreshold = () => Math.max(100, window.innerHeight * 0.10);
+
     window.addEventListener('scroll', () => {
-      const scrollY = window.pageYOffset;
-      const shouldShow = scrollY > 500;
+      toggleAll(window.pageYOffset > getThreshold());
+    }, { passive: true });
 
-      btn.classList.toggle('visible', shouldShow);
-
-      // El botón de pagos aparece y desaparece junto con el de subir
-      if (payBtn) payBtn.classList.toggle('visible', shouldShow);
+    // Recalcular al cambiar el tamaño de la ventana
+    window.addEventListener('resize', () => {
+      toggleAll(window.pageYOffset > getThreshold());
     }, { passive: true });
 
     btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
@@ -436,6 +469,7 @@ const ContactForm = {
 document.addEventListener('DOMContentLoaded', () => {
   Toast.init();
   Boot.init();
+  Theme.init(); 
   TypeWriter.init();
   Particles.init();
   Nav.init();
@@ -454,3 +488,4 @@ document.addEventListener('DOMContentLoaded', () => {
 // FIX OVERFLOW
 // ==========================================
 document.body.style.overflowX = 'hidden';
+

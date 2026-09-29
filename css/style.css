@@ -2259,3 +2259,121 @@ ul { list-style: none; }
     animation: none !important;
   }
 }
+
+/* ============ LOGO NEXUS ============ */
+.logo__svg--nexus {
+  filter: drop-shadow(0 0 8px rgba(0,240,255,0.5));
+  transition: filter 0.3s ease;
+}
+.logo:hover .logo__svg--nexus {
+  filter: drop-shadow(0 0 18px rgba(0,240,255,1));
+}
+
+/* Escudo que se dibuja al cargar */
+.nexus-shield {
+  animation: nexus-draw 3s ease-out forwards;
+}
+@keyframes nexus-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+/* 3 anillos girando a distintas velocidades */
+.nexus-ring {
+  transform-origin: 50px 50px;
+  transform-box: fill-box;
+}
+.nexus-ring--1 { animation: nexus-rot 24s linear infinite; }
+.nexus-ring--2 { animation: nexus-rot 14s linear infinite reverse; }
+.nexus-ring--3 { animation: nexus-rot 10s linear infinite; }
+@keyframes nexus-rot {
+  to { transform: rotate(360deg); }
+}
+
+/* Barrido radar */
+.nexus-sweep {
+  transform-origin: 50px 50px;
+  transform-box: fill-box;
+  animation: nexus-rot 3.5s linear infinite;
+}
+
+/* Núcleo hexagonal pulsante */
+.nexus-core {
+  transform-origin: 50px 50px;
+  transform-box: fill-box;
+  animation: nexus-core-pulse 2.5s ease-in-out infinite;
+}
+@keyframes nexus-core-pulse {
+  0%, 100% { transform: scale(1);    opacity: 1;    }
+  50%      { transform: scale(1.08); opacity: 0.85; }
+}
+
+/* Punto central latiendo */
+.nexus-center {
+  transform-origin: 50px 50px;
+  transform-box: fill-box;
+  animation: nexus-center-pulse 1.8s ease-in-out infinite;
+}
+@keyframes nexus-center-pulse {
+  0%, 100% { transform: scale(1);   opacity: 1; }
+  50%      { transform: scale(1.5); opacity: 0.7; }
+}
+
+/* 3 ondas expansivas en cascada */
+.nexus-pulse {
+  transform-origin: 50px 50px;
+  transform-box: fill-box;
+  animation: nexus-wave 3s ease-out infinite;
+}
+.nexus-pulse--2 { animation-delay: 1s; }
+.nexus-pulse--3 { animation-delay: 2s; }
+@keyframes nexus-wave {
+  0%   { transform: scale(1); opacity: 0.7; }
+  100% { transform: scale(5); opacity: 0;   }
+}
+
+/* Líneas de datos fluyendo (efecto "información viajando") */
+.nexus-data {
+  stroke-dasharray: 2 4;
+  opacity: 0.5;
+  animation: nexus-flow 1.5s linear infinite;
+}
+.nexus-data--1 { animation-delay: 0s; }
+.nexus-data--2 { animation-delay: 0.2s; }
+.nexus-data--3 { animation-delay: 0.4s; }
+.nexus-data--4 { animation-delay: 0.6s; }
+.nexus-data--5 { animation-delay: 0.8s; }
+.nexus-data--6 { animation-delay: 1s; }
+@keyframes nexus-flow {
+  to { stroke-dashoffset: -12; opacity: 1; }
+}
+
+/* 6 nodos pulsando en cascada */
+.nexus-node {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: nexus-node-pulse 2.4s ease-in-out infinite;
+}
+.nexus-node--1 { animation-delay: 0s; }
+.nexus-node--2 { animation-delay: 0.4s; }
+.nexus-node--3 { animation-delay: 0.8s; }
+.nexus-node--4 { animation-delay: 1.2s; }
+.nexus-node--5 { animation-delay: 1.6s; }
+.nexus-node--6 { animation-delay: 2s; }
+@keyframes nexus-node-pulse {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 1;   }
+}
+
+/* Accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  .nexus-shield,
+  .nexus-ring,
+  .nexus-sweep,
+  .nexus-core,
+  .nexus-center,
+  .nexus-pulse,
+  .nexus-data,
+  .nexus-node {
+    animation: none !important;
+  }
+}

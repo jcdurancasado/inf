@@ -477,6 +477,49 @@ const ContactForm = {
   }
 };
 
+
+// ==========================================
+// CURSOS RECOMENDADOS
+// ==========================================
+const CursosRecomendados = {
+  init() {
+    const banner = document.querySelector('.cursos-banner');
+    if (!banner) return;
+
+    if ('IntersectionObserver' in window && !CONFIG.reducedMotion) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && !banner.dataset.seen) {
+            banner.dataset.seen = '1';
+            Toast.show('🎓 Cursos gratis te esperan abajo', 'info', 4000);
+            observer.disconnect();
+          }
+        });
+      }, { threshold: 0.4 });
+      observer.observe(banner);
+    }
+
+    document.querySelectorAll('.cursos-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const targetId = btn.getAttribute('href');
+        if (!targetId || !targetId.startsWith('#')) return;
+        const target = document.querySelector(targetId);
+        if (!target) return;
+        e.preventDefault();
+        const header = document.querySelector('[data-header]');
+        const offset = header ? header.offsetHeight : 70;
+        const top = target.getBoundingClientRect().top + window.pageYOffset - offset - 20;
+        window.scrollTo({ top, behavior: 'smooth' });
+        history.pushState(null, '', targetId);
+        target.style.transition = 'box-shadow 0.5s ease';
+        target.style.boxShadow = '0 0 0 2px var(--neon-cyan), 0 0 40px rgba(0,240,255,0.5)';
+        setTimeout(() => { target.style.boxShadow = ''; }, 1600);
+      });
+    });
+  }
+};
+
+
 // ==========================================
 // INIT
 // ==========================================
@@ -494,6 +537,7 @@ document.addEventListener('DOMContentLoaded', () => {
   FAQ.init();
   ContactForm.init();
   CertCounter.init();
+  CursosRecomendados.init();
   console.log('%cJCDURANCASADO · v8.0', 'color: #00f0ff; font-family: Orbitron; font-size: 18px;');
   console.log('%c"No hablo en técnico cuando explico. La tecnología debe servir a las personas, no al revés."', 'color: #b829dd; font-style: italic;');
 });

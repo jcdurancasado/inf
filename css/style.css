@@ -2169,3 +2169,93 @@ ul { list-style: none; }
   0%, 100% { box-shadow: 0 0 0 0 rgba(0,255,136,0.3); }
   50%      { box-shadow: 0 0 15px rgba(0,255,136,0.5); }
 }
+
+/* ============ LOGO CORE ACTIVO ============ */
+.logo__svg--core {
+  filter: drop-shadow(0 0 6px rgba(0,240,255,0.5));
+  transition: filter 0.3s ease;
+}
+.logo:hover .logo__svg--core {
+  filter: drop-shadow(0 0 14px rgba(0,240,255,0.9));
+}
+
+/* Anillos girando */
+.core-ring {
+  transform-origin: 50px 50px;
+  transform-box: fill-box;
+}
+.core-ring--outer {
+  animation: core-rotate 20s linear infinite;
+}
+.core-ring--mid {
+  animation: core-rotate 12s linear infinite reverse;
+}
+.core-ring--inner {
+  animation: core-rotate 8s linear infinite;
+}
+@keyframes core-rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Barrido de radar */
+.core-sweep {
+  transform-origin: 50px 50px;
+  transform-box: fill-box;
+  animation: core-sweep 4s linear infinite;
+}
+@keyframes core-sweep {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Núcleo pulsante */
+.core-dot {
+  transform-origin: 50px 50px;
+  transform-box: fill-box;
+  animation: core-dot-pulse 2s ease-in-out infinite;
+}
+@keyframes core-dot-pulse {
+  0%, 100% { transform: scale(1);   opacity: 1; }
+  50%      { transform: scale(1.4); opacity: 0.8; }
+}
+
+/* Ondas de señal expandiéndose */
+.core-pulse {
+  transform-origin: 50px 50px;
+  transform-box: fill-box;
+  animation: core-wave 3s ease-out infinite;
+}
+.core-pulse--2 { animation-delay: 1.5s; }
+@keyframes core-wave {
+  0%   { transform: scale(1);  opacity: 0.7; }
+  100% { transform: scale(4.5); opacity: 0; }
+}
+
+/* Nodos pulsando secuencialmente */
+.core-node {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: core-node-pulse 2.4s ease-in-out infinite;
+}
+.core-node--1 { animation-delay: 0s; }
+.core-node--2 { animation-delay: 0.4s; }
+.core-node--3 { animation-delay: 0.8s; }
+.core-node--4 { animation-delay: 1.2s; }
+.core-node--5 { animation-delay: 1.6s; }
+.core-node--6 { animation-delay: 2s; }
+@keyframes core-node-pulse {
+  0%, 100% { opacity: 0.5; r: 2.5; }
+  50%      { opacity: 1;   r: 3.5; }
+}
+
+/* Respeta prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .core-ring,
+  .core-sweep,
+  .core-dot,
+  .core-pulse,
+  .core-node {
+    animation: none !important;
+  }
+}

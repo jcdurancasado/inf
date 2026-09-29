@@ -614,13 +614,15 @@ const ScrollProgress = {
 // CURSOR PERSONALIZADO
 // ==========================================
 const CustomCursor = {
-  dot: null, ring: null,
-  mouseX: 0, mouseY: 0,
-  ringX: 0, ringY: 0,
-  isHover: false,
+  dot: null,
+  ring: null,
+  mouseX: 0,
+  mouseY: 0,
+  ringX: 0,
+  ringY: 0,
+  rafId: null,
 
   init() {
-    // Solo en dispositivos con puntero fino (no táctiles)
     if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
     if (CONFIG.reducedMotion) return;
 
@@ -628,64 +630,53 @@ const CustomCursor = {
     this.ring = document.getElementById('cursorRing');
     if (!this.dot || !this.ring) return;
 
-    // Posición inicial fuera de pantalla
-    this.dot.style.transform = 'translate(-100px, -100px)';
-    this.ring.style.transform = 'translate(-100px, -100px)';
-
     this.bind();
-    this.animate();
+    this.loop();
   },
 
   bind() {
-    // Movimiento del mouse
+    // El dot sigue exacto al mouse; el ring con suavizado
     window.addEventListener('mousemove', (e) => {
       this.mouseX = e.clientX;
       this.mouseY = e.clientY;
+      // El dot va inmediato (sin esperar al RAF)
+      this.dot.style.transform = `translate3d(${this.mouseX}px, ${this.mouseY}px, 0)`;
     }, { passive: true });
 
-    // Detectar hover en elementos interactivos
     const interactiveSelector = 'a, button, input, textarea, select, [role="button"], .term-chip, .cyber-btn, .link-card, .pay-card, .stack-chip';
 
     document.addEventListener('mouseover', (e) => {
       if (e.target.closest(interactiveSelector)) {
         document.body.classList.add('cursor-hover');
-        this.isHover = true;
       }
     });
 
     document.addEventListener('mouseout', (e) => {
       if (e.target.closest(interactiveSelector)) {
         document.body.classList.remove('cursor-hover');
-        this.isHover = false;
       }
     });
 
-    // Click
-    window.addEventListener('mousedown', () => document.body.classList.add('cursor-click'));
-    window.addEventListener('mouseup', () => document.body.classList.remove('cursor-click'));
+    window.addEventListener('mousedown', () => document.body.classList.add('cursor-click'), { passive: true });
+    window.addEventListener('mouseup',   () => document.body.classList.remove('cursor-click'), { passive: true });
 
-    // Fuera de la ventana
     document.addEventListener('mouseleave', () => document.body.classList.add('cursor-hidden'));
     document.addEventListener('mouseenter', () => document.body.classList.remove('cursor-hidden'));
 
-    // Si el usuario cambia a otro input (por si acaso), ocultar al salir
-    window.addEventListener('blur', () => document.body.classList.add('cursor-hidden'));
+    window.addEventListener('blur',  () => document.body.classList.add('cursor-hidden'));
     window.addEventListener('focus', () => document.body.classList.remove('cursor-hidden'));
   },
 
-  animate() {
-    // Suavizado del anillo (lerp)
-    this.ringX += (this.mouseX - this.ringX) * 0.18;
-    this.ringY += (this.mouseY - this.ringY) * 0.18;
+  loop() {
+    // El ring sigue con suavizado, el dot ya va directo
+    this.ringX += (this.mouseX - this.ringX) * 0.35;   // ⬅️ antes 0.18, ahora más rápido
+    this.ringY += (this.mouseY - this.ringY) * 0.35;
 
-    // El dot va directo, el ring con retardo
-    this.dot.style.transform  = `translate(${this.mouseX}px, ${this.mouseY}px) translate(-50%, -50%)`;
-    this.ring.style.transform = `translate(${this.ringX}px, ${this.ringY}px) translate(-50%, -50%)`;
+    this.ring.style.transform = `translate3d(${this.ringX}px, ${this.ringY}px, 0)`;
 
-    requestAnimationFrame(() => this.animate());
+    this.rafId = requestAnimationFrame(() => this.loop());
   }
 };
-
 // ==========================================
 // INIT
 // ==========================================

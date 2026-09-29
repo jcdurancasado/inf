@@ -580,6 +580,111 @@ const StatsCounter = {
     requestAnimationFrame(tick);
   }
 };
+// ==========================================
+// BARRA DE PROGRESO DE SCROLL
+// ==========================================
+const ScrollProgress = {
+  bar: null,
+  init() {
+    this.bar = document.getElementById('scrollProgressBar');
+    if (!this.bar) return;
+
+    let ticking = false;
+    const update = () => {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const percent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      this.bar.style.width = Math.min(100, Math.max(0, percent)) + '%';
+      ticking = false;
+    };
+
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(update);
+        ticking = true;
+      }
+    }, { passive: true });
+
+    window.addEventListener('resize', update, { passive: true });
+    update();
+  }
+};
+
+// ==========================================
+// CURSOR PERSONALIZADO
+// ==========================================
+const CustomCursor = {
+  dot: null, ring: null,
+  mouseX: 0, mouseY: 0,
+  ringX: 0, ringY: 0,
+  isHover: false,
+
+  init() {
+    // Solo en dispositivos con puntero fino (no táctiles)
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    if (CONFIG.reducedMotion) return;
+
+    this.dot = document.getElementById('cursorDot');
+    this.ring = document.getElementById('cursorRing');
+    if (!this.dot || !this.ring) return;
+
+    // Posición inicial fuera de pantalla
+    this.dot.style.transform = 'translate(-100px, -100px)';
+    this.ring.style.transform = 'translate(-100px, -100px)';
+
+    this.bind();
+    this.animate();
+  },
+
+  bind() {
+    // Movimiento del mouse
+    window.addEventListener('mousemove', (e) => {
+      this.mouseX = e.clientX;
+      this.mouseY = e.clientY;
+    }, { passive: true });
+
+    // Detectar hover en elementos interactivos
+    const interactiveSelector = 'a, button, input, textarea, select, [role="button"], .term-chip, .cyber-btn, .link-card, .pay-card, .stack-chip';
+
+    document.addEventListener('mouseover', (e) => {
+      if (e.target.closest(interactiveSelector)) {
+        document.body.classList.add('cursor-hover');
+        this.isHover = true;
+      }
+    });
+
+    document.addEventListener('mouseout', (e) => {
+      if (e.target.closest(interactiveSelector)) {
+        document.body.classList.remove('cursor-hover');
+        this.isHover = false;
+      }
+    });
+
+    // Click
+    window.addEventListener('mousedown', () => document.body.classList.add('cursor-click'));
+    window.addEventListener('mouseup', () => document.body.classList.remove('cursor-click'));
+
+    // Fuera de la ventana
+    document.addEventListener('mouseleave', () => document.body.classList.add('cursor-hidden'));
+    document.addEventListener('mouseenter', () => document.body.classList.remove('cursor-hidden'));
+
+    // Si el usuario cambia a otro input (por si acaso), ocultar al salir
+    window.addEventListener('blur', () => document.body.classList.add('cursor-hidden'));
+    window.addEventListener('focus', () => document.body.classList.remove('cursor-hidden'));
+  },
+
+  animate() {
+    // Suavizado del anillo (lerp)
+    this.ringX += (this.mouseX - this.ringX) * 0.18;
+    this.ringY += (this.mouseY - this.ringY) * 0.18;
+
+    // El dot va directo, el ring con retardo
+    this.dot.style.transform  = `translate(${this.mouseX}px, ${this.mouseY}px) translate(-50%, -50%)`;
+    this.ring.style.transform = `translate(${this.ringX}px, ${this.ringY}px) translate(-50%, -50%)`;
+
+    requestAnimationFrame(() => this.animate());
+  }
+};
 
 // ==========================================
 // INIT
@@ -599,6 +704,8 @@ document.addEventListener('DOMContentLoaded', () => {
   ContactForm.init();
   CertCounter.init();
   StatsCounter.init();
+  ScrollProgress.init();
+  CustomCursor.init();
   CursosRecomendados.init();
   console.log('%cJCDURANCASADO · v8.0', 'color: #00f0ff; font-family: Orbitron; font-size: 18px;');
   console.log('%c"No hablo en técnico cuando explico. La tecnología debe servir a las personas, no al revés."', 'color: #b829dd; font-style: italic;');

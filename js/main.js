@@ -519,6 +519,67 @@ const CursosRecomendados = {
   }
 };
 
+// ==========================================
+// CONTADOR DE ESTADÍSTICAS
+// ==========================================
+const StatsCounter = {
+  init() {
+    const stats = document.querySelectorAll('.stat[data-count]');
+    if (!stats.length) return;
+
+    if (CONFIG.reducedMotion) {
+      stats.forEach(stat => {
+        const num = stat.querySelector('.stat__number');
+        const target = parseInt(stat.dataset.count, 10);
+        if (num) num.textContent = target.toLocaleString('es-DO');
+      });
+      return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !entry.target.dataset.counted) {
+          entry.target.dataset.counted = '1';
+          this.animate(entry.target);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.4 });
+
+    stats.forEach(stat => observer.observe(stat));
+  },
+
+  animate(stat) {
+    const numEl = stat.querySelector('.stat__number');
+    const suffixEl = stat.querySelector('.stat__suffix');
+    const target = parseInt(stat.dataset.count, 10);
+    const duration = 2000;
+    const start = performance.now();
+
+    // Guardar sufijo si existe
+    if (suffixEl && !suffixEl.textContent) {
+      suffixEl.textContent = stat.dataset.suffix || '';
+    }
+
+    const easeOutExpo = (t) => t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
+
+    const tick = (now) => {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = easeOutExpo(progress);
+      const current = Math.floor(eased * target);
+      numEl.textContent = current.toLocaleString('es-DO');
+
+      if (progress < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        numEl.textContent = target.toLocaleString('es-DO');
+      }
+    };
+
+    requestAnimationFrame(tick);
+  }
+};
 
 // ==========================================
 // INIT
@@ -537,6 +598,7 @@ document.addEventListener('DOMContentLoaded', () => {
   FAQ.init();
   ContactForm.init();
   CertCounter.init();
+  StatsCounter.init();
   CursosRecomendados.init();
   console.log('%cJCDURANCASADO · v8.0', 'color: #00f0ff; font-family: Orbitron; font-size: 18px;');
   console.log('%c"No hablo en técnico cuando explico. La tecnología debe servir a las personas, no al revés."', 'color: #b829dd; font-style: italic;');

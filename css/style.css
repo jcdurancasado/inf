@@ -2536,51 +2536,54 @@ ul { list-style: none; }
 
 /* ============ CURSOR PERSONALIZADO ============ */
 @media (hover: hover) and (pointer: fine) {
-  /* Ocultar cursor nativo en toda la página */
   html, body { cursor: none; }
   a, button, input, textarea, select, [role="button"] { cursor: none; }
 
   .cursor-dot,
   .cursor-ring {
     position: fixed;
-    top: 0; left: 0;
+    top: 0;
+    left: 0;
     pointer-events: none;
     z-index: 99999;
     border-radius: 50%;
     will-change: transform;
-    mix-blend-mode: screen;
+    transform: translate3d(-100px, -100px, 0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
 
   .cursor-dot {
     width: 6px;
     height: 6px;
+    margin: -3px 0 0 -3px;           /* centrado sin transform extra */
     background: var(--neon-cyan);
     box-shadow:
       0 0 8px rgba(0,240,255,0.9),
       0 0 16px rgba(0,240,255,0.5);
-    transform: translate(-50%, -50%);
-    transition: width 0.2s ease, height 0.2s ease, background 0.2s ease;
+    transition: width 0.15s ease, height 0.15s ease, background 0.15s ease, margin 0.15s ease;
   }
 
   .cursor-ring {
     width: 32px;
     height: 32px;
+    margin: -16px 0 0 -16px;         /* centrado sin transform extra */
     border: 1.5px solid rgba(0,240,255,0.5);
     background: transparent;
-    transform: translate(-50%, -50%);
     transition:
-      width 0.25s ease,
-      height 0.25s ease,
-      border-color 0.25s ease,
-      background 0.25s ease,
-      opacity 0.25s ease;
+      width 0.2s ease,
+      height 0.2s ease,
+      margin 0.2s ease,
+      border-color 0.2s ease,
+      background 0.2s ease,
+      opacity 0.2s ease;
     opacity: 0.7;
   }
 
-  /* Al hacer hover sobre enlaces/botones */
   body.cursor-hover .cursor-ring {
     width: 56px;
     height: 56px;
+    margin: -28px 0 0 -28px;
     border-color: var(--neon-purple);
     background: rgba(184,41,221,0.08);
     opacity: 1;
@@ -2588,16 +2591,17 @@ ul { list-style: none; }
   body.cursor-hover .cursor-dot {
     width: 10px;
     height: 10px;
+    margin: -5px 0 0 -5px;
     background: var(--neon-purple);
     box-shadow:
       0 0 12px rgba(184,41,221,0.9),
       0 0 24px rgba(184,41,221,0.5);
   }
 
-  /* Al hacer clic */
   body.cursor-click .cursor-ring {
     width: 24px;
     height: 24px;
+    margin: -12px 0 0 -12px;
     border-color: var(--neon-green);
   }
   body.cursor-click .cursor-dot {
@@ -2605,13 +2609,11 @@ ul { list-style: none; }
     box-shadow: 0 0 16px rgba(0,255,136,1);
   }
 
-  /* Cuando sale de la ventana */
   body.cursor-hidden .cursor-dot,
   body.cursor-hidden .cursor-ring {
     opacity: 0;
   }
 
-  /* Modo claro */
   [data-theme="light"] .cursor-dot {
     background: #0088cc;
     box-shadow: 0 0 8px rgba(0,136,204,0.9), 0 0 16px rgba(0,136,204,0.5);

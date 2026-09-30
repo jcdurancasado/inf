@@ -204,6 +204,7 @@
           <li><a href="#servicios" class="nav__link" data-nav-link>SERVICIOS</a></li>
           <li><a href="#trayectoria" class="nav__link" data-nav-link>TRAYECTORIA</a></li>
           <li><a href="#enlaces" class="nav__link" data-nav-link>ENLACES</a></li>
+          <li><a href="#toolkit" class="nav__link" data-nav-link>TOOLKIT</a></li>
           <li><a href="#cursos" class="nav__link" data-nav-link><i class="fa-solid fa-graduation-cap"></i>&nbsp;CURSOS</a></li>
           <li><a href="#contacto" class="nav__link nav__link--cta" data-nav-link>CONTACTO</a></li>
         </ul>
@@ -566,6 +567,149 @@
   </div>
 </section>
     
+    <!-- TOOLKIT TÉCNICO -->
+    <section class="section section--cyber" id="toolkit" aria-labelledby="toolkit-title">
+      <div class="cyber-section__bg" aria-hidden="true">
+        <div class="cyber-lines"></div>
+        <div class="cyber-hexagons"></div>
+      </div>
+
+      <div class="container">
+        <header class="section__header" data-reveal>
+          <span class="section__eyebrow">[ TOOLKIT TÉCNICO ]</span>
+          <h2 id="toolkit-title" class="section__title">HERRAMIENTAS PARA ESTUDIANTES</h2>
+          <p class="section__lead">Utilidades gratuitas para practicar redes y preparar certificaciones Cisco.</p>
+        </header>
+
+        <!-- HERRAMIENTA 1: Calculadora de subredes -->
+        <article class="tool-card" data-reveal>
+          <header class="tool-card__head">
+            <div class="tool-card__icon"><i class="fa-solid fa-network-wired"></i></div>
+            <div>
+              <h3 class="tool-card__title">Calculadora de Subredes</h3>
+              <p class="tool-card__desc">Ingresa una IP y máscara CIDR. Calcula red, broadcast, rango y hosts.</p>
+            </div>
+          </header>
+
+          <div class="tool-card__body">
+            <div class="tool-form">
+              <div class="tool-field">
+                <label for="subnetIP">IP</label>
+                <input type="text" id="subnetIP" class="tool-input" placeholder="192.168.1.10" value="192.168.1.10" autocomplete="off">
+              </div>
+              <div class="tool-field">
+                <label for="subnetCIDR">CIDR</label>
+                <select id="subnetCIDR" class="tool-input"></select>
+              </div>
+              <button type="button" class="tool-btn" id="subnetCalc">
+                <i class="fa-solid fa-bolt"></i> Calcular
+              </button>
+            </div>
+
+            <div class="tool-output" id="subnetOutput" hidden>
+              <div class="tool-output__row"><span>IP</span><code id="outIP">—</code></div>
+              <div class="tool-output__row"><span>Máscara</span><code id="outMask">—</code></div>
+              <div class="tool-output__row"><span>Red</span><code id="outNet">—</code></div>
+              <div class="tool-output__row"><span>Broadcast</span><code id="outBroadcast">—</code></div>
+              <div class="tool-output__row"><span>Rango usable</span><code id="outRange">—</code></div>
+              <div class="tool-output__row"><span>Hosts</span><code id="outHosts">—</code></div>
+              <div class="tool-output__row"><span>Clase</span><code id="outClass">—</code></div>
+              <div class="tool-output__row"><span>Tipo</span><code id="outType">—</code></div>
+            </div>
+          </div>
+        </article>
+
+        <!-- HERRAMIENTA 2: Conversor binario/decimal/hex -->
+        <article class="tool-card" data-reveal>
+          <header class="tool-card__head">
+            <div class="tool-card__icon"><i class="fa-solid fa-arrow-right-arrow-left"></i></div>
+            <div>
+              <h3 class="tool-card__title">Conversor Binario · Decimal · Hex</h3>
+              <p class="tool-card__desc">Escribe en cualquier campo y los demás se actualizan en vivo.</p>
+            </div>
+          </header>
+
+          <div class="tool-card__body">
+            <div class="tool-form tool-form--grid">
+              <div class="tool-field">
+                <label for="convBin">Binario</label>
+                <input type="text" id="convBin" class="tool-input tool-input--mono" placeholder="11000000" autocomplete="off">
+              </div>
+              <div class="tool-field">
+                <label for="convDec">Decimal</label>
+                <input type="text" id="convDec" class="tool-input tool-input--mono" placeholder="192" autocomplete="off">
+              </div>
+              <div class="tool-field">
+                <label for="convHex">Hexadecimal</label>
+                <input type="text" id="convHex" class="tool-input tool-input--mono" placeholder="C0" autocomplete="off">
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- HERRAMIENTA 3: Estadísticas de la industria -->
+        <article class="tool-card" data-reveal>
+          <header class="tool-card__head">
+            <div class="tool-card__icon"><i class="fa-solid fa-chart-line"></i></div>
+            <div>
+              <h3 class="tool-card__title">Datos de la Industria TI</h3>
+              <p class="tool-card__desc">Cifras actualizadas sobre demanda y salarios en redes y ciberseguridad.</p>
+            </div>
+          </header>
+
+          <div class="tool-card__body">
+            <div class="industry-grid">
+              <div class="industry-card">
+                <div class="industry-card__value">3.5M+</div>
+                <div class="industry-card__label">Empleos sin cubrir en ciberseguridad (global)</div>
+                <div class="industry-card__source">Cybersecurity Ventures</div>
+              </div>
+              <div class="industry-card">
+                <div class="industry-card__value">+32%</div>
+                <div class="industry-card__label">Crecimiento proyectado de la demanda (2022-2032)</div>
+                <div class="industry-card__source">U.S. BLS</div>
+              </div>
+              <div class="industry-card">
+                <div class="industry-card__value">$120K</div>
+                <div class="industry-card__label">Salario promedio anual — Network Security Engineer (USA)</div>
+                <div class="industry-card__source">Glassdoor</div>
+              </div>
+              <div class="industry-card">
+                <div class="industry-card__value">95%</div>
+                <div class="industry-card__label">Empresas que valoran certificaciones Cisco al contratar</div>
+                <div class="industry-card__source">Cisco 2024</div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- HERRAMIENTA 4: Mapa de calor de actividad docente -->
+        <article class="tool-card" data-reveal>
+          <header class="tool-card__head">
+            <div class="tool-card__icon"><i class="fa-solid fa-fire"></i></div>
+            <div>
+              <h3 class="tool-card__title">Mapa de Actividad Docente</h3>
+              <p class="tool-card__desc">Cada cuadro representa una clase impartida. Más brillante, más actividad.</p>
+            </div>
+          </header>
+
+          <div class="tool-card__body">
+            <div class="heatmap" id="heatmap" aria-label="Mapa de calor de actividad docente"></div>
+            <div class="heatmap__legend">
+              <span>Menos</span>
+              <span class="heatmap__dot" data-lvl="0"></span>
+              <span class="heatmap__dot" data-lvl="1"></span>
+              <span class="heatmap__dot" data-lvl="2"></span>
+              <span class="heatmap__dot" data-lvl="3"></span>
+              <span class="heatmap__dot" data-lvl="4"></span>
+              <span>Más</span>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
     <!-- TRAYECTORIA -->
     <section class="section" id="trayectoria" aria-labelledby="trayectoria-title">
       <div class="container">

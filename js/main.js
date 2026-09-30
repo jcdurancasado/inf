@@ -312,12 +312,14 @@ const ScrollTop = {
     const btn = document.getElementById('scrollTop');
     const payBtn = document.querySelector('.pay-float');
     const themeBtn = document.getElementById('themeToggle');
+    const callBtn = document.getElementById('callFloat');
     if (!btn) return;
 
     const toggleAll = (show) => {
       btn.classList.toggle('visible', show);
       if (payBtn) payBtn.classList.toggle('visible', show);
       if (themeBtn) themeBtn.classList.toggle('visible', show);
+      if (callBtn) callBtn.classList.toggle('visible', show);
     };
 
     // Aparecen apenas el usuario baja un poco (10% del viewport, mín. 100px)

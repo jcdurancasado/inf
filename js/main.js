@@ -677,6 +677,182 @@ const CustomCursor = {
     this.rafId = requestAnimationFrame(() => this.loop());
   }
 };
+
+// ==========================================
+// CALCULADORA DE SUBREDES
+// ==========================================
+const SubnetCalc = {
+  init() {
+    const cidrSelect = document.getElementById('subnetCIDR');
+    const ipInput = document.getElementById('subnetIP');
+    const btn = document.getElementById('subnetCalc');
+    const output = document.getElementById('subnetOutput');
+    if (!cidrSelect || !ipInput || !btn || !output) return;
+
+    for (let i = 0; i <= 32; i++) {
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = '/' + i;
+      cidrSelect.appendChild(opt);
+    }
+    cidrSelect.value = '24';
+
+    btn.addEventListener('click', () => this.calculate());
+    ipInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') this.calculate();
+    });
+  },
+
+  calculate() {
+    const ipInput = document.getElementById('subnetIP');
+    const cidrSelect = document.getElementById('subnetCIDR');
+    const output = document.getElementById('subnetOutput');
+
+    const ip = ipInput.value.trim();
+    const cidr = parseInt(cidrSelect.value, 10);
+
+    if (!this.isValidIP(ip)) {
+      ipInput.classList.add('invalid');
+      setTimeout(() => ipInput.classList.remove('invalid'), 1500);
+      return;
+    }
+
+    const octets = ip.split('.').map(Number);
+    const ipNum = (octets[0] << 24) | (octets[1] << 16) | (octets[2] << 8) | octets[3];
+    const maskNum = cidr === 0 ? 0 : (-1 << (32 - cidr)) >>> 0;
+    const netNum = (ipNum & maskNum) >>> 0;
+    const broadcastNum = (netNum | (~maskNum >>> 0)) >>> 0;
+    const firstHost = cidr >= 31 ? netNum : netNum + 1;
+    const lastHost = cidr >= 31 ? broadcastNum : broadcastNum - 1;
+    const hosts = cidr >= 31 ? 0 : Math.pow(2, 32 - cidr) - 2;
+
+    document.getElementById('outIP').textContent = ip;
+    document.getElementById('outMask').textContent = this.numToIP(maskNum) + ' /' + cidr;
+    document.getElementById('outNet').textContent = this.numToIP(netNum);
+    document.getElementById('outBroadcast').textContent = this.numToIP(broadcastNum);
+    document.getElementById('outRange').textContent = this.numToIP(firstHost) + '  →  ' + this.numToIP(lastHost);
+    document.getElementById('outHosts').textContent = hosts.toLocaleString('es-DO');
+    document.getElementById('outClass').textContent = this.getClass(octets[0]);
+    document.getElementById('outType').textContent = this.getType(octets);
+
+    output.hidden = false;
+  },
+
+  isValidIP(ip) {
+    const parts = ip.split('.');
+    if (parts.length !== 4) return false;
+    return parts.every(p => {
+      const n = Number(p);
+      return Number.isInteger(n) && n >= 0 && n <= 255 && p === String(n);
+    });
+  },
+
+  numToIP(num) {
+    return [
+      (num >>> 24) & 255,
+      (num >>> 16) & 255,
+      (num >>> 8) & 255,
+      num & 255
+    ].join('.');
+  },
+
+  getClass(first) {
+    if (first < 128) return 'A';
+    if (first < 192) return 'B';
+    if (first < 224) return 'C';
+    if (first < 240) return 'D (Multicast)';
+    return 'E (Experimental)';
+  },
+
+  getType(octets) {
+    const [a, b] = octets;
+    if (a === 10) return 'Privada (RFC 1918)';
+    if (a === 172 && b >= 16 && b <= 31) return 'Privada (RFC 1918)';
+    if (a === 192 && b === 168) return 'Privada (RFC 1918)';
+    if (a === 127) return 'Loopback';
+    if (a === 169 && b === 254) return 'Link-local (APIPA)';
+    if (a >= 224 && a <= 239) return 'Multicast';
+    return 'Pública';
+  }
+};
+
+// ==========================================
+// CONVERSOR BINARIO / DECIMAL / HEX
+// ==========================================
+const NumConverter = {
+  init() {
+    const bin = document.getElementById('convBin');
+    const dec = document.getElementById('convDec');
+    const hex = document.getElementById('convHex');
+    if (!bin || !dec || !hex) return;
+
+    bin.addEventListener('input', () => {
+      const v = bin.value.replace(/[^01]/g, '');
+      if (bin.value !== v) bin.value = v;
+      if (!v) { dec.value = ''; hex.value = ''; return; }
+      const n = parseInt(v, 2);
+      if (!isNaN(n)) { dec.value = n; hex.value = n.toString(16).toUpperCase(); }
+    });
+
+    dec.addEventListener('input', () => {
+      const v = dec.value.replace(/[^0-9]/g, '');
+      if (dec.value !== v) dec.value = v;
+      if (!v) { bin.value = ''; hex.value = ''; return; }
+      const n = parseInt(v, 10);
+      if (!isNaN(n)) { bin.value = n.toString(2); hex.value = n.toString(16).toUpperCase(); }
+    });
+
+    hex.addEventListener('input', () => {
+      const v = hex.value.replace(/[^0-9A-Fa-f]/g, '').toUpperCase();
+      if (hex.value !== v) hex.value = v;
+      if (!v) { bin.value = ''; dec.value = ''; return; }
+      const n = parseInt(v, 16);
+      if (!isNaN(n)) { bin.value = n.toString(2); dec.value = n; }
+    });
+  }
+};
+
+// ==========================================
+// MAPA DE CALOR ACTIVIDAD DOCENTE
+// ==========================================
+const Heatmap = {
+  init() {
+    const container = document.getElementById('heatmap');
+    if (!container) return;
+
+    const WEEKS = 52;
+    const DAYS = 7;
+    const total = WEEKS * DAYS;
+
+    const fragment = document.createDocumentFragment();
+    const today = new Date();
+
+    for (let i = 0; i < total; i++) {
+      const cell = document.createElement('div');
+      cell.className = 'heatmap__cell';
+
+      const progress = i / total;
+      const seed = Math.sin(i * 12.9898) * 43758.5453;
+      const rand = seed - Math.floor(seed);
+      const baseLevel = progress * 4;
+      let lvl = Math.floor(baseLevel + rand * 2.2 - 0.5);
+      lvl = Math.max(0, Math.min(4, lvl));
+
+      cell.dataset.lvl = lvl;
+
+      const dayOffset = total - i - 1;
+      const date = new Date(today);
+      date.setDate(date.getDate() - dayOffset);
+      const dateStr = date.toLocaleDateString('es-DO', { day: '2-digit', month: 'short', year: 'numeric' });
+      cell.title = `${dateStr} — ${lvl} ${lvl === 1 ? 'clase' : 'clases'}`;
+
+      fragment.appendChild(cell);
+    }
+
+    container.appendChild(fragment);
+  }
+};
+
 // ==========================================
 // INIT
 // ==========================================
@@ -698,6 +874,9 @@ document.addEventListener('DOMContentLoaded', () => {
   ScrollProgress.init();
   CustomCursor.init();
   CursosRecomendados.init();
+  SubnetCalc.init();
+  NumConverter.init();
+  Heatmap.init();
   console.log('%cJCDURANCASADO · v8.0', 'color: #00f0ff; font-family: Orbitron; font-size: 18px;');
   console.log('%c"No hablo en técnico cuando explico. La tecnología debe servir a las personas, no al revés."', 'color: #b829dd; font-style: italic;');
 });

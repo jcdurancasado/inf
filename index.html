@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="format-detection" content="telephone=no" />
-
+  
   <!-- SEO -->
   <meta name="description" content="Julio C. Durán Casado - Ingeniero en Redes y Telecomunicaciones. Diseño, implementación y protección de infraestructuras tecnológicas modernas." />
   <meta name="keywords" content="Julio Durán Casado, redes, Cisco, CCNA, CCNP, CyberOps, ciberseguridad, telecomunicaciones, República Dominicana" />
@@ -342,11 +342,15 @@
 
             <div class="profile__actions">
               <a href="https://www.credly.com/users/jcdurancasado" target="_blank" rel="noopener" class="cyber-btn cyber-btn--primary">
-                <span>VER CREDENCIALES</span>
+                <span>CREDLY</span>
                 <i class="fa-solid fa-certificate"></i>
               </a>
-              <a href="mailto:jcdurancasado@gmail.com?subject=SOLICITUD CV" class="cyber-btn cyber-btn--secondary">
-                <span>SOLICITAR CV</span>
+              <a href="https://eu.credential.net/profile/jcdurancasado" target="_blank" rel="noopener" class="cyber-btn cyber-btn--secondary">
+                <span>CREDENTIAL</span>
+                <i class="fa-solid fa-award"></i>
+              </a>
+              <a href="files/CV - Julio C. Duran Casado - Actualizado 01-10-2016.pdf" download="CV - Julio C. Duran Casado - Actualizado 01-10-2016.pdf" class="cyber-btn cyber-btn--primary">
+                <span>DESCARGAR CV</span>
                 <i class="fa-solid fa-download"></i>
               </a>
             </div>
@@ -595,6 +599,9 @@
           <button type="button" class="toolkit-filter" data-filter="redes">
             <i class="fa-solid fa-network-wired"></i> REDES
           </button>
+          <button type="button" class="toolkit-filter" data-filter="seg">
+            <i class="fa-solid fa-shield-halved"></i> SEGURIDAD
+          </button>
           <button type="button" class="toolkit-filter" data-filter="info">
             <i class="fa-solid fa-chart-line"></i> INFO
           </button>
@@ -731,6 +738,149 @@
               <span class="heatmap__dot" data-lvl="4"></span>
               <span>Más</span>
             </div>
+          </div>
+        </article>
+
+        <!-- HERRAMIENTA 5: Generador de Hash -->
+        <article class="tool-card" data-reveal data-category="seg">
+          <header class="tool-card__head">
+            <div class="tool-card__icon"><i class="fa-solid fa-fingerprint"></i></div>
+            <div>
+              <h3 class="tool-card__title">Generador de Hash</h3>
+              <p class="tool-card__desc">Convierte texto en SHA-1, SHA-256, SHA-384 y SHA-512. Todo en tu navegador, sin enviar nada.</p>
+            </div>
+          </header>
+          <div class="tool-card__body">
+            <div class="tool-form">
+              <div class="tool-field">
+                <label for="hashInput">Texto</label>
+                <input type="text" id="hashInput" class="tool-input tool-input--mono" placeholder="abc" autocomplete="off">
+              </div>
+              <button type="button" class="tool-btn" id="hashBtn"><i class="fa-solid fa-bolt"></i> Generar</button>
+              <button type="button" class="tool-btn tool-btn--ghost" id="hashClear"><i class="fa-solid fa-eraser"></i> Limpiar</button>
+            </div>
+            <div class="tool-output" id="hashOutput" hidden>
+              <div class="tool-output__row"><span>SHA-1</span><code id="outSHA1">—</code><button type="button" class="copy-btn" data-copy-target="outSHA1" aria-label="Copiar SHA-1"><i class="fa-solid fa-copy"></i></button></div>
+              <div class="tool-output__row"><span>SHA-256</span><code id="outSHA256">—</code><button type="button" class="copy-btn" data-copy-target="outSHA256" aria-label="Copiar SHA-256"><i class="fa-solid fa-copy"></i></button></div>
+              <div class="tool-output__row"><span>SHA-384</span><code id="outSHA384">—</code><button type="button" class="copy-btn" data-copy-target="outSHA384" aria-label="Copiar SHA-384"><i class="fa-solid fa-copy"></i></button></div>
+              <div class="tool-output__row"><span>SHA-512</span><code id="outSHA512">—</code><button type="button" class="copy-btn" data-copy-target="outSHA512" aria-label="Copiar SHA-512"><i class="fa-solid fa-copy"></i></button></div>
+            </div>
+          </div>
+        </article>
+
+        <!-- HERRAMIENTA 6: Generador + Analizador de Contraseñas -->
+        <article class="tool-card" data-reveal data-category="seg">
+          <header class="tool-card__head">
+            <div class="tool-card__icon"><i class="fa-solid fa-key"></i></div>
+            <div>
+              <h3 class="tool-card__title">Generador y Analizador de Contraseñas</h3>
+              <p class="tool-card__desc">Crea contraseñas seguras y mide su fuerza en tiempo real.</p>
+            </div>
+          </header>
+          <div class="tool-card__body">
+            <div class="tool-form tool-form--grid">
+              <div class="tool-field">
+                <label for="pwdLength">Longitud: <span id="pwdLengthVal">16</span></label>
+                <input type="range" id="pwdLength" min="8" max="64" value="16" class="tool-range">
+              </div>
+              <div class="tool-field tool-field--checks">
+                <label class="pwd-check"><input type="checkbox" id="pwdLower" checked> minúsculas</label>
+                <label class="pwd-check"><input type="checkbox" id="pwdUpper" checked> MAYÚSCULAS</label>
+              </div>
+              <div class="tool-field tool-field--checks">
+                <label class="pwd-check"><input type="checkbox" id="pwdNumbers" checked> números</label>
+                <label class="pwd-check"><input type="checkbox" id="pwdSymbols" checked> símbolos</label>
+              </div>
+            </div>
+
+            <div class="tool-form" style="margin-top: var(--space-md);">
+              <div class="tool-field">
+                <label for="pwdOutput">Contraseña generada</label>
+                <input type="text" id="pwdOutput" class="tool-input tool-input--mono" readonly placeholder="—">
+              </div>
+              <button type="button" class="tool-btn" id="pwdGenerate"><i class="fa-solid fa-wand-magic-sparkles"></i> Generar</button>
+              <button type="button" class="tool-btn tool-btn--ghost" data-copy-from="pwdOutput" aria-label="Copiar contraseña"><i class="fa-solid fa-copy"></i></button>
+            </div>
+
+            <div class="pwd-strength" id="pwdStrength" hidden>
+              <div class="pwd-strength__bar"><div class="pwd-strength__fill" id="pwdStrengthFill"></div></div>
+              <div class="pwd-strength__meta">
+                <span id="pwdStrengthLabel">—</span>
+                <span id="pwdStrengthEntropy">—</span>
+              </div>
+            </div>
+
+            <div class="tool-form" style="margin-top: var(--space-lg);">
+              <div class="tool-field">
+                <label for="pwdAnalyze">Analizar contraseña existente</label>
+                <input type="text" id="pwdAnalyze" class="tool-input tool-input--mono" placeholder="Escribe una contraseña…" autocomplete="off">
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- HERRAMIENTA 7: Calculadora de Transferencia -->
+        <article class="tool-card" data-reveal data-category="redes">
+          <header class="tool-card__head">
+            <div class="tool-card__icon"><i class="fa-solid fa-gauge-high"></i></div>
+            <div>
+              <h3 class="tool-card__title">Calculadora de Transferencia</h3>
+              <p class="tool-card__desc">¿Cuánto tarda un archivo en subir/bajar según tu velocidad de red?</p>
+            </div>
+          </header>
+          <div class="tool-card__body">
+            <div class="tool-form">
+              <div class="tool-field">
+                <label for="bwSize">Tamaño del archivo</label>
+                <input type="number" id="bwSize" class="tool-input" placeholder="1000" min="0" step="any">
+              </div>
+              <div class="tool-field">
+                <label for="bwSizeUnit">Unidad</label>
+                <select id="bwSizeUnit" class="tool-input">
+                  <option value="1024">KB</option>
+                  <option value="1048576" selected>MB</option>
+                  <option value="1073741824">GB</option>
+                  <option value="1099511627776">TB</option>
+                </select>
+              </div>
+              <div class="tool-field">
+                <label for="bwSpeed">Velocidad</label>
+                <input type="number" id="bwSpeed" class="tool-input" placeholder="100" min="0" step="any">
+              </div>
+              <div class="tool-field">
+                <label for="bwSpeedUnit">Unidad</label>
+                <select id="bwSpeedUnit" class="tool-input">
+                  <option value="1000">Kbps</option>
+                  <option value="1000000" selected>Mbps</option>
+                  <option value="1000000000">Gbps</option>
+                </select>
+              </div>
+              <button type="button" class="tool-btn" id="bwCalc"><i class="fa-solid fa-bolt"></i> Calcular</button>
+              <button type="button" class="tool-btn tool-btn--ghost" id="bwClear"><i class="fa-solid fa-eraser"></i> Limpiar</button>
+            </div>
+            <div class="tool-output" id="bwOutput" hidden>
+              <div class="tool-output__row"><span>Archivo</span><code id="bwOutSize">—</code></div>
+              <div class="tool-output__row"><span>Velocidad</span><code id="bwOutSpeed">—</code></div>
+              <div class="tool-output__row"><span>Tiempo</span><code id="bwOutTime">—</code><button type="button" class="copy-btn" data-copy-target="bwOutTime" aria-label="Copiar tiempo"><i class="fa-solid fa-copy"></i></button></div>
+            </div>
+          </div>
+        </article>
+
+        <!-- HERRAMIENTA 8: Código de Colores RJ45 -->
+        <article class="tool-card" data-reveal data-category="redes">
+          <header class="tool-card__head">
+            <div class="tool-card__icon"><i class="fa-solid fa-ethernet"></i></div>
+            <div>
+              <h3 class="tool-card__title">Código de Colores RJ45</h3>
+              <p class="tool-card__desc">Ponchado T568A y T568B para cables directos y cruzados.</p>
+            </div>
+          </header>
+          <div class="tool-card__body">
+            <div class="rj45-toggle">
+              <button type="button" class="rj45-tab active" data-std="B">T568B (estándar EE.UU.)</button>
+              <button type="button" class="rj45-tab" data-std="A">T568A (estándar Europa)</button>
+            </div>
+            <div class="rj45-pins" id="rj45Pins"></div>
           </div>
         </article>
 

@@ -314,6 +314,8 @@ const ScrollTop = {
     const themeBtn = document.getElementById('themeToggle');
     const callBtn = document.getElementById('callFloat');
     const soundBtn = document.getElementById('soundToggle');
+    const notifBtn = document.getElementById('notifBtn');
+    const installBtn = document.getElementById('installBtn');
     if (!btn) return;
 
     const toggleAll = (show) => {
@@ -322,6 +324,8 @@ const ScrollTop = {
       if (themeBtn) themeBtn.classList.toggle('visible', show);
       if (callBtn) callBtn.classList.toggle('visible', show);
       if (soundBtn) soundBtn.classList.toggle('visible', show);
+      if (notifBtn && !notifBtn.hidden) notifBtn.classList.toggle('visible', show);
+      if (installBtn && !installBtn.hidden) installBtn.classList.toggle('visible', show);
     };
 
     // Aparecen apenas el usuario baja un poco (10% del viewport, mín. 100px)
@@ -976,6 +980,126 @@ const Sounds = {
     }
   }
 };
+
+// ==========================================
+// NOTIFICACIONES PUSH
+// ==========================================
+const Notifications = {
+  btn: null,
+  tooltip: null,
+  KEY: 'jcdc_notif',
+  enabled: false,
+
+  init() {
+    if (!('Notification' in window)) return;
+
+    this.btn = document.getElementById('notifBtn');
+    if (!this.btn) return;
+    this.tooltip = this.btn.querySelector('.notif-btn__tooltip');
+
+    // Estado guardado
+    const saved = localStorage.getItem(this.KEY);
+    this.enabled = saved === 'on' && Notification.permission === 'granted';
+
+    // Si está bloqueado por el navegador, ocultar botón
+    if (Notification.permission === 'denied') {
+      this.btn.hidden = true;
+      return;
+    }
+
+    // Reflejar estado visual
+    this.updateUI();
+
+    // Mostrar botón
+    this.btn.hidden = false;
+
+    // Click → toggle
+    this.btn.addEventListener('click', () => this.toggle());
+  },
+
+  async toggle() {
+    if (this.enabled) {
+      // DESACTIVAR
+      this.enabled = false;
+      localStorage.setItem(this.KEY, 'off');
+      this.updateUI();
+      if (typeof Toast !== 'undefined') {
+        Toast.show('🔕 Notificaciones desactivadas', 'info', 2200);
+      }
+      return;
+    }
+
+    // ACTIVAR: pedir permiso si no lo tenemos
+    if (Notification.permission !== 'granted') {
+      const result = await Notification.requestPermission();
+      if (result !== 'granted') {
+        this.btn.hidden = true;
+        localStorage.setItem(this.KEY, 'dismissed');
+        if (typeof Toast !== 'undefined') {
+          Toast.show('Notificaciones bloqueadas por el navegador', 'error', 2500);
+        }
+        return;
+      }
+    }
+
+    // Ahora sí activar
+    this.enabled = true;
+    localStorage.setItem(this.KEY, 'on');
+    this.updateUI();
+
+    if (typeof Toast !== 'undefined') {
+      Toast.show('🔔 Notificaciones activadas', 'success', 2200);
+    }
+
+    // Notificación de bienvenida después de un momento
+    setTimeout(() => this.sendWelcome(), 1200);
+  },
+
+  updateUI() {
+    if (!this.btn) return;
+    this.btn.classList.toggle('active', this.enabled);
+    this.btn.setAttribute('aria-pressed', this.enabled ? 'true' : 'false');
+    const icon = this.btn.querySelector('i');
+    if (icon) {
+      icon.className = this.enabled
+        ? 'fa-solid fa-bell'
+        : 'fa-solid fa-bell-slash';
+    }
+    if (this.tooltip) {
+      this.tooltip.textContent = this.enabled
+        ? 'Desactivar notificaciones'
+        : 'Activar notificaciones';
+    }
+  },
+
+  sendWelcome() {
+    if (!this.enabled || Notification.permission !== 'granted') return;
+    const notif = new Notification('¡Bienvenido a JCDurán!', {
+      body: 'Recibirás avisos de nuevos cursos, tutoriales y proyectos.',
+      icon: '/img/icons/icon-192.png',
+      tag: 'welcome',
+    });
+    notif.onclick = () => {
+      window.focus();
+      notif.close();
+    };
+  },
+
+  // API pública
+  push(title, body, url) {
+    if (!this.enabled || Notification.permission !== 'granted') return;
+    const notif = new Notification(title, {
+      body: body,
+      icon: '/img/icons/icon-192.png',
+      tag: 'custom-' + Date.now(),
+    });
+    notif.onclick = () => {
+      window.focus();
+      if (url) window.location.href = url;
+      notif.close();
+    };
+  }
+};
 // ==========================================
 // INIT
 // ==========================================
@@ -1001,6 +1125,7 @@ document.addEventListener('DOMContentLoaded', () => {
   NumConverter.init();
   Heatmap.init();
   Sounds.init();
+  Notifications.init();
   console.log('%cJCDURANCASADO · v8.0', 'color: #00f0ff; font-family: Orbitron; font-size: 18px;');
   console.log('%c"No hablo en técnico cuando explico. La tecnología debe servir a las personas, no al revés."', 'color: #b829dd; font-style: italic;');
 });

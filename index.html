@@ -585,8 +585,21 @@
           <p class="section__lead">Utilidades gratuitas para practicar redes y preparar certificaciones Cisco.</p>
         </header>
 
+        <!-- FILTROS POR CATEGORÍA -->
+        <div class="toolkit-filters" data-reveal>
+          <button type="button" class="toolkit-filter active" data-filter="all">
+            <i class="fa-solid fa-layer-group"></i> TODAS
+          </button>
+          <button type="button" class="toolkit-filter" data-filter="redes">
+            <i class="fa-solid fa-network-wired"></i> REDES
+          </button>
+          <button type="button" class="toolkit-filter" data-filter="info">
+            <i class="fa-solid fa-chart-line"></i> INFO
+          </button>
+        </div>
+
         <!-- HERRAMIENTA 1: Calculadora de subredes -->
-        <article class="tool-card" data-reveal>
+        <article class="tool-card" data-reveal data-category="redes">
           <header class="tool-card__head">
             <div class="tool-card__icon"><i class="fa-solid fa-network-wired"></i></div>
             <div>
@@ -608,23 +621,26 @@
               <button type="button" class="tool-btn" id="subnetCalc">
                 <i class="fa-solid fa-bolt"></i> Calcular
               </button>
+              <button type="button" class="tool-btn tool-btn--ghost" id="subnetClear">
+                <i class="fa-solid fa-eraser"></i> Limpiar
+              </button>
             </div>
 
             <div class="tool-output" id="subnetOutput" hidden>
-              <div class="tool-output__row"><span>IP</span><code id="outIP">—</code></div>
-              <div class="tool-output__row"><span>Máscara</span><code id="outMask">—</code></div>
-              <div class="tool-output__row"><span>Red</span><code id="outNet">—</code></div>
-              <div class="tool-output__row"><span>Broadcast</span><code id="outBroadcast">—</code></div>
-              <div class="tool-output__row"><span>Rango usable</span><code id="outRange">—</code></div>
-              <div class="tool-output__row"><span>Hosts</span><code id="outHosts">—</code></div>
-              <div class="tool-output__row"><span>Clase</span><code id="outClass">—</code></div>
-              <div class="tool-output__row"><span>Tipo</span><code id="outType">—</code></div>
+              <div class="tool-output__row"><span>IP</span><code id="outIP">—</code><button type="button" class="copy-btn" data-copy-target="outIP" aria-label="Copiar IP"><i class="fa-solid fa-copy"></i></button></div>
+              <div class="tool-output__row"><span>Máscara</span><code id="outMask">—</code><button type="button" class="copy-btn" data-copy-target="outMask" aria-label="Copiar máscara"><i class="fa-solid fa-copy"></i></button></div>
+              <div class="tool-output__row"><span>Red</span><code id="outNet">—</code><button type="button" class="copy-btn" data-copy-target="outNet" aria-label="Copiar red"><i class="fa-solid fa-copy"></i></button></div>
+              <div class="tool-output__row"><span>Broadcast</span><code id="outBroadcast">—</code><button type="button" class="copy-btn" data-copy-target="outBroadcast" aria-label="Copiar broadcast"><i class="fa-solid fa-copy"></i></button></div>
+              <div class="tool-output__row"><span>Rango usable</span><code id="outRange">—</code><button type="button" class="copy-btn" data-copy-target="outRange" aria-label="Copiar rango"><i class="fa-solid fa-copy"></i></button></div>
+              <div class="tool-output__row"><span>Hosts</span><code id="outHosts">—</code><button type="button" class="copy-btn" data-copy-target="outHosts" aria-label="Copiar hosts"><i class="fa-solid fa-copy"></i></button></div>
+              <div class="tool-output__row"><span>Clase</span><code id="outClass">—</code><button type="button" class="copy-btn" data-copy-target="outClass" aria-label="Copiar clase"><i class="fa-solid fa-copy"></i></button></div>
+              <div class="tool-output__row"><span>Tipo</span><code id="outType">—</code><button type="button" class="copy-btn" data-copy-target="outType" aria-label="Copiar tipo"><i class="fa-solid fa-copy"></i></button></div>
             </div>
           </div>
         </article>
 
         <!-- HERRAMIENTA 2: Conversor binario/decimal/hex -->
-        <article class="tool-card" data-reveal>
+        <article class="tool-card" data-reveal data-category="redes">
           <header class="tool-card__head">
             <div class="tool-card__icon"><i class="fa-solid fa-arrow-right-arrow-left"></i></div>
             <div>
@@ -648,11 +664,16 @@
                 <input type="text" id="convHex" class="tool-input tool-input--mono" placeholder="C0" autocomplete="off">
               </div>
             </div>
+            <div class="tool-actions">
+              <button type="button" class="tool-btn tool-btn--ghost" id="convClear">
+                <i class="fa-solid fa-eraser"></i> Limpiar
+              </button>
+            </div>
           </div>
         </article>
 
         <!-- HERRAMIENTA 3: Estadísticas de la industria -->
-        <article class="tool-card" data-reveal>
+        <article class="tool-card" data-reveal data-category="info">
           <header class="tool-card__head">
             <div class="tool-card__icon"><i class="fa-solid fa-chart-line"></i></div>
             <div>
@@ -688,7 +709,7 @@
         </article>
 
         <!-- HERRAMIENTA 4: Mapa de calor de actividad docente -->
-        <article class="tool-card" data-reveal>
+        <article class="tool-card" data-reveal data-category="info">
           <header class="tool-card__head">
             <div class="tool-card__icon"><i class="fa-solid fa-fire"></i></div>
             <div>
@@ -1472,7 +1493,7 @@
       </div>
     </div>
   </footer>
-  
+
   <button class="notif-btn" id="notifBtn" aria-label="Activar notificaciones" hidden>
     <i class="fa-solid fa-bell"></i>
     <span class="notif-btn__tooltip">Activar notificaciones</span>

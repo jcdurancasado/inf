@@ -1199,6 +1199,65 @@ const ToolkitClear = {
     }
   }
 };
+
+// ==========================================
+// PWA · SERVICE WORKER + INSTALACIÓN
+// ==========================================
+const PWA = {
+  deferredPrompt: null,
+
+  init() {
+    // 1. Registrar service worker (solo en HTTPS)
+    if ('serviceWorker' in navigator && location.protocol === 'https:') {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker
+          .register('sw.js')
+          .then((reg) => console.log('[PWA] SW registrado:', reg.scope))
+          .catch((err) => console.warn('[PWA] SW error:', err));
+      });
+    }
+
+    // 2. Detectar evento de instalación
+    const btn = document.getElementById('installBtn');
+    if (!btn) return;
+
+    // Si ya está instalada, no mostrar
+    if (window.matchMedia('(display-mode: standalone)').matches) return;
+    if (window.navigator.standalone === true) return; // iOS
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      this.deferredPrompt = e;
+      btn.hidden = false;
+      // Aparece con el mismo delay que los flotantes
+      setTimeout(() => btn.classList.add('visible'), 400);
+    });
+
+    // Click en el botón
+    btn.addEventListener('click', async () => {
+      if (!this.deferredPrompt) {
+        if (typeof Toast !== 'undefined') {
+          Toast.show('Usa el menú del navegador → "Instalar app"', 'info', 4000);
+        }
+        return;
+      }
+      this.deferredPrompt.prompt();
+      const { outcome } = await this.deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        btn.hidden = true;
+        if (typeof Toast !== 'undefined') Toast.show('¡App instalada!', 'success', 2500);
+      }
+      this.deferredPrompt = null;
+    });
+
+    // Cuando se instala, ocultar
+    window.addEventListener('appinstalled', () => {
+      btn.hidden = true;
+      this.deferredPrompt = null;
+      if (typeof Toast !== 'undefined') Toast.show('App añadida a tu pantalla de inicio', 'success', 3000);
+    });
+  }
+};
 // ==========================================
 // INIT
 // ==========================================
@@ -1228,6 +1287,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ToolkitClear.init();
   Sounds.init();
   Notifications.init();
+  PWA.init();
   console.log('%cJCDURANCASADO · v8.0', 'color: #00f0ff; font-family: Orbitron; font-size: 18px;');
   console.log('%c"No hablo en técnico cuando explico. La tecnología debe servir a las personas, no al revés."', 'color: #b829dd; font-style: italic;');
 });

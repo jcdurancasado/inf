@@ -1229,8 +1229,12 @@ const PWA = {
       e.preventDefault();
       this.deferredPrompt = e;
       btn.hidden = false;
-      // Aparece con el mismo delay que los flotantes
-      setTimeout(() => btn.classList.add('visible'), 400);
+      // Sincronizar con el scroll actual: si el usuario ya bajó,
+      // mostrar; si no, esperar al ScrollTop como los demás.
+      const threshold = Math.max(100, window.innerHeight * 0.10);
+      if (window.pageYOffset > threshold) {
+        btn.classList.add('visible');
+      }
     });
 
     // Click en el botón

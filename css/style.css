@@ -1154,7 +1154,7 @@ ul { list-style: none; }
 /* ============ SCROLL TOP ============ */
 .scroll-top {
   position: fixed;
-  bottom: 150px;              /* ⬅️ Ahora está arriba del pago y del tema */
+  bottom: 270px;
   right: 30px;
   width: 50px; height: 50px;
   background: var(--bg-panel); border: 2px solid var(--neon-cyan);
@@ -1286,7 +1286,6 @@ ul { list-style: none; }
   .hologram-container { width: 220px; height: 220px; }
   .links-grid { grid-template-columns: 1fr; }
   .toast { min-width: auto; width: calc(100vw - var(--space-lg)); }
-  .scroll-top { width: 44px; height: 44px; bottom: 20px; right: 20px; }
   .form-terminal__body { padding: var(--space-lg); }
   .profile__block { padding: var(--space-md) var(--space-lg); }
   .spec { flex-direction: column; align-items: flex-start; gap: 0.25rem; }
@@ -1547,7 +1546,7 @@ ul { list-style: none; }
 
 .pay-float {
   position: fixed;
-  bottom: 90px;               /* ⬅️ Ahora está en medio */
+  bottom: 150px;
   right: 30px;
   width: 50px;
   height: 50px;
@@ -1659,9 +1658,11 @@ ul { list-style: none; }
 
 /* Responsive */
 @media (max-width: 480px) {
-  .scroll-top         { width: 44px; height: 44px; bottom: 140px; right: 20px; }
-  .pay-float          { width: 44px; height: 44px; bottom: 84px;  right: 20px; }
-  .theme-toggle-float { width: 44px; height: 44px; bottom: 28px;  right: 20px; }
+  .scroll-top         { width: 44px; height: 44px; bottom: 240px; right: 20px; }
+  .call-float         { width: 44px; height: 44px; bottom: 190px; right: 20px; font-size: 1rem; }
+  .pay-float          { width: 44px; height: 44px; bottom: 140px; right: 20px; }
+  .sound-toggle       { width: 44px; height: 44px; bottom: 90px;  right: 20px; font-size: 1rem; }
+  .theme-toggle-float { width: 44px; height: 44px; bottom: 40px;  right: 20px; }
 }
 /* ============ MODO CLARO (LIGHT THEME) ============ */
 [data-theme="light"] {
@@ -2928,7 +2929,7 @@ ul { list-style: none; }
 /* ============ BOTÓN FLOTANTE AGENDAR ============ */
 .call-float {
   position: fixed;
-  bottom: 150px;
+  bottom: 210px;
   right: 30px;
   width: 50px;
   height: 50px;
@@ -3013,15 +3014,11 @@ ul { list-style: none; }
 [data-theme="light"] .call-float__tooltip { border-color: #7c3aed; color: #7c3aed; }
 
 /* Reacomodar scroll-top para que no se solape */
-.scroll-top { bottom: 210px; }
+.scroll-top { bottom: 270px; }
 
 @media (max-width: 480px) {
-  .scroll-top  { width: 44px; height: 44px; bottom: 200px; right: 20px; }
-  .call-float  { width: 44px; height: 44px; bottom: 144px; right: 20px; font-size: 1rem; }
-  .pay-float   { width: 44px; height: 44px; bottom: 88px;  right: 20px; }
   .call-float__tooltip { display: none; }
 }
-
 /* ============ TOOLTIPS FLOTANTES ============ */
 .float-tooltip,
 .call-float__tooltip {
@@ -3084,4 +3081,181 @@ ul { list-style: none; }
 /* Móvil: ocultar tooltips */
 @media (max-width: 480px) {
   .float-tooltip { display: none; }
+}
+
+
+/* ============ TOGGLE DE SONIDO ============ */
+.sound-toggle {
+  position: fixed;
+  bottom: 90px;
+  right: 30px;
+  width: 50px;
+  height: 50px;
+  background: var(--bg-panel);
+  border: 2px solid var(--neon-yellow);
+  border-radius: 50%;
+  color: var(--neon-yellow);
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 15px rgba(255,238,0,0.3);
+  z-index: 999;
+  transition: var(--transition);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  padding: 0;
+  cursor: pointer;
+}
+.sound-toggle.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.sound-toggle:hover {
+  background: var(--neon-yellow);
+  color: var(--bg-primary);
+  transform: translateY(-5px);
+  box-shadow: 0 0 25px rgba(255,238,0,0.6);
+}
+.sound-toggle i { transition: transform 0.3s ease; }
+.sound-toggle:hover i { transform: scale(1.15); }
+
+/* Estado activo (sonidos encendidos) */
+.sound-toggle[aria-pressed="true"] {
+  background: rgba(255,238,0,0.15);
+  border-color: var(--neon-yellow);
+  color: var(--neon-yellow);
+  box-shadow:
+    0 0 15px rgba(255,238,0,0.5),
+    inset 0 0 10px rgba(255,238,0,0.2);
+}
+
+/* Modo claro */
+[data-theme="light"] .sound-toggle {
+  border-color: #d97706;
+  color: #d97706;
+}
+[data-theme="light"] .sound-toggle:hover {
+  background: #d97706;
+  color: #ffffff;
+}
+[data-theme="light"] .sound-toggle[aria-pressed="true"] {
+  background: rgba(217,119,6,0.12);
+  border-color: #d97706;
+  color: #d97706;
+}
+
+/* Ondas de sonido hacia la izquierda */
+.sound-toggle::before,
+.sound-toggle::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  border: 2px solid var(--neon-yellow);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  animation: sound-emit 2.4s ease-out infinite;
+  pointer-events: none;
+  clip-path: inset(0 0 0 50%);
+  z-index: -1;
+}
+.sound-toggle::after {
+  animation-delay: 1.2s;
+}
+
+@keyframes sound-emit {
+  0% {
+    width: 100%;
+    height: 100%;
+    opacity: 0.85;
+  }
+  100% {
+    width: 260%;
+    height: 260%;
+    opacity: 0;
+  }
+}
+
+/* Tooltip del sonido — amarillo */
+.sound-toggle .float-tooltip {
+  color: var(--neon-yellow) !important;
+  border: 1px solid var(--neon-yellow) !important;
+  box-shadow: 0 0 15px rgba(255,238,0,0.5) !important;
+}
+
+/* Modo claro: tooltip anaranjado oscuro */
+[data-theme="light"] .sound-toggle .float-tooltip {
+  color: #d97706 !important;
+  border-color: #d97706 !important;
+  box-shadow: 0 0 15px rgba(217,119,6,0.5) !important;
+}
+
+/* Mostrar tooltip al hacer hover */
+.sound-toggle:hover .float-tooltip {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* Desactivar ondas cuando está encendido (opcional: más intensas) */
+.sound-toggle[aria-pressed="true"]::before,
+.sound-toggle[aria-pressed="true"]::after {
+  border-color: var(--neon-yellow);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sound-toggle::before,
+  .sound-toggle::after {
+    animation: none !important;
+    display: none;
+  }
+}
+
+/* ============ TOGGLE DE TEMA: SOMBRA QUE RESPIRA ============ */
+.theme-toggle-float {
+  animation: theme-shadow-pulse 2.8s ease-in-out infinite;
+}
+
+@keyframes theme-shadow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(255,255,255,0.2);
+  }
+  50% {
+    box-shadow:
+      0 0 25px rgba(255,255,255,0.7),
+      0 0 45px rgba(255,255,255,0.35);
+  }
+}
+
+/* Modo claro: sombra anaranjada al respirar */
+[data-theme="light"] .theme-toggle-float {
+  animation: theme-shadow-pulse-light 2.8s ease-in-out infinite;
+}
+
+@keyframes theme-shadow-pulse-light {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(0,0,0,0.15);
+  }
+  50% {
+    box-shadow:
+      0 0 25px rgba(217,119,6,0.6),
+      0 0 45px rgba(217,119,6,0.3);
+  }
+}
+
+/* Al hacer hover se detiene el latido (queda la sombra del hover original) */
+.theme-toggle-float:hover {
+  animation: none;
+}
+
+/* Accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle-float {
+    animation: none !important;
+  }
 }

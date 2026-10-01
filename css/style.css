@@ -3301,27 +3301,6 @@ ul { list-style: none; }
   .install-btn        { bottom: 50px !important; }
 }
 
-/* ============ FIX PARA NAVEGADORES IN-APP ============ */
-@media (max-width: 768px) {
-  .scroll-top,
-  .call-float,
-  .pay-float,
-  .sound-toggle,
-  .theme-toggle-float,
-  .install-btn {
-    right: 16px !important;
-    left: auto !important;
-  }
-
-  .scroll-top         { bottom: 340px !important; }
-  .call-float         { bottom: 280px !important; }
-  .install-btn        { bottom: 400px !important; }
-  .notif-btn          { bottom: 220px !important; }
-  .pay-float          { bottom: 160px !important; }
-  .sound-toggle       { bottom: 100px !important; }
-  .theme-toggle-float { bottom: 40px !important; }
-}
-
 /* ============================================
    MODO CLARO · PULIDO COMPLETO v3
 ============================================ */

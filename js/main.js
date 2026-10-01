@@ -1263,6 +1263,274 @@ const PWA = {
   }
 };
 // ==========================================
+// HASH GENERATOR
+// ==========================================
+const HashGen = {
+  async run() {
+    const input = document.getElementById('hashInput');
+    const output = document.getElementById('hashOutput');
+    if (!input || !output) return;
+
+    const text = input.value;
+    if (!text) {
+      if (typeof Toast !== 'undefined') Toast.show('Escribe algo primero', 'info', 1500);
+      return;
+    }
+
+    const algos = [
+      { id: 'outSHA1',   algo: 'SHA-1' },
+      { id: 'outSHA256', algo: 'SHA-256' },
+      { id: 'outSHA384', algo: 'SHA-384' },
+      { id: 'outSHA512', algo: 'SHA-512' }
+    ];
+
+    try {
+      for (const { id, algo } of algos) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = await this.hash(algo, text);
+      }
+      output.hidden = false;
+    } catch (e) {
+      if (typeof Toast !== 'undefined') Toast.show('Error generando hash', 'error');
+    }
+  },
+  async hash(algo, text) {
+    const buf = new TextEncoder().encode(text);
+    const h = await crypto.subtle.digest(algo, buf);
+    return Array.from(new Uint8Array(h))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+  },
+  init() {
+    const btn = document.getElementById('hashBtn');
+    const clear = document.getElementById('hashClear');
+    const input = document.getElementById('hashInput');
+    if (!btn) return;
+    btn.addEventListener('click', () => this.run());
+    if (input) input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') this.run();
+    });
+    if (clear) clear.addEventListener('click', () => {
+      const out = document.getElementById('hashOutput');
+      if (input) { input.value = ''; input.focus(); }
+      if (out) out.hidden = true;
+    });
+  }
+};
+
+// ==========================================
+// PASSWORD GEN + ANALYZER
+// ==========================================
+const PasswordTool = {
+  init() {
+    const len = document.getElementById('pwdLength');
+    const lenVal = document.getElementById('pwdLengthVal');
+    const btn = document.getElementById('pwdGenerate');
+    const analyze = document.getElementById('pwdAnalyze');
+    if (!btn) return;
+
+    if (len && lenVal) {
+      len.addEventListener('input', () => { lenVal.textContent = len.value; });
+    }
+
+    btn.addEventListener('click', () => this.generate());
+
+    if (analyze) {
+      analyze.addEventListener('input', () => {
+        this.updateStrength(analyze.value);
+      });
+    }
+
+    this.generate();
+  },
+
+  generate() {
+    const length = parseInt(document.getElementById('pwdLength')?.value || 16, 10);
+    const useLower   = document.getElementById('pwdLower')?.checked;
+    const useUpper   = document.getElementById('pwdUpper')?.checked;
+    const useNumbers = document.getElementById('pwdNumbers')?.checked;
+    const useSymbols = document.getElementById('pwdSymbols')?.checked;
+
+    const pools = {
+      lower:   'abcdefghijkmnopqrstuvwxyz',
+      upper:   'ABCDEFGHJKLMNPQRSTUVWXYZ',
+      numbers: '23456789',
+      symbols: '!@#$%^&*()-_=+[]{};:,.?'
+    };
+
+    let pool = '';
+    if (useLower)   pool += pools.lower;
+    if (useUpper)   pool += pools.upper;
+    if (useNumbers) pool += pools.numbers;
+    if (useSymbols) pool += pools.symbols;
+
+    if (!pool) {
+      pool = pools.lower + pools.upper + pools.numbers;
+      if (typeof Toast !== 'undefined') Toast.show('Selecciona al menos una opción', 'info', 1800);
+    }
+
+    const arr = new Uint32Array(length);
+    crypto.getRandomValues(arr);
+    let out = '';
+    for (let i = 0; i < length; i++) out += pool[arr[i] % pool.length];
+
+    const output = document.getElementById('pwdOutput');
+    if (output) output.value = out;
+
+    this.updateStrength(out);
+  },
+
+  updateStrength(pwd) {
+    const wrap  = document.getElementById('pwdStrength');
+    const fill  = document.getElementById('pwdStrengthFill');
+    const label = document.getElementById('pwdStrengthLabel');
+    const entEl = document.getElementById('pwdStrengthEntropy');
+    if (!fill || !label || !entEl || !wrap) return;
+
+    if (!pwd) { wrap.hidden = true; return; }
+    wrap.hidden = false;
+
+    let poolSize = 0;
+    if (/[a-z]/.test(pwd)) poolSize += 26;
+    if (/[A-Z]/.test(pwd)) poolSize += 26;
+    if (/[0-9]/.test(pwd)) poolSize += 10;
+    if (/[^a-zA-Z0-9]/.test(pwd)) poolSize += 32;
+
+    const entropy = poolSize ? pwd.length * Math.log2(poolSize) : 0;
+
+    let level, text, pct;
+    if (entropy < 28)       { level = 1; text = 'MUY DÉBIL';  pct = 15; }
+    else if (entropy < 40)  { level = 2; text = 'DÉBIL';      pct = 35; }
+    else if (entropy < 60)  { level = 3; text = 'MEDIA';      pct = 55; }
+    else if (entropy < 128) { level = 4; text = 'FUERTE';     pct = 80; }
+    else                    { level = 5; text = 'MUY FUERTE'; pct = 100; }
+
+    fill.dataset.level = level;
+    fill.style.width = pct + '%';
+    label.textContent = text;
+    entEl.textContent = entropy.toFixed(1) + ' bits';
+  }
+};
+
+// ==========================================
+// BANDWIDTH CALCULATOR
+// ==========================================
+const BandwidthCalc = {
+  init() {
+    const btn = document.getElementById('bwCalc');
+    const clear = document.getElementById('bwClear');
+    if (!btn) return;
+
+    btn.addEventListener('click', () => this.calculate());
+    if (clear) clear.addEventListener('click', () => {
+      ['bwSize', 'bwSpeed'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      const out = document.getElementById('bwOutput');
+      if (out) out.hidden = true;
+    });
+  },
+
+  calculate() {
+    const size  = parseFloat(document.getElementById('bwSize')?.value);
+    const sUnit = parseFloat(document.getElementById('bwSizeUnit')?.value);
+    const speed = parseFloat(document.getElementById('bwSpeed')?.value);
+    const spUnit = parseFloat(document.getElementById('bwSpeedUnit')?.value);
+
+    if (!size || !speed || size <= 0 || speed <= 0) {
+      if (typeof Toast !== 'undefined') Toast.show('Rellena tamaño y velocidad', 'info', 1800);
+      return;
+    }
+
+    const sizeBytes = size * sUnit;
+    const bytesPerSec = (speed * spUnit) / 8;
+    const seconds = sizeBytes / bytesPerSec;
+
+    const fmtTime = (s) => {
+      if (s < 1) return (s * 1000).toFixed(0) + ' ms';
+      if (s < 60) return s.toFixed(2) + ' seg';
+      if (s < 3600) return Math.floor(s / 60) + ' min ' + Math.round(s % 60) + ' seg';
+      if (s < 86400) return Math.floor(s / 3600) + ' h ' + Math.round((s % 3600) / 60) + ' min';
+      return Math.floor(s / 86400) + ' días ' + Math.round((s % 86400) / 3600) + ' h';
+    };
+
+    document.getElementById('bwOutSize').textContent =
+      size + ' ' + document.getElementById('bwSizeUnit').selectedOptions[0].textContent;
+    document.getElementById('bwOutSpeed').textContent =
+      speed + ' ' + document.getElementById('bwSpeedUnit').selectedOptions[0].textContent;
+    document.getElementById('bwOutTime').textContent = fmtTime(seconds);
+
+    document.getElementById('bwOutput').hidden = false;
+  }
+};
+
+// ==========================================
+// RJ45 COLOR CODES
+// ==========================================
+const RJ45 = {
+  std: {
+    B: [
+      { n: 'Blanco/Naranja', color: '#ff8c00', stripe: true  },
+      { n: 'Naranja',         color: '#ff8c00', stripe: false },
+      { n: 'Blanco/Verde',    color: '#00c853', stripe: true  },
+      { n: 'Azul',            color: '#1976d2', stripe: false },
+      { n: 'Blanco/Azul',     color: '#1976d2', stripe: true  },
+      { n: 'Verde',           color: '#00c853', stripe: false },
+      { n: 'Blanco/Marrón',   color: '#8d6e63', stripe: true  },
+      { n: 'Marrón',          color: '#8d6e63', stripe: false }
+    ],
+    A: [
+      { n: 'Blanco/Verde',    color: '#00c853', stripe: true  },
+      { n: 'Verde',           color: '#00c853', stripe: false },
+      { n: 'Blanco/Naranja',  color: '#ff8c00', stripe: true  },
+      { n: 'Azul',            color: '#1976d2', stripe: false },
+      { n: 'Blanco/Azul',     color: '#1976d2', stripe: true  },
+      { n: 'Naranja',         color: '#ff8c00', stripe: false },
+      { n: 'Blanco/Marrón',   color: '#8d6e63', stripe: true  },
+      { n: 'Marrón',          color: '#8d6e63', stripe: false }
+    ]
+  },
+
+  init() {
+    const container = document.getElementById('rj45Pins');
+    if (!container) return;
+
+    document.querySelectorAll('.rj45-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.rj45-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        this.render(tab.dataset.std);
+      });
+    });
+
+    this.render('B');
+  },
+
+  render(std) {
+    const container = document.getElementById('rj45Pins');
+    if (!container) return;
+    const pins = this.std[std] || this.std.B;
+
+    container.innerHTML = pins.map((pin, i) => {
+      let background;
+      if (pin.stripe) {
+        background = `repeating-linear-gradient(90deg, ${pin.color} 0px, ${pin.color} 4px, #ffffff 4px, #ffffff 8px)`;
+      } else {
+        background = pin.color;
+      }
+      return `
+        <div class="rj45-pin">
+          <span class="rj45-pin__num">${i + 1}</span>
+          <div class="rj45-pin__wire" style="background: ${background};"></div>
+          <span class="rj45-pin__name">${pin.n}</span>
+        </div>
+      `;
+    }).join('');
+  }
+};
+
+// ==========================================
 // INIT
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
@@ -1289,6 +1557,10 @@ document.addEventListener('DOMContentLoaded', () => {
   ToolkitFilter.init();
   CopyButtons.init();
   ToolkitClear.init();
+  HashGen.init();
+  PasswordTool.init();
+  BandwidthCalc.init();
+  RJ45.init();
   Sounds.init();
   Notifications.init();
   PWA.init();

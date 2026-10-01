@@ -4408,3 +4408,149 @@ ul { list-style: none; }
   }
   .notif-btn__tooltip { display: none; }
 }
+
+/* ============ TOOLKIT · FILTROS Y ACCIONES ============ */
+
+/* Chips de filtro por categoría */
+.toolkit-filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  max-width: 900px;
+  margin: 0 auto var(--space-xl);
+}
+
+.toolkit-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1.15rem;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: 100px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.toolkit-filter i { font-size: 0.75rem; opacity: 0.8; }
+.toolkit-filter:hover {
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  transform: translateY(-2px);
+}
+.toolkit-filter.active {
+  background: rgba(0,240,255,0.1);
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  box-shadow: 0 0 15px rgba(0,240,255,0.3);
+}
+.toolkit-filter.active i { opacity: 1; }
+
+/* Ocultar cards filtradas */
+.tool-card[data-hidden="true"] {
+  display: none;
+}
+
+/* Fila de output con espacio para botón copiar */
+.tool-output__row {
+  position: relative;
+  padding-right: 2.5rem;
+}
+
+/* Botón copiar (aparece al hover de la fila) */
+.copy-btn {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  cursor: pointer;
+  opacity: 0;
+  transition: var(--transition);
+}
+.tool-output__row:hover .copy-btn {
+  opacity: 1;
+}
+.copy-btn:hover {
+  background: rgba(0,240,255,0.1);
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+}
+.copy-btn.copied {
+  opacity: 1;
+  background: rgba(0,255,136,0.1);
+  border-color: var(--neon-green);
+  color: var(--neon-green);
+  box-shadow: 0 0 10px rgba(0,255,136,0.4);
+}
+
+/* Botón secundario (limpiar) */
+.tool-btn--ghost {
+  background: transparent;
+  border-color: var(--border-medium);
+  color: var(--text-secondary);
+}
+.tool-btn--ghost:hover {
+  background: rgba(0,240,255,0.06);
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  box-shadow: none;
+}
+
+/* Contenedor de acciones (debajo del conversor) */
+.tool-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+/* Modo claro */
+[data-theme="light"] .toolkit-filter {
+  background: #ffffff;
+  border-color: rgba(0,136,204,0.2);
+}
+[data-theme="light"] .toolkit-filter.active {
+  background: rgba(0,136,204,0.1);
+  border-color: #0088cc;
+  color: #0088cc;
+  box-shadow: 0 0 15px rgba(0,136,204,0.25);
+}
+[data-theme="light"] .copy-btn:hover {
+  background: rgba(0,136,204,0.1);
+  border-color: #0088cc;
+  color: #0088cc;
+}
+[data-theme="light"] .copy-btn.copied {
+  background: rgba(5,150,105,0.1);
+  border-color: #059669;
+  color: #059669;
+}
+[data-theme="light"] .tool-btn--ghost:hover {
+  background: rgba(0,136,204,0.06);
+  border-color: #0088cc;
+  color: #0088cc;
+}
+
+/* Móvil: mostrar copy-btn siempre */
+@media (max-width: 768px) {
+  .copy-btn { opacity: 0.6; }
+  .toolkit-filters { gap: 0.4rem; }
+  .toolkit-filter {
+    padding: 0.45rem 0.9rem;
+    font-size: 0.66rem;
+  }
+}

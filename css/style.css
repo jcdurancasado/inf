@@ -4678,3 +4678,203 @@ ul { list-style: none; }
   }
   .install-btn__tooltip { display: none; }
 }
+
+/* ============ FASE 2 · NUEVAS HERRAMIENTAS ============ */
+
+/* Slider range */
+.tool-range {
+  width: 100%;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 100px;
+  outline: none;
+  cursor: pointer;
+}
+.tool-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--neon-cyan);
+  border: 2px solid var(--bg-primary);
+  box-shadow: 0 0 10px var(--neon-cyan);
+  cursor: pointer;
+}
+.tool-range::-moz-range-thumb {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--neon-cyan);
+  border: 2px solid var(--bg-primary);
+  box-shadow: 0 0 10px var(--neon-cyan);
+  cursor: pointer;
+}
+
+/* Checkboxes de contraseña */
+.tool-field--checks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  justify-content: center;
+}
+.pwd-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+.pwd-check input[type="checkbox"] {
+  accent-color: var(--neon-cyan);
+  width: 15px; height: 15px;
+  cursor: pointer;
+}
+
+/* Barra de fuerza */
+.pwd-strength {
+  margin-top: var(--space-md);
+}
+.pwd-strength__bar {
+  height: 6px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 100px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+.pwd-strength__fill {
+  height: 100%;
+  width: 0%;
+  background: var(--neon-red);
+  transition: width 0.4s ease, background 0.4s ease;
+}
+.pwd-strength__fill[data-level="1"] { background: var(--neon-red); box-shadow: 0 0 10px var(--neon-red); }
+.pwd-strength__fill[data-level="2"] { background: var(--neon-orange); box-shadow: 0 0 10px var(--neon-orange); }
+.pwd-strength__fill[data-level="3"] { background: var(--neon-yellow); box-shadow: 0 0 10px var(--neon-yellow); }
+.pwd-strength__fill[data-level="4"] { background: var(--neon-green); box-shadow: 0 0 10px var(--neon-green); }
+.pwd-strength__fill[data-level="5"] { background: linear-gradient(90deg, var(--neon-cyan), var(--neon-green)); box-shadow: 0 0 15px var(--neon-green); }
+
+.pwd-strength__meta {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+.pwd-strength__meta span:first-child { color: var(--text-primary); font-weight: 600; }
+
+/* RJ45 */
+.rj45-toggle {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: var(--space-lg);
+  flex-wrap: wrap;
+}
+.rj45-tab {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.75rem 1rem;
+  background: var(--bg-primary);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.rj45-tab:hover { border-color: var(--neon-cyan); color: var(--neon-cyan); }
+.rj45-tab.active {
+  background: rgba(0,240,255,0.1);
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  box-shadow: 0 0 15px rgba(0,240,255,0.3);
+}
+
+.rj45-pins {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 0.5rem;
+  padding: var(--space-md);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  position: relative;
+  margin-top: var(--space-md);
+}
+.rj45-pins::before {
+  content: 'PIN 1 → 8  (clip hacia arriba)';
+  position: absolute;
+  top: -22px;
+  left: 0;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  letter-spacing: 0.15em;
+}
+
+.rj45-pin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.25rem;
+}
+.rj45-pin__num {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--neon-cyan);
+}
+.rj45-pin__wire {
+  width: 100%;
+  height: 50px;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+}
+.rj45-pin__wire::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255,255,255,0.15) 0px,
+    rgba(255,255,255,0.15) 3px,
+    transparent 3px,
+    transparent 6px
+  );
+  opacity: 0.35;
+}
+.rj45-pin__name {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* Modo claro */
+[data-theme="light"] .rj45-tab.active {
+  background: rgba(0,136,204,0.1);
+  border-color: #0088cc;
+  color: #0088cc;
+}
+[data-theme="light"] .rj45-pin__num { color: #0088cc; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .rj45-pins { gap: 0.25rem; padding: 0.75rem 0.4rem; }
+  .rj45-pin__wire { height: 40px; }
+  .rj45-pin__num { font-size: 0.7rem; }
+  .rj45-pin__name { font-size: 0.55rem; }
+}

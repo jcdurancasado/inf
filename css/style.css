@@ -1154,7 +1154,7 @@ ul { list-style: none; }
 /* ============ SCROLL TOP ============ */
 .scroll-top {
   position: fixed;
-  bottom: 330px;
+  bottom: 390px;
   right: 30px;
   width: 50px; height: 50px;
   background: var(--bg-panel); border: 2px solid var(--neon-cyan);
@@ -1546,7 +1546,7 @@ ul { list-style: none; }
 
 .pay-float {
   position: fixed;
-  bottom: 150px;
+  bottom: 210px;
   right: 30px;
   width: 50px;
   height: 50px;
@@ -1604,7 +1604,7 @@ ul { list-style: none; }
 /* ============ THEME TOGGLE FLOTANTE ============ */
 .theme-toggle-float {
   position: fixed;
-  bottom: 30px;
+  bottom: 90px;
   right: 30px;
   width: 50px;
   height: 50px;
@@ -1658,11 +1658,13 @@ ul { list-style: none; }
 
 /* Responsive */
 @media (max-width: 480px) {
-  .scroll-top         { width: 44px; height: 44px; bottom: 240px; right: 20px; }
-  .call-float         { width: 44px; height: 44px; bottom: 190px; right: 20px; font-size: 1rem; }
-  .pay-float          { width: 44px; height: 44px; bottom: 140px; right: 20px; }
-  .sound-toggle       { width: 44px; height: 44px; bottom: 90px;  right: 20px; font-size: 1rem; }
-  .theme-toggle-float { width: 44px; height: 44px; bottom: 40px;  right: 20px; }
+  .scroll-top         { width: 44px; height: 44px; bottom: 340px; right: 20px; }
+  .call-float         { width: 44px; height: 44px; bottom: 290px; right: 20px; font-size: 1rem; }
+  .notif-btn          { width: 44px; height: 44px; bottom: 240px; right: 20px; font-size: 1rem; }
+  .pay-float          { width: 44px; height: 44px; bottom: 190px; right: 20px; }
+  .sound-toggle       { width: 44px; height: 44px; bottom: 140px; right: 20px; font-size: 1rem; }
+  .theme-toggle-float { width: 44px; height: 44px; bottom: 90px;  right: 20px; }
+  .install-btn        { width: 44px; height: 44px; bottom: 40px;  right: 20px; font-size: 1rem; }
 }
 /* ============ MODO CLARO (LIGHT THEME) ============ */
 [data-theme="light"] {
@@ -2929,7 +2931,7 @@ ul { list-style: none; }
 /* ============ BOTÓN FLOTANTE AGENDAR ============ */
 .call-float {
   position: fixed;
-  bottom: 270px;
+  bottom: 330px;
   right: 30px;
   width: 50px;
   height: 50px;
@@ -3084,7 +3086,7 @@ ul { list-style: none; }
 /* ============ TOGGLE DE SONIDO ============ */
 .sound-toggle {
   position: fixed;
-  bottom: 90px;
+  bottom: 150px;
   right: 30px;
   width: 50px;
   height: 50px;
@@ -3270,13 +3272,13 @@ ul { list-style: none; }
     left: auto !important;
   }
 
-  .scroll-top         { bottom: 340px !important; }
-  .call-float         { bottom: 280px !important; }
-  .install-btn        { bottom: 400px !important; }
-  .notif-btn          { bottom: 220px !important; }
-  .pay-float          { bottom: 160px !important; }
-  .sound-toggle       { bottom: 100px !important; }
-  .theme-toggle-float { bottom: 40px !important; }
+  .scroll-top         { bottom: 400px !important; }
+  .call-float         { bottom: 340px !important; }
+  .notif-btn          { bottom: 280px !important; }
+  .pay-float          { bottom: 220px !important; }
+  .sound-toggle       { bottom: 160px !important; }
+  .theme-toggle-float { bottom: 100px !important; }
+  .install-btn        { bottom: 40px !important; }
 }
 
 /* En pantallas muy pequeñas, mantener alineación */
@@ -3290,13 +3292,13 @@ ul { list-style: none; }
     right: 14px !important;
   }
 
-  .scroll-top         { bottom: 320px !important; }
-  .call-float         { bottom: 265px !important; }
-  .install-btn        { bottom: 375px !important; }
-  .notif-btn          { bottom: 210px !important; }
-  .pay-float          { bottom: 155px !important; }
-  .sound-toggle       { bottom: 100px !important; }
-  .theme-toggle-float { bottom: 45px !important; }
+  .scroll-top         { bottom: 380px !important; }
+  .call-float         { bottom: 325px !important; }
+  .notif-btn          { bottom: 270px !important; }
+  .pay-float          { bottom: 215px !important; }
+  .sound-toggle       { bottom: 160px !important; }
+  .theme-toggle-float { bottom: 105px !important; }
+  .install-btn        { bottom: 50px !important; }
 }
 
 /* ============ FIX PARA NAVEGADORES IN-APP ============ */
@@ -4216,7 +4218,7 @@ ul { list-style: none; }
 /* ============ BOTÓN NOTIFICACIONES ============ */
 .notif-btn {
   position: fixed;
-  bottom: 210px;
+  bottom: 270px;
   right: 30px;
   width: 50px;
   height: 50px;
@@ -4553,4 +4555,147 @@ ul { list-style: none; }
     padding: 0.45rem 0.9rem;
     font-size: 0.66rem;
   }
+}
+
+/* ============ BOTÓN INSTALAR PWA ============ */
+.install-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 50px;
+  height: 50px;
+  background: var(--bg-panel);
+  border: 2px solid var(--neon-cyan);
+  border-radius: 50%;
+  color: var(--neon-cyan);
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 15px rgba(0,240,255,0.35);
+  z-index: 999;
+  transition: var(--transition);
+  padding: 0;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+}
+.install-btn[hidden] { display: none; }
+.install-btn.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.install-btn:hover {
+  background: var(--neon-cyan);
+  color: var(--bg-primary);
+  transform: translateY(-5px);
+  box-shadow: 0 0 25px rgba(0,240,255,0.7);
+}
+.install-btn:hover i {
+  animation: none;
+  transform: translateY(4px) scale(1.15);
+}
+
+/* Flecha fantasma que cae — simula descarga */
+.install-btn::after {
+  content: '↓';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--neon-cyan);
+  text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);
+  opacity: 0;
+  animation: install-drop 1.6s ease-in infinite;
+  pointer-events: none;
+  line-height: 1;
+}
+@keyframes install-drop {
+  0%   { opacity: 0;   transform: translateX(-50%) translateY(-6px)  scale(0.6); }
+  30%  { opacity: 1;   transform: translateX(-50%) translateY(2px)   scale(1);   }
+  70%  { opacity: 0.9; transform: translateX(-50%) translateY(20px)  scale(1);   }
+  100% { opacity: 0;   transform: translateX(-50%) translateY(34px)  scale(0.8); }
+}
+
+/* El icono dentro hace un bob suave, como empujado hacia abajo */
+.install-btn i {
+  animation: install-icon-bob 1.6s ease-in-out infinite;
+  transition: none;
+}
+@keyframes install-icon-bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(3px); }
+}
+
+/* Tooltip */
+.install-btn__tooltip {
+  position: absolute;
+  right: calc(100% + 14px);
+  top: 50%;
+  transform: translateY(-50%) translateX(6px);
+  padding: 0.5rem 0.9rem;
+  background: #0a0a0f !important;
+  border: 1px solid var(--neon-cyan);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--neon-cyan);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  box-shadow: 0 0 15px rgba(0,240,255,0.5);
+  letter-spacing: 0.05em;
+  z-index: 1002;
+  text-shadow: 0 0 6px currentColor;
+}
+.install-btn:hover .install-btn__tooltip {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+.install-btn:hover { z-index: 1001; }
+
+/* Modo claro */
+[data-theme="light"] .install-btn {
+  background: #ffffff;
+  border-color: #0088cc;
+  color: #0088cc;
+  box-shadow: 0 0 15px rgba(0,136,204,0.3);
+}
+[data-theme="light"] .install-btn:hover {
+  background: #0088cc;
+  color: #ffffff;
+}
+[data-theme="light"] .install-btn::after {
+  color: #0088cc;
+  text-shadow: 0 0 10px #0088cc, 0 0 20px #0088cc;
+}
+[data-theme="light"] .install-btn__tooltip {
+  background: #ffffff !important;
+  color: #0088cc;
+  border-color: #0088cc;
+  text-shadow: 0 0 6px currentColor;
+}
+
+/* Móvil */
+@media (max-width: 768px) {
+  .install-btn {
+    right: 16px !important;
+    left: auto !important;
+  }
+}
+@media (max-width: 480px) {
+  .install-btn {
+    width: 44px;
+    height: 44px;
+    right: 20px !important;
+    font-size: 1rem;
+  }
+  .install-btn__tooltip { display: none; }
 }

@@ -313,6 +313,7 @@ const ScrollTop = {
     const payBtn = document.querySelector('.pay-float');
     const themeBtn = document.getElementById('themeToggle');
     const callBtn = document.getElementById('callFloat');
+    const soundBtn = document.getElementById('soundToggle');
     if (!btn) return;
 
     const toggleAll = (show) => {
@@ -320,6 +321,7 @@ const ScrollTop = {
       if (payBtn) payBtn.classList.toggle('visible', show);
       if (themeBtn) themeBtn.classList.toggle('visible', show);
       if (callBtn) callBtn.classList.toggle('visible', show);
+      if (soundBtn) soundBtn.classList.toggle('visible', show);
     };
 
     // Aparecen apenas el usuario baja un poco (10% del viewport, mín. 100px)
@@ -856,6 +858,125 @@ const Heatmap = {
 };
 
 // ==========================================
+// SONIDOS SUTILES (Web Audio API)
+// ==========================================
+const Sounds = {
+  enabled: false,
+  ctx: null,
+  KEY: 'jcdc_sounds',
+  toggle: null,
+
+  init() {
+    this.toggle = document.getElementById('soundToggle');
+    if (!this.toggle) return;
+
+    // Cargar preferencia
+    this.enabled = localStorage.getItem(this.KEY) === 'on';
+    this.updateUI();
+
+    // Click en el botón → activar/desactivar
+    this.toggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.enabled = !this.enabled;
+      localStorage.setItem(this.KEY, this.enabled ? 'on' : 'off');
+      this.updateUI();
+
+      // Reproducir un beep de confirmación al activar
+      if (this.enabled) this.playClick();
+
+      if (typeof Toast !== 'undefined') {
+        Toast.show(this.enabled ? '🔊 Sonidos activados' : '🔇 Sonidos desactivados', 'info', 1800);
+      }
+    });
+
+    // Bind: hover en elementos interactivos
+    const hoverSelector = 'a, button, .link-card, .pay-card, .stack-chip, .service-card, .curso-card, .cert-pill, .tag, .nav__link';
+
+    document.addEventListener('mouseover', (e) => {
+      if (!this.enabled) return;
+      if (e.target.closest(hoverSelector)) {
+        // No repetir si ya estaba sobre un elemento (evita spam en contenedores)
+        if (e.target._soundHovered) return;
+        e.target._soundHovered = true;
+        this.playHover();
+      }
+    });
+
+    document.addEventListener('mouseout', (e) => {
+      if (e.target._soundHovered) {
+        e.target._soundHovered = false;
+      }
+    });
+
+    // Bind: click
+    document.addEventListener('click', (e) => {
+      if (!this.enabled) return;
+      if (e.target.closest('a, button')) {
+        this.playClick();
+      }
+    }, { passive: true });
+  },
+
+  // Crear contexto de audio bajo demanda (los navegadores bloquean hasta gesto del usuario)
+  getCtx() {
+    if (!this.ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      this.ctx = new AC();
+    }
+    // Reanudar si está suspendido
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+    return this.ctx;
+  },
+
+  // Beep genérico
+  beep({ frequency = 800, duration = 0.05, volume = 0.08, type = 'sine' } = {}) {
+    const ctx = this.getCtx();
+    if (!ctx) return;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(frequency, ctx.currentTime);
+
+    gain.gain.setValueAtTime(0, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(volume, ctx.currentTime + 0.008);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + duration + 0.02);
+  },
+
+  playHover() {
+    this.beep({ frequency: 1200, duration: 0.035, volume: 0.04, type: 'sine' });
+  },
+
+  playClick() {
+    // Doble beep corto para dar sensación "digital"
+    this.beep({ frequency: 800, duration: 0.05, volume: 0.07, type: 'square' });
+    setTimeout(() => {
+      this.beep({ frequency: 1100, duration: 0.04, volume: 0.05, type: 'square' });
+    }, 40);
+  },
+
+  updateUI() {
+    if (!this.toggle) return;
+    this.toggle.setAttribute('aria-pressed', this.enabled ? 'true' : 'false');
+    const icon = this.toggle.querySelector('i');
+    if (icon) {
+      icon.className = this.enabled
+        ? 'fa-solid fa-volume-high'
+        : 'fa-solid fa-volume-xmark';
+    }
+    const tooltip = document.getElementById('soundTooltip');
+    if (tooltip) {
+      tooltip.textContent = this.enabled ? 'Desactivar sonidos' : 'Activar sonidos';
+    }
+  }
+};
+// ==========================================
 // INIT
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
@@ -879,6 +1000,7 @@ document.addEventListener('DOMContentLoaded', () => {
   SubnetCalc.init();
   NumConverter.init();
   Heatmap.init();
+  Sounds.init();
   console.log('%cJCDURANCASADO · v8.0', 'color: #00f0ff; font-family: Orbitron; font-size: 18px;');
   console.log('%c"No hablo en técnico cuando explico. La tecnología debe servir a las personas, no al revés."', 'color: #b829dd; font-style: italic;');
 });

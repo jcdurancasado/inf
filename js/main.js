@@ -1100,6 +1100,105 @@ const Notifications = {
     };
   }
 };
+
+// ==========================================
+// TOOLKIT · FILTRO POR CATEGORÍA
+// ==========================================
+const ToolkitFilter = {
+  init() {
+    const buttons = document.querySelectorAll('.toolkit-filter');
+    const cards = document.querySelectorAll('.tool-card[data-category]');
+    if (!buttons.length) return;
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const filter = btn.dataset.filter;
+        buttons.forEach(b => b.classList.toggle('active', b === btn));
+
+        cards.forEach(card => {
+          const show = filter === 'all' || card.dataset.category === filter;
+          card.dataset.hidden = show ? 'false' : 'true';
+        });
+      });
+    });
+  }
+};
+
+// ==========================================
+// TOOLKIT · COPIAR AL PORTAPAPELES
+// ==========================================
+const CopyButtons = {
+  init() {
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.copy-btn');
+      if (!btn) return;
+
+      const targetId = btn.dataset.copyTarget;
+      const el = document.getElementById(targetId);
+      if (!el) return;
+
+      const text = el.textContent.trim();
+      if (!text || text === '—') {
+        if (typeof Toast !== 'undefined') Toast.show('Nada que copiar', 'info', 1500);
+        return;
+      }
+
+      const writePromise = navigator.clipboard
+        ? navigator.clipboard.writeText(text)
+        : Promise.reject();
+
+      writePromise
+        .then(() => {
+          btn.classList.add('copied');
+          const icon = btn.querySelector('i');
+          if (icon) icon.className = 'fa-solid fa-check';
+          if (typeof Toast !== 'undefined') Toast.show('Copiado: ' + text, 'success', 1600);
+          setTimeout(() => {
+            btn.classList.remove('copied');
+            if (icon) icon.className = 'fa-solid fa-copy';
+          }, 1400);
+        })
+        .catch(() => {
+          if (typeof Toast !== 'undefined') Toast.show('No se pudo copiar', 'error');
+        });
+    });
+  }
+};
+
+// ==========================================
+// TOOLKIT · BOTONES LIMPIAR
+// ==========================================
+const ToolkitClear = {
+  init() {
+    // Subredes
+    const subnetClear = document.getElementById('subnetClear');
+    if (subnetClear) {
+      subnetClear.addEventListener('click', () => {
+        const ip = document.getElementById('subnetIP');
+        const cidr = document.getElementById('subnetCIDR');
+        const output = document.getElementById('subnetOutput');
+        if (ip) { ip.value = ''; ip.classList.remove('invalid'); ip.focus(); }
+        if (cidr) cidr.value = '24';
+        if (output) output.hidden = true;
+        if (typeof Toast !== 'undefined') Toast.show('Limpiado', 'info', 1200);
+      });
+    }
+
+    // Conversor
+    const convClear = document.getElementById('convClear');
+    if (convClear) {
+      convClear.addEventListener('click', () => {
+        ['convBin', 'convDec', 'convHex'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.value = '';
+        });
+        const first = document.getElementById('convBin');
+        if (first) first.focus();
+        if (typeof Toast !== 'undefined') Toast.show('Limpiado', 'info', 1200);
+      });
+    }
+  }
+};
 // ==========================================
 // INIT
 // ==========================================
@@ -1124,6 +1223,9 @@ document.addEventListener('DOMContentLoaded', () => {
   SubnetCalc.init();
   NumConverter.init();
   Heatmap.init();
+  ToolkitFilter.init();
+  CopyButtons.init();
+  ToolkitClear.init();
   Sounds.init();
   Notifications.init();
   console.log('%cJCDURANCASADO · v8.0', 'color: #00f0ff; font-family: Orbitron; font-size: 18px;');

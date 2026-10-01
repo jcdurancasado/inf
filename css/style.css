@@ -3259,3 +3259,42 @@ ul { list-style: none; }
     animation: none !important;
   }
 }
+
+/* ============ FIX PARA NAVEGADORES IN-APP (Instagram, Facebook, TikTok) ============ */
+@media (max-width: 768px) {
+  .scroll-top,
+  .call-float,
+  .pay-float,
+  .sound-toggle,
+  .theme-toggle-float,
+  .install-btn {
+    right: 16px !important;
+    left: auto !important;
+  }
+
+  .scroll-top         { bottom: 280px !important; }
+  .call-float         { bottom: 220px !important; }
+  .install-btn        { bottom: 340px !important; }
+  .pay-float          { bottom: 160px !important; }
+  .sound-toggle       { bottom: 100px !important; }
+  .theme-toggle-float { bottom: 40px !important; }
+}
+
+/* En pantallas muy pequeñas, mantener alineación */
+@media (max-width: 400px) {
+  .scroll-top,
+  .call-float,
+  .pay-float,
+  .sound-toggle,
+  .theme-toggle-float,
+  .install-btn {
+    right: 14px !important;
+  }
+
+  .scroll-top         { bottom: 260px !important; }
+  .call-float         { bottom: 205px !important; }
+  .install-btn        { bottom: 315px !important; }
+  .pay-float          { bottom: 150px !important; }
+  .sound-toggle       { bottom: 95px !important; }
+  .theme-toggle-float { bottom: 40px !important; }
+}

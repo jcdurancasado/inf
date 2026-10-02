@@ -171,7 +171,7 @@ const TypeWriter = {
 const Particles = {
   canvas: null, ctx: null, particles: [], animationId: null, visible: false,
   init() {
-    if (CONFIG.reducedMotion || !CONFIG.hasHover) return;
+    if (CONFIG.reducedMotion) return;
     this.canvas = document.getElementById('particles');
     if (!this.canvas) return;
     this.ctx = this.canvas.getContext('2d');
@@ -195,7 +195,7 @@ const Particles = {
     this.canvas.height = window.innerHeight;
   },
   create() {
-    const count = window.innerWidth < 768 ? 12 : 22;
+    const count = window.innerWidth < 768 ? 18 : 25;
     for (let i = 0; i < count; i++) {
       this.particles.push({
         x: Math.random() * this.canvas.width,
@@ -1122,7 +1122,19 @@ const ToolkitFilter = {
   init() {
     const buttons = document.querySelectorAll('.toolkit-filter');
     const cards = document.querySelectorAll('.tool-card[data-category]');
+    const filtersBar = document.querySelector('.toolkit-filters--sticky');
     if (!buttons.length) return;
+
+    // Hint de swipe en móvil: se oculta al hacer scroll
+    if (filtersBar) {
+      const hideHint = () => {
+        if (filtersBar.scrollLeft > 5) {
+          filtersBar.classList.add('is-scrolled');
+          filtersBar.removeEventListener('scroll', hideHint);
+        }
+      };
+      filtersBar.addEventListener('scroll', hideHint, { passive: true });
+    }
 
     buttons.forEach(btn => {
       btn.addEventListener('click', () => {

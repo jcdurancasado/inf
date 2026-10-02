@@ -287,7 +287,9 @@ const Nav = {
         if (entry.isIntersecting) {
           const id = entry.target.id;
           links.forEach(l => {
-            l.classList.toggle('nav__link--active', l.getAttribute('href') === `#${id}`);
+            const href = l.getAttribute('href') || '';
+            const hash = href.includes('#') ? '#' + href.split('#')[1] : href;
+            l.classList.toggle('nav__link--active', hash === `#${id}`);
           });
         }
       });
@@ -2254,6 +2256,399 @@ const Base64Tool = {
 };
 
 // ==========================================
+// SOPORTE · INFO DEL SISTEMA
+// ==========================================
+const SysInfo = {
+  init() {
+    const btn = document.getElementById('sysDetect');
+    const btnCopy = document.getElementById('sysCopy');
+    const wrap = document.getElementById('sysOutput');
+    if (!btn) return;
+
+    const detect = () => {
+      const ua = navigator.userAgent;
+      let os = 'Desconocido';
+      if (/Windows NT 10/.test(ua)) os = 'Windows 10/11';
+      else if (/Windows/.test(ua)) os = 'Windows';
+      else if (/Mac OS X/.test(ua)) os = 'macOS';
+      else if (/Android/.test(ua)) os = 'Android';
+      else if (/iPhone|iPad/.test(ua)) os = 'iOS';
+      else if (/Linux/.test(ua)) os = 'Linux';
+
+      let browser = 'Desconocido';
+      if (/Edg\//.test(ua)) browser = 'Microsoft Edge';
+      else if (/OPR\//.test(ua)) browser = 'Opera';
+      else if (/Chrome\//.test(ua) && !/Edg\//.test(ua)) browser = 'Google Chrome';
+      else if (/Firefox\//.test(ua)) browser = 'Mozilla Firefox';
+      else if (/Safari\//.test(ua) && !/Chrome/.test(ua)) browser = 'Safari';
+
+      const ram = navigator.deviceMemory ? `~${navigator.deviceMemory} GB` : 'No disponible';
+      const conn = navigator.connection
+        ? `${navigator.connection.effectiveType || '?'} · ${navigator.connection.downlink || '?'} Mbps`
+        : 'No disponible';
+
+      document.getElementById('sysOS').textContent = os;
+      document.getElementById('sysBrowser').textContent = browser;
+      document.getElementById('sysScreen').textContent = `${screen.width} × ${screen.height} px (${window.devicePixelRatio}x)`;
+      document.getElementById('sysViewport').textContent = `${window.innerWidth} × ${window.innerHeight} px`;
+      document.getElementById('sysCores').textContent = navigator.hardwareConcurrency ? `${navigator.hardwareConcurrency} hilos` : 'No disponible';
+      document.getElementById('sysRAM').textContent = ram;
+      document.getElementById('sysLang').textContent = navigator.language;
+      document.getElementById('sysTZ').textContent = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      document.getElementById('sysConn').textContent = conn;
+      document.getElementById('sysTouch').textContent = ('ontouchstart' in window) ? 'Sí' : 'No';
+
+      wrap.hidden = false;
+    };
+
+    btn.addEventListener('click', detect);
+
+    btnCopy.addEventListener('click', () => {
+      if (wrap.hidden) detect();
+      const rows = wrap.querySelectorAll('.tool-output__row');
+      let text = 'INFO DEL SISTEMA\n─────────────────\n';
+      rows.forEach(r => {
+        const label = r.querySelector('span').textContent;
+        const val = r.querySelector('code').textContent;
+        text += `${label.padEnd(15)} ${val}\n`;
+      });
+      navigator.clipboard.writeText(text)
+        .then(() => Toast.show('Info copiada', 'success', 1500))
+        .catch(() => Toast.show('No se pudo copiar', 'error'));
+    });
+  }
+};
+
+// ==========================================
+// SOPORTE · COMANDOS POR SISTEMA
+// ==========================================
+const CmdList = {
+  data: [
+    // LINUX
+    { os: 'linux', cmd: 'ip a',                       desc: 'Ver interfaces de red y sus IPs' },
+    { os: 'linux', cmd: 'ip route',                   desc: 'Ver tabla de rutas' },
+    { os: 'linux', cmd: 'ping -c 4 host',             desc: 'Ping con 4 paquetes' },
+    { os: 'linux', cmd: 'ss -tuln',                   desc: 'Puertos TCP/UDP escuchando' },
+    { os: 'linux', cmd: 'netstat -tuln',              desc: 'Alternativa a ss (más antiguo)' },
+    { os: 'linux', cmd: 'nslookup dominio.com',       desc: 'Consultar DNS' },
+    { os: 'linux', cmd: 'dig dominio.com',            desc: 'Consulta DNS detallada' },
+    { os: 'linux', cmd: 'traceroute host',            desc: 'Ruta de paquetes al destino' },
+    { os: 'linux', cmd: 'curl -I url',                desc: 'Ver cabeceras HTTP de una URL' },
+    { os: 'linux', cmd: 'wget url',                   desc: 'Descargar archivo por HTTP/FTP' },
+    { os: 'linux', cmd: 'tcpdump -i eth0',            desc: 'Capturar tráfico en interfaz' },
+    { os: 'linux', cmd: 'chmod 755 archivo',          desc: 'Permisos: rwxr-xr-x' },
+    { os: 'linux', cmd: 'chown user:group archivo',   desc: 'Cambiar propietario y grupo' },
+    { os: 'linux', cmd: 'ps aux | grep proceso',      desc: 'Buscar proceso activo' },
+    { os: 'linux', cmd: 'systemctl status servicio',  desc: 'Estado de un servicio systemd' },
+    { os: 'linux', cmd: 'df -h',                      desc: 'Uso de disco legible' },
+    { os: 'linux', cmd: 'du -sh carpeta',             desc: 'Tamaño de una carpeta' },
+    { os: 'linux', cmd: 'top / htop',                 desc: 'Monitor de procesos en vivo' },
+    { os: 'linux', cmd: 'uname -a',                   desc: 'Info del kernel' },
+    { os: 'linux', cmd: 'whoami',                     desc: 'Usuario actual' },
+    { os: 'linux', cmd: 'sudo apt update && upgrade', desc: 'Actualizar paquetes (Debian/Ubuntu)' },
+    { os: 'linux', cmd: 'ssh user@host',              desc: 'Conectar por SSH' },
+
+    // WINDOWS
+    { os: 'windows', cmd: 'ipconfig /all',              desc: 'Info completa de red' },
+    { os: 'windows', cmd: 'ipconfig /flushdns',         desc: 'Limpiar caché DNS' },
+    { os: 'windows', cmd: 'ping -t host',               desc: 'Ping continuo (Ctrl+C para parar)' },
+    { os: 'windows', cmd: 'tracert host',               desc: 'Ruta de paquetes al destino' },
+    { os: 'windows', cmd: 'nslookup dominio.com',       desc: 'Consultar DNS' },
+    { os: 'windows', cmd: 'netstat -ano',               desc: 'Puertos y PID de procesos' },
+    { os: 'windows', cmd: 'arp -a',                     desc: 'Tabla ARP (IP ↔ MAC)' },
+    { os: 'windows', cmd: 'route print',                desc: 'Tabla de rutas' },
+    { os: 'windows', cmd: 'netsh wlan show profiles',   desc: 'Redes WiFi guardadas' },
+    { os: 'windows', cmd: 'net user',                   desc: 'Usuarios locales' },
+    { os: 'windows', cmd: 'net share',                  desc: 'Recursos compartidos' },
+    { os: 'windows', cmd: 'systeminfo',                 desc: 'Info completa del sistema' },
+    { os: 'windows', cmd: 'tasklist',                   desc: 'Procesos activos' },
+    { os: 'windows', cmd: 'taskkill /PID xxxx /F',      desc: 'Matar proceso por PID' },
+    { os: 'windows', cmd: 'sfc /scannow',               desc: 'Verificar archivos del sistema' },
+    { os: 'windows', cmd: 'chkdsk C: /f',               desc: 'Comprobar disco y reparar' },
+    { os: 'windows', cmd: 'Get-NetIPAddress',           desc: 'IPs (PowerShell)' },
+    { os: 'windows', cmd: 'Test-NetConnection host',    desc: 'Test de conexión (PowerShell)' },
+
+    // CISCO IOS
+    { os: 'cisco', cmd: 'enable',                     desc: 'Entrar a modo privilegiado' },
+    { os: 'cisco', cmd: 'configure terminal',         desc: 'Modo configuración global' },
+    { os: 'cisco', cmd: 'show running-config',        desc: 'Ver configuración actual' },
+    { os: 'cisco', cmd: 'show ip interface brief',    desc: 'Estado de interfaces IP' },
+    { os: 'cisco', cmd: 'show ip route',              desc: 'Tabla de enrutamiento' },
+    { os: 'cisco', cmd: 'show vlan brief',            desc: 'Lista de VLANs configuradas' },
+    { os: 'cisco', cmd: 'show mac address-table',     desc: 'Tabla MAC aprendida' },
+    { os: 'cisco', cmd: 'show cdp neighbors',         desc: 'Equipos Cisco conectados' },
+    { os: 'cisco', cmd: 'show version',               desc: 'Versión de IOS y hardware' },
+    { os: 'cisco', cmd: 'interface Gig0/0',           desc: 'Entrar a configurar interfaz' },
+    { os: 'cisco', cmd: 'ip address 192.168.1.1 255.255.255.0', desc: 'Asignar IP a interfaz' },
+    { os: 'cisco', cmd: 'no shutdown',                desc: 'Activar interfaz' },
+    { os: 'cisco', cmd: 'vlan 10',                    desc: 'Crear VLAN' },
+    { os: 'cisco', cmd: 'switchport mode access',     desc: 'Modo access del puerto' },
+    { os: 'cisco', cmd: 'switchport access vlan 10',  desc: 'Asignar puerto a VLAN' },
+    { os: 'cisco', cmd: 'router ospf 1',              desc: 'Activar OSPF proceso 1' },
+    { os: 'cisco', cmd: 'write memory',               desc: 'Guardar configuración' },
+    { os: 'cisco', cmd: 'copy running-config startup-config', desc: 'Guardar (versión larga)' }
+  ],
+
+  activeOs: 'all',
+  searchTerm: '',
+
+  init() {
+    const list = document.getElementById('cmdList');
+    const searchInput = document.getElementById('cmdSearch');
+    const searchClear = document.getElementById('cmdSearchClear');
+    const filters = document.querySelectorAll('[data-os]');
+    const empty = document.getElementById('cmdEmpty');
+    const countEl = document.getElementById('cmdCount');
+    const totalEl = document.getElementById('cmdTotal');
+    if (!list) return;
+
+    this.list = list;
+    this.empty = empty;
+    this.countEl = countEl;
+    if (totalEl) totalEl.textContent = this.data.length;
+
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        this.searchTerm = searchInput.value.trim().toLowerCase();
+        if (searchClear) searchClear.hidden = !this.searchTerm;
+        this.render();
+      });
+    }
+
+    if (searchClear) {
+      searchClear.addEventListener('click', () => {
+        searchInput.value = '';
+        this.searchTerm = '';
+        searchClear.hidden = true;
+        searchInput.focus();
+        this.render();
+      });
+    }
+
+    filters.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filters.forEach(b => b.classList.toggle('active', b === btn));
+        this.activeOs = btn.dataset.os;
+        this.render();
+      });
+    });
+
+    // Copiar comando (delegado)
+    list.addEventListener('click', (e) => {
+      const btn = e.target.closest('.cmd-item__copy');
+      if (!btn) return;
+      const cmd = btn.dataset.cmd;
+      navigator.clipboard.writeText(cmd)
+        .then(() => {
+          btn.classList.add('copied');
+          const icon = btn.querySelector('i');
+          if (icon) icon.className = 'fa-solid fa-check';
+          Toast.show('Copiado: ' + cmd, 'success', 1400);
+          setTimeout(() => {
+            btn.classList.remove('copied');
+            if (icon) icon.className = 'fa-solid fa-copy';
+          }, 1200);
+        })
+        .catch(() => Toast.show('No se pudo copiar', 'error'));
+    });
+
+    this.render();
+  },
+
+  render() {
+    if (!this.list) return;
+    const term = this.searchTerm;
+    const os = this.activeOs;
+
+    let html = '';
+    let visible = 0;
+
+    this.data.forEach(item => {
+      if (os !== 'all' && item.os !== os) return;
+      if (term) {
+        const hay = (item.cmd + ' ' + item.desc + ' ' + item.os).toLowerCase();
+        if (!hay.includes(term)) return;
+      }
+      visible++;
+      html += `
+        <div class="cmd-item">
+          <span class="cmd-item__os" data-os="${item.os}">${item.os.toUpperCase()}</span>
+          <div class="cmd-item__body">
+            <div class="cmd-item__cmd">${item.cmd}</div>
+            <div class="cmd-item__desc">${item.desc}</div>
+          </div>
+          <button type="button" class="cmd-item__copy" data-cmd="${item.cmd.replace(/"/g, '&quot;')}" aria-label="Copiar"><i class="fa-solid fa-copy"></i></button>
+        </div>
+      `;
+    });
+
+    this.list.innerHTML = html;
+    if (this.countEl) this.countEl.textContent = visible;
+    if (this.empty) this.empty.hidden = visible > 0;
+  }
+};
+
+// ==========================================
+// SOPORTE · CONVERSOR DE COLORES
+// ==========================================
+const ColorConverter = {
+  init() {
+    const hexIn = document.getElementById('colorHex');
+    const rgbIn = document.getElementById('colorRgb');
+    const hslIn = document.getElementById('colorHsl');
+    const preview = document.getElementById('colorPreview');
+    const previewHex = document.getElementById('colorPreviewHex');
+    if (!hexIn) return;
+
+    const update = (source) => {
+      let r, g, b;
+
+      try {
+        if (source === 'hex') {
+          let hex = hexIn.value.replace('#', '').trim();
+          if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+          if (!/^[0-9a-f]{6}$/i.test(hex)) return;
+          r = parseInt(hex.slice(0,2), 16);
+          g = parseInt(hex.slice(2,4), 16);
+          b = parseInt(hex.slice(4,6), 16);
+        } else if (source === 'rgb') {
+          const parts = rgbIn.value.split(',').map(s => parseInt(s.trim(), 10));
+          if (parts.length !== 3 || parts.some(n => isNaN(n) || n < 0 || n > 255)) return;
+          [r, g, b] = parts;
+        } else if (source === 'hsl') {
+          const m = hslIn.value.match(/(\d+)\s*,\s*(\d+)%?\s*,\s*(\d+)%?/);
+          if (!m) return;
+          const [h, s, l] = [parseInt(m[1],10), parseInt(m[2],10)/100, parseInt(m[3],10)/100];
+          const rgb = this.hslToRgb(h, s, l);
+          [r, g, b] = rgb;
+        }
+      } catch (e) { return; }
+
+      const hex = '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
+      const rgbStr = `${r}, ${g}, ${b}`;
+      const hsl = this.rgbToHsl(r, g, b);
+      const hslStr = `${hsl.h}, ${hsl.s}%, ${hsl.l}%`;
+
+      if (source !== 'hex') hexIn.value = hex;
+      if (source !== 'rgb') rgbIn.value = rgbStr;
+      if (source !== 'hsl') hslIn.value = hslStr;
+
+      preview.style.background = hex;
+      previewHex.textContent = hex.toUpperCase();
+      // Color de texto según luminosidad
+      const lum = (0.299*r + 0.587*g + 0.114*b) / 255;
+      previewHex.style.background = lum > 0.6 ? 'rgba(0,0,0,0.85)' : 'rgba(255,255,255,0.85)';
+      previewHex.style.color = lum > 0.6 ? '#fff' : '#000';
+    };
+
+    hexIn.addEventListener('input', () => update('hex'));
+    rgbIn.addEventListener('input', () => update('rgb'));
+    hslIn.addEventListener('input', () => update('hsl'));
+
+    // Aleatorio
+    const rnd = document.getElementById('colorRandom');
+    if (rnd) {
+      rnd.addEventListener('click', () => {
+        const h = Math.floor(Math.random() * 360);
+        const s = 50 + Math.floor(Math.random() * 50);
+        const l = 40 + Math.floor(Math.random() * 30);
+        hslIn.value = `${h}, ${s}%, ${l}%`;
+        update('hsl');
+      });
+    }
+
+    // Copiar HEX
+    const copyBtn = document.getElementById('colorCopy');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(hexIn.value)
+          .then(() => Toast.show('Hex copiado: ' + hexIn.value, 'success', 1500))
+          .catch(() => Toast.show('No se pudo copiar', 'error'));
+      });
+    }
+
+    update('hex');
+  },
+
+  hslToRgb(h, s, l) {
+    let r, g, b;
+    if (s === 0) { r = g = b = l; }
+    else {
+      const hue2rgb = (p, q, t) => {
+        if (t < 0) t += 1;
+        if (t > 1) t -= 1;
+        if (t < 1/6) return p + (q - p) * 6 * t;
+        if (t < 1/2) return q;
+        if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+        return p;
+      };
+      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      const p = 2 * l - q;
+      r = hue2rgb(p, q, h/360 + 1/3);
+      g = hue2rgb(p, q, h/360);
+      b = hue2rgb(p, q, h/360 - 1/3);
+    }
+    return [Math.round(r*255), Math.round(g*255), Math.round(b*255)];
+  },
+
+  rgbToHsl(r, g, b) {
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h, s, l = (max + min) / 2;
+    if (max === min) { h = s = 0; }
+    else {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+        case g: h = (b - r) / d + 2; break;
+        case b: h = (r - g) / d + 4; break;
+      }
+      h = Math.round(h * 60);
+    }
+    return { h, s: Math.round(s * 100), l: Math.round(l * 100) };
+  }
+};
+
+// ==========================================
+// SOPORTE · CÓDIGOS HTTP
+// ==========================================
+const HTTPCodes = {
+  data: [
+    { code: 200, cat: '2xx', name: 'OK',                    desc: 'La petición fue exitosa' },
+    { code: 201, cat: '2xx', name: 'Created',               desc: 'Recurso creado correctamente' },
+    { code: 204, cat: '2xx', name: 'No Content',            desc: 'OK sin cuerpo de respuesta' },
+    { code: 301, cat: '3xx', name: 'Moved Permanently',     desc: 'Redirección permanente a otra URL' },
+    { code: 302, cat: '3xx', name: 'Found',                 desc: 'Redirección temporal' },
+    { code: 304, cat: '3xx', name: 'Not Modified',          desc: 'Usar caché (no cambió)' },
+    { code: 400, cat: '4xx', name: 'Bad Request',           desc: 'Petición mal formada' },
+    { code: 401, cat: '4xx', name: 'Unauthorized',          desc: 'Falta autenticación' },
+    { code: 403, cat: '4xx', name: 'Forbidden',             desc: 'Sin permisos para el recurso' },
+    { code: 404, cat: '4xx', name: 'Not Found',             desc: 'Recurso no encontrado' },
+    { code: 405, cat: '4xx', name: 'Method Not Allowed',    desc: 'Método HTTP no permitido' },
+    { code: 408, cat: '4xx', name: 'Request Timeout',       desc: 'El cliente tardó demasiado' },
+    { code: 429, cat: '4xx', name: 'Too Many Requests',     desc: 'Rate limit excedido' },
+    { code: 500, cat: '5xx', name: 'Internal Server Error', desc: 'Error en el servidor' },
+    { code: 502, cat: '5xx', name: 'Bad Gateway',           desc: 'Gateway/proxy con respuesta inválida' },
+    { code: 503, cat: '5xx', name: 'Service Unavailable',   desc: 'Servidor saturado o en mantenimiento' },
+    { code: 504, cat: '5xx', name: 'Gateway Timeout',       desc: 'El upstream no respondió a tiempo' }
+  ],
+
+  init() {
+    const grid = document.getElementById('httpGrid');
+    if (!grid) return;
+
+    grid.innerHTML = this.data.map(c => `
+      <div class="http-card" data-cat="${c.cat}">
+        <div class="http-card__code">${c.code}</div>
+        <div class="http-card__name">${c.name}</div>
+        <div class="http-card__desc">${c.desc}</div>
+      </div>
+    `).join('');
+  }
+};
+
+// ==========================================
 // INIT
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
@@ -2292,6 +2687,10 @@ document.addEventListener('DOMContentLoaded', () => {
   UUIDTool.init();
   TimestampTool.init();
   Base64Tool.init();
+  SysInfo.init();
+  CmdList.init();
+  ColorConverter.init();
+  HTTPCodes.init();
   Sounds.init();
   Notifications.init();
   PWA.init();

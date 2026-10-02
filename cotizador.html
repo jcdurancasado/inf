@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('jcdc_theme');
+        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var theme = saved || (prefersDark ? 'dark' : 'dark');
+        document.documentElement.setAttribute('data-theme', theme);
+        if (sessionStorage.getItem('jcdc_booted') === '1') {
+          document.documentElement.classList.add('jcdc-booted');
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="description" content="Cotizador interactivo de servicios: redes, ciberseguridad, capacitación y soporte. Precio estimado en USD y DOP." />
+  <meta name="author" content="Julio César Durán Casado" />
+  <meta name="theme-color" content="#00f0ff" />
+  <meta property="og:title" content="Cotizador de Servicios — Julio C. Durán Casado" />
+  <meta property="og:description" content="Obtén una estimación en segundos para tu proyecto de redes, seguridad o capacitación." />
+  <meta property="og:image" content="https://jcdurancasado.github.io/inf/img/foto.png" />
+  <meta property="og:url" content="https://jcdurancasado.github.io/inf/cotizador.html" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <title>JCDC - Cotizador</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Rajdhani:wght@400;500;600&family=Share+Tech+Mono&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Rajdhani:wght@400;500;600&family=Share+Tech+Mono&display=swap" media="print" onload="this.media='all'" />
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Rajdhani:wght@400;500;600&family=Share+Tech+Mono&display=swap" />
+  </noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="icon" type="image/png" href="img/foto.png" />
+  <link rel="apple-touch-icon" href="img/icons/icon-192.png" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+
+  <div class="scroll-progress" aria-hidden="true">
+    <div class="scroll-progress__bar" id="scrollProgressBar"></div>
+  </div>
+
+  <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+  <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+  <div class="scanlines" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+  <div class="cyber-grid" aria-hidden="true"></div>
+  <canvas id="particles" class="particles" aria-hidden="true"></canvas>
+
+  <div class="toast-container" aria-live="polite"></div>
+
+  <div class="boot-sequence" id="boot-sequence">
+    <div class="boot-content">
+      <div class="boot-logo"><span class="boot-text">JCDURANCASADO · NETCORE</span></div>
+      <div class="boot-lines" id="boot-lines"></div>
+      <div class="boot-progress"><div class="boot-bar" id="boot-bar"></div></div>
+      <div class="boot-status" id="boot-status">Inicializando NETCORE...</div>
+    </div>
+  </div>
+
+  <header class="header" data-header>
+    <div class="header__scanline"></div>
+    <div class="container header__container">
+      <a href="index.html" class="logo" aria-label="Inicio">
+        <div class="logo__symbol">
+          <svg viewBox="0 0 100 100" class="logo__svg logo__svg--nexus">
+            <path d="M50 4 L88 26 L88 62 Q88 88 50 96 Q12 88 12 62 L12 26 Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-dasharray="240" stroke-dashoffset="240" class="nexus-shield"/>
+            <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.3" stroke-dasharray="3 6" class="nexus-ring nexus-ring--1"/>
+            <circle cx="50" cy="50" r="34" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5" stroke-dasharray="8 4" class="nexus-ring nexus-ring--2"/>
+            <circle cx="50" cy="50" r="26" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.6" stroke-dasharray="2 3" class="nexus-ring nexus-ring--3"/>
+            <path d="M50 50 L50 8 A42 42 0 0 1 85 28 Z" fill="currentColor" opacity="0.09" class="nexus-sweep"/>
+            <path d="M50 38 L60 44 L60 56 L50 62 L40 56 L40 44 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" class="nexus-core"/>
+            <circle cx="50" cy="50" r="4" fill="currentColor" class="nexus-center"/>
+            <circle cx="50" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="1.5" class="nexus-pulse nexus-pulse--1"/>
+            <circle cx="50" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="1.5" class="nexus-pulse nexus-pulse--2"/>
+            <circle cx="50" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="1.5" class="nexus-pulse nexus-pulse--3"/>
+            <line x1="50" y1="50" x2="50" y2="14" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--1"/>
+            <line x1="50" y1="50" x2="81" y2="32" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--2"/>
+            <line x1="50" y1="50" x2="81" y2="68" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--3"/>
+            <line x1="50" y1="50" x2="50" y2="86" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--4"/>
+            <line x1="50" y1="50" x2="19" y2="68" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--5"/>
+            <line x1="50" y1="50" x2="19" y2="32" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--6"/>
+            <circle cx="50" cy="14" r="2.5" fill="currentColor" class="nexus-node nexus-node--1"/>
+            <circle cx="81" cy="32" r="2.5" fill="currentColor" class="nexus-node nexus-node--2"/>
+            <circle cx="81" cy="68" r="2.5" fill="currentColor" class="nexus-node nexus-node--3"/>
+            <circle cx="50" cy="86" r="2.5" fill="currentColor" class="nexus-node nexus-node--4"/>
+            <circle cx="19" cy="68" r="2.5" fill="currentColor" class="nexus-node nexus-node--5"/>
+            <circle cx="19" cy="32" r="2.5" fill="currentColor" class="nexus-node nexus-node--6"/>
+            <line x1="50" y1="4"  x2="50" y2="9"  stroke="currentColor" stroke-width="1.8"/>
+            <line x1="88" y1="26" x2="83" y2="29" stroke="currentColor" stroke-width="1.8"/>
+            <line x1="88" y1="62" x2="83" y2="59" stroke="currentColor" stroke-width="1.8"/>
+            <line x1="50" y1="96" x2="50" y2="91" stroke="currentColor" stroke-width="1.8"/>
+            <line x1="12" y1="62" x2="17" y2="59" stroke="currentColor" stroke-width="1.8"/>
+            <line x1="12" y1="26" x2="17" y2="29" stroke="currentColor" stroke-width="1.8"/>
+          </svg>
+        </div>
+      </a>
+
+      <nav id="nav-menu" class="nav" data-nav>
+        <ul class="nav__list">
+          <li><a href="index.html#inicio" class="nav__link">INICIO</a></li>
+          <li><a href="index.html#perfil" class="nav__link">PERFIL</a></li>
+          <li><a href="index.html#servicios" class="nav__link">SERVICIOS</a></li>
+          <li><a href="index.html#trayectoria" class="nav__link">TRAYECTORIA</a></li>
+          <li><a href="index.html#enlaces" class="nav__link">ENLACES</a></li>
+          <li><a href="toolkit.html" class="nav__link">TOOLKIT</a></li>
+          <li><a href="netpro.html" class="nav__link">NETPRO</a></li>
+          <li><a href="index.html#cursos" class="nav__link"><i class="fa-solid fa-graduation-cap"></i>&nbsp;CURSOS</a></li>
+          <li><a href="cotizador.html" class="nav__link nav__link--quote nav__link--active"><i class="fa-solid fa-calculator"></i>&nbsp;COTIZAR</a></li>
+          <li><a href="index.html#contacto" class="nav__link nav__link--cta">CONTACTO</a></li>
+        </ul>
+      </nav>
+
+      <button class="nav-toggle" aria-label="Menú" aria-expanded="false" aria-controls="nav-menu" data-nav-toggle>
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- COTIZADOR -->
+    <section class="section section--cyber quote-section" aria-labelledby="quote-title">
+      <div class="cyber-section__bg" aria-hidden="true">
+        <div class="cyber-lines"></div>
+        <div class="cyber-hexagons"></div>
+      </div>
+
+      <div class="container">
+
+        <!-- Hero del cotizador -->
+        <div class="quote-hero" data-reveal>
+          <span class="section__eyebrow">[ COTIZADOR INTERACTIVO ]</span>
+          <h1 id="quote-title" class="quote-hero__title">
+            ESTIMA TU PROYECTO<br>
+            <span class="text-gradient">EN 30 SEGUNDOS</span>
+          </h1>
+          <p class="quote-hero__subtitle">
+            Responde 3 preguntas y obtén un <strong>rango estimado en USD y DOP</strong>. Sin registro.
+          </p>
+        </div>
+
+        <!-- Wizard -->
+        <div class="quote-wizard" id="quoteWizard" data-reveal>
+
+          <!-- Steps indicator -->
+          <div class="quote-steps" id="quoteSteps">
+            <div class="quote-step active" data-step="1">
+              <span class="quote-step__num">1</span>
+              <span class="quote-step__label">Servicio</span>
+            </div>
+            <div class="quote-step" data-step="2">
+              <span class="quote-step__num">2</span>
+              <span class="quote-step__label">Alcance</span>
+            </div>
+            <div class="quote-step" data-step="3">
+              <span class="quote-step__num">3</span>
+              <span class="quote-step__label">Extras</span>
+            </div>
+            <div class="quote-step" data-step="4">
+              <span class="quote-step__num">4</span>
+              <span class="quote-step__label">Resumen</span>
+            </div>
+          </div>
+
+          <!-- Barra de progreso -->
+          <div class="quote-progress"><div class="quote-progress__bar" id="quoteProgressBar"></div></div>
+
+          <!-- Panel 1: Servicio -->
+          <div class="quote-panel active" data-panel="1">
+            <h3 class="quote-panel__title">¿Qué servicio necesitas?</h3>
+            <p class="quote-panel__help">Elige el área principal de tu proyecto.</p>
+
+            <div class="quote-options quote-options--services">
+              <label class="quote-option" data-service="red">
+                <input type="radio" name="service" value="red">
+                <span class="quote-option__icon"><i class="fa-solid fa-network-wired"></i></span>
+                <span class="quote-option__name">Red Empresarial</span>
+                <span class="quote-option__desc">Cisco, VLANs, VPNs, WiFi</span>
+              </label>
+
+              <label class="quote-option" data-service="audit">
+                <input type="radio" name="service" value="audit">
+                <span class="quote-option__icon"><i class="fa-solid fa-shield-halved"></i></span>
+                <span class="quote-option__name">Auditoría de Seguridad</span>
+                <span class="quote-option__desc">Análisis, hardening, pentest</span>
+              </label>
+
+              <label class="quote-option" data-service="training">
+                <input type="radio" name="service" value="training">
+                <span class="quote-option__icon"><i class="fa-solid fa-chalkboard-user"></i></span>
+                <span class="quote-option__name">Capacitación Técnica</span>
+                <span class="quote-option__desc">CCNA, CyberOps, IT Essentials</span>
+              </label>
+
+              <label class="quote-option" data-service="support">
+                <input type="radio" name="service" value="support">
+                <span class="quote-option__icon"><i class="fa-solid fa-screwdriver-wrench"></i></span>
+                <span class="quote-option__name">Soporte Mensual</span>
+                <span class="quote-option__desc">Mantenimiento y asistencia</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Panel 2: Alcance (dinámico) -->
+          <div class="quote-panel" data-panel="2">
+            <h3 class="quote-panel__title" id="quoteScopeTitle">Define el alcance</h3>
+            <p class="quote-panel__help">Ajusta las cantidades según tu infraestructura.</p>
+
+            <div class="quote-fields" id="quoteFields"></div>
+          </div>
+
+          <!-- Panel 3: Extras -->
+          <div class="quote-panel" data-panel="3">
+            <h3 class="quote-panel__title">Servicios adicionales</h3>
+            <p class="quote-panel__help">Marca lo que quieras incluir (opcional).</p>
+
+            <div class="quote-options quote-options--extras">
+              <label class="quote-option quote-option--sm" data-extra="docs">
+                <input type="checkbox" value="docs">
+                <span class="quote-option__icon"><i class="fa-solid fa-file-lines"></i></span>
+                <span class="quote-option__name">Documentación técnica</span>
+                <span class="quote-option__price">+$150</span>
+              </label>
+
+              <label class="quote-option quote-option--sm" data-extra="certificate">
+                <input type="checkbox" value="certificate">
+                <span class="quote-option__icon"><i class="fa-solid fa-award"></i></span>
+                <span class="quote-option__name">Certificado por escrito</span>
+                <span class="quote-option__price">+$50</span>
+              </label>
+
+              <label class="quote-option quote-option--sm" data-extra="onsite">
+                <input type="checkbox" value="onsite">
+                <span class="quote-option__icon"><i class="fa-solid fa-map-location-dot"></i></span>
+                <span class="quote-option__name">Visita presencial</span>
+                <span class="quote-option__price">+$100</span>
+              </label>
+
+              <label class="quote-option quote-option--sm" data-extra="training">
+                <input type="checkbox" value="training">
+                <span class="quote-option__icon"><i class="fa-solid fa-chalkboard-user"></i></span>
+                <span class="quote-option__name">Capacitación al equipo (4h)</span>
+                <span class="quote-option__price">+$200</span>
+              </label>
+
+              <label class="quote-option quote-option--sm" data-extra="urgent">
+                <input type="checkbox" value="urgent">
+                <span class="quote-option__icon"><i class="fa-solid fa-bolt"></i></span>
+                <span class="quote-option__name">Entrega urgente (&lt; 1 semana)</span>
+                <span class="quote-option__price">+30%</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Panel 4: Resumen -->
+          <div class="quote-panel" data-panel="4">
+            <h3 class="quote-panel__title">Resumen de tu cotización</h3>
+            <p class="quote-panel__help">Estimación orientativa. El precio final se confirma tras una consulta.</p>
+
+            <div class="quote-summary" id="quoteSummary"></div>
+
+            <div class="quote-cta">
+              <p class="quote-cta__note">
+                <i class="fa-solid fa-circle-info"></i>
+                Los valores mostrados son una <strong>estimación</strong>. El precio final depende del alcance detallado.
+              </p>
+              <div class="quote-cta__actions">
+                <button type="button" class="cyber-btn cyber-btn--primary cyber-btn--large" id="quoteWhatsApp">
+                  <span>ENVIAR POR WHATSAPP</span>
+                  <i class="fa-brands fa-whatsapp"></i>
+                </button>
+                <button type="button" class="cyber-btn cyber-btn--primary cyber-btn--large" id="quoteDownload">
+                  <span>DESCARGAR PDF</span>
+                  <i class="fa-solid fa-file-pdf"></i>
+                </button>
+                <button type="button" class="cyber-btn cyber-btn--secondary cyber-btn--large" id="quoteEmail">
+                  <span>ENVIAR POR EMAIL</span>
+                  <i class="fa-solid fa-envelope"></i>
+                </button>
+                <button type="button" class="cyber-btn cyber-btn--secondary cyber-btn--large" id="quoteRestart">
+                  <span>REINICIAR</span>
+                  <i class="fa-solid fa-rotate-left"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Navegación -->
+          <div class="quote-nav" id="quoteNav">
+            <button type="button" class="quote-nav__btn quote-nav__btn--back" id="quoteBack" disabled>
+              <i class="fa-solid fa-arrow-left"></i>
+              <span>ATRÁS</span>
+            </button>
+            <button type="button" class="quote-nav__btn quote-nav__btn--next" id="quoteNext" disabled>
+              <span>SIGUIENTE</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="footer__grid-lines" aria-hidden="true"></div>
+    <div class="container">
+      <div class="footer__main">
+        <div class="footer__brand">
+          <a href="index.html" class="logo logo--footer" aria-label="Inicio">
+            <div class="logo__symbol">
+              <svg viewBox="0 0 100 100" class="logo__svg logo__svg--nexus">
+                <path d="M50 4 L88 26 L88 62 Q88 88 50 96 Q12 88 12 62 L12 26 Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-dasharray="240" stroke-dashoffset="240" class="nexus-shield"/>
+                <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.3" stroke-dasharray="3 6" class="nexus-ring nexus-ring--1"/>
+                <circle cx="50" cy="50" r="34" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5" stroke-dasharray="8 4" class="nexus-ring nexus-ring--2"/>
+                <circle cx="50" cy="50" r="26" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.6" stroke-dasharray="2 3" class="nexus-ring nexus-ring--3"/>
+                <path d="M50 50 L50 8 A42 42 0 0 1 85 28 Z" fill="currentColor" opacity="0.09" class="nexus-sweep"/>
+                <path d="M50 38 L60 44 L60 56 L50 62 L40 56 L40 44 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" class="nexus-core"/>
+                <circle cx="50" cy="50" r="4" fill="currentColor" class="nexus-center"/>
+              </svg>
+            </div>
+          </a>
+          <div class="footer__status">
+            <span class="badge__text"><i class="fa-solid fa-signal"></i> DISPONIBLE PARA PROYECTOS</span>
+          </div>
+        </div>
+
+        <div class="footer__nav">
+          <div class="footer__col">
+            <h4>[ NAVEGACIÓN ]</h4>
+            <ul>
+              <li><a href="index.html#inicio">Inicio</a></li>
+              <li><a href="index.html#perfil">Perfil</a></li>
+              <li><a href="index.html#servicios">Servicios</a></li>
+              <li><a href="index.html#enlaces">Enlaces</a></li>
+            </ul>
+          </div>
+          <div class="footer__col">
+            <h4>[ RECURSOS ]</h4>
+            <ul>
+              <li><a href="index.html#trayectoria">Trayectoria</a></li>
+              <li><a href="index.html#certificaciones">Credenciales</a></li>
+              <li><a href="toolkit.html">Toolkit</a></li>
+              <li><a href="index.html#faq">FAQ</a></li>
+            </ul>
+          </div>
+          <div class="footer__col">
+            <h4>[ CONTACTO ]</h4>
+            <ul>
+              <li><a href="mailto:jcdurancasado@gmail.com">Email</a></li>
+              <li><a href="https://wa.me/18090000000" target="_blank" rel="noopener">WhatsApp</a></li>
+              <li><a href="https://linkedin.com/in/jcdurancasado" target="_blank" rel="noopener">LinkedIn</a></li>
+              <li><a href="https://t.me/jcdurancasado" target="_blank" rel="noopener">Telegram</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer__bottom">
+        <p>&copy; <span data-year>2024</span> JCDURANCASADO · TODOS LOS DERECHOS RESERVADOS.</p>
+      </div>
+    </div>
+  </footer>
+
+  <div class="floating-stack" aria-hidden="false">
+
+    <button class="scroll-top" id="scrollTop" aria-label="Subir al inicio">
+      <span class="scroll-shock" aria-hidden="true"></span>
+      <span class="scroll-shock-2" aria-hidden="true"></span>
+      <i class="fa-solid fa-arrow-up"></i>
+    </button>
+
+    <a href="https://calendly.com/jcdurancasado" target="_blank" rel="noopener" class="call-float" id="callFloat" aria-label="Agendar llamada">
+      <i class="fa-solid fa-calendar-check"></i>
+      <span class="call-check" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </span>
+      <span class="call-float__tooltip">Agendar llamada</span>
+    </a>
+
+    <button class="notif-btn" id="notifBtn" aria-label="Activar notificaciones" hidden>
+      <span class="notif-waves notif-waves--left" aria-hidden="true">
+        <span class="notif-wave"></span><span class="notif-wave"></span><span class="notif-wave"></span>
+      </span>
+      <span class="notif-waves notif-waves--right" aria-hidden="true">
+        <span class="notif-wave"></span><span class="notif-wave"></span><span class="notif-wave"></span>
+      </span>
+      <i class="fa-solid fa-bell"></i>
+      <span class="notif-btn__tooltip">Activar notificaciones</span>
+    </button>
+
+    <a href="index.html#payments" class="pay-float" aria-label="Ver métodos de pago">
+      <span class="pay-scan" aria-hidden="true"></span>
+      <i class="fa-solid fa-credit-card"></i>
+      <span class="float-tooltip">Ver pagos</span>
+    </a>
+
+    <button class="sound-toggle" id="soundToggle" aria-label="Sonidos" aria-pressed="false">
+      <i class="fa-solid fa-volume-xmark"></i>
+      <span class="float-tooltip" id="soundTooltip">Activar sonidos</span>
+    </button>
+
+    <button class="theme-toggle-float" id="themeToggle" aria-label="Cambiar tema">
+      <i class="fa-solid fa-circle-half-stroke"></i>
+      <span class="float-tooltip">Cambiar tema</span>
+    </button>
+
+    <button class="install-btn" id="installBtn" aria-label="Instalar aplicación" hidden>
+      <i class="fa-solid fa-download"></i>
+      <span class="install-btn__tooltip">Instalar app</span>
+    </button>
+
+  </div>
+
+  <script src="js/main.js"></script>
+  <script src="js/cotizador.js"></script>
+</body>
+</html>

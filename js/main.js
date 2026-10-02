@@ -1471,24 +1471,24 @@ const BandwidthCalc = {
 const RJ45 = {
   std: {
     B: [
-      { n: 'Blanco/Naranja', color: '#ff8c00', stripe: true  },
-      { n: 'Naranja',         color: '#ff8c00', stripe: false },
-      { n: 'Blanco/Verde',    color: '#00c853', stripe: true  },
-      { n: 'Azul',            color: '#1976d2', stripe: false },
-      { n: 'Blanco/Azul',     color: '#1976d2', stripe: true  },
-      { n: 'Verde',           color: '#00c853', stripe: false },
-      { n: 'Blanco/Marrón',   color: '#8d6e63', stripe: true  },
-      { n: 'Marrón',          color: '#8d6e63', stripe: false }
+      { n: 'Blanco/Naranja', color: '#FF6B00', stripe: true  },
+      { n: 'Naranja',         color: '#FF6B00', stripe: false },
+      { n: 'Blanco/Verde',    color: '#00E676', stripe: true  },
+      { n: 'Azul',            color: '#0EA5FF', stripe: false },
+      { n: 'Blanco/Azul',     color: '#0EA5FF', stripe: true  },
+      { n: 'Verde',           color: '#00E676', stripe: false },
+      { n: 'Blanco/Marrón',   color: '#A0522D', stripe: true  },
+      { n: 'Marrón',          color: '#A0522D', stripe: false }
     ],
     A: [
-      { n: 'Blanco/Verde',    color: '#00c853', stripe: true  },
-      { n: 'Verde',           color: '#00c853', stripe: false },
-      { n: 'Blanco/Naranja',  color: '#ff8c00', stripe: true  },
-      { n: 'Azul',            color: '#1976d2', stripe: false },
-      { n: 'Blanco/Azul',     color: '#1976d2', stripe: true  },
-      { n: 'Naranja',         color: '#ff8c00', stripe: false },
-      { n: 'Blanco/Marrón',   color: '#8d6e63', stripe: true  },
-      { n: 'Marrón',          color: '#8d6e63', stripe: false }
+      { n: 'Blanco/Verde',    color: '#00E676', stripe: true  },
+      { n: 'Verde',           color: '#00E676', stripe: false },
+      { n: 'Blanco/Naranja',  color: '#FF6B00', stripe: true  },
+      { n: 'Azul',            color: '#0EA5FF', stripe: false },
+      { n: 'Blanco/Azul',     color: '#0EA5FF', stripe: true  },
+      { n: 'Naranja',         color: '#FF6B00', stripe: false },
+      { n: 'Blanco/Marrón',   color: '#A0522D', stripe: true  },
+      { n: 'Marrón',          color: '#A0522D', stripe: false }
     ]
   },
 
@@ -1515,14 +1515,16 @@ const RJ45 = {
     container.innerHTML = pins.map((pin, i) => {
       let background;
       if (pin.stripe) {
-        background = `repeating-linear-gradient(90deg, ${pin.color} 0px, ${pin.color} 4px, #ffffff 4px, #ffffff 8px)`;
+        /* 5px de color + 3px de blanco → más color, más vivo */
+        background = `repeating-linear-gradient(90deg, ${pin.color} 0px, ${pin.color} 5px, #f5f5f5 5px, #f5f5f5 8px)`;
       } else {
         background = pin.color;
       }
+      const solidClass = pin.stripe ? '' : ' rj45-pin__wire--solid';
       return `
         <div class="rj45-pin">
           <span class="rj45-pin__num">${i + 1}</span>
-          <div class="rj45-pin__wire" style="background: ${background};"></div>
+          <div class="rj45-pin__wire${solidClass}" style="background: ${background};"></div>
           <span class="rj45-pin__name">${pin.n}</span>
         </div>
       `;
@@ -1567,9 +1569,3 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('%cJCDURANCASADO · v8.0', 'color: #00f0ff; font-family: Orbitron; font-size: 18px;');
   console.log('%c"No hablo en técnico cuando explico. La tecnología debe servir a las personas, no al revés."', 'color: #b829dd; font-style: italic;');
 });
-
-// ==========================================
-// FIX OVERFLOW
-// ==========================================
-document.body.style.overflowX = 'hidden';
-

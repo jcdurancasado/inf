@@ -4263,49 +4263,84 @@ ul { list-style: none; }
   45%  { transform: rotate(0deg); }
 }
 
-/* Vibración lateral (badajo) — solo visible cuando está activa */
-.notif-btn::before,
-.notif-btn::after {
-  content: '';
+/* ============ BOTÓN CAMPANA · ONDAS CSS ============ */
+
+.notif-waves {
   position: absolute;
   top: 50%;
-  width: 3px;
-  height: 22px;
-  background: var(--neon-pink);
-  border-radius: 3px;
-  box-shadow: 0 0 10px var(--neon-pink);
-  pointer-events: none;
   transform: translateY(-50%);
-  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
 }
-.notif-btn::before {
-  right: calc(100% + 4px);
-  animation: notif-vibrate-left 0.9s ease-in-out infinite;
+.notif-waves--left {
+  right: 100%;
+  margin-right: 4px;
 }
-.notif-btn::after {
-  left: calc(100% + 4px);
-  animation: notif-vibrate-right 0.9s ease-in-out infinite;
-}
-@keyframes notif-vibrate-left {
-  0%, 100% { opacity: 0; transform: translateY(-50%) translateX(3px) scaleY(0.7); }
-  50%      { opacity: 1; transform: translateY(-50%) translateX(-4px) scaleY(1.1); }
-}
-@keyframes notif-vibrate-right {
-  0%, 100% { opacity: 0; transform: translateY(-50%) translateX(-3px) scaleY(0.7); }
-  50%      { opacity: 1; transform: translateY(-50%) translateX(4px) scaleY(1.1); }
+.notif-waves--right {
+  left: 100%;
+  margin-left: 4px;
 }
 
-/* Vibración solo cuando está activa */
-.notif-btn:not(.active)::before,
-.notif-btn:not(.active)::after {
-  animation: none;
+/* Cada arco: media luna hecha con border-radius */
+.notif-wave {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  transform: translate(-50%, -50%);
+  border: 2px solid var(--neon-pink);
+  border-radius: 50%;
+  /* Ocultamos 3 bordes → solo queda el arco derecho ")" */
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+  opacity: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 0 4px var(--neon-pink));
+}
+
+/* Lado izquierdo: reflejamos → "(" */
+.notif-waves--left .notif-wave {
+  border-right-color: transparent;
+  border-left-color: var(--neon-pink);
+}
+
+/* Tamaños crecientes = 3 capas concéntricas */
+.notif-wave:nth-child(1) { width: 14px; height: 14px; }
+.notif-wave:nth-child(2) { width: 22px; height: 22px; }
+.notif-wave:nth-child(3) { width: 30px; height: 30px; }
+
+/* Animación: solo cuando la campana está ACTIVA */
+.notif-btn.active .notif-wave {
+  animation: notif-wave-on 1.5s ease-in-out infinite;
+}
+.notif-btn.active .notif-wave:nth-child(1) { animation-delay: 0s;    }
+.notif-btn.active .notif-wave:nth-child(2) { animation-delay: 0.15s; }
+.notif-btn.active .notif-wave:nth-child(3) { animation-delay: 0.30s; }
+
+@keyframes notif-wave-on {
+  0%   { opacity: 0;    }
+  30%  { opacity: 1;    }
+  70%  { opacity: 0.85; }
+  100% { opacity: 0;    }
 }
 
 /* Modo claro */
-[data-theme="light"] .notif-btn::before,
-[data-theme="light"] .notif-btn::after {
-  background: #d6006e;
-  box-shadow: 0 0 10px #d6006e;
+[data-theme="light"] .notif-wave {
+  border-right-color: #d6006e;
+  border-left-color: transparent;
+  filter: drop-shadow(0 0 4px #d6006e);
+}
+[data-theme="light"] .notif-waves--left .notif-wave {
+  border-right-color: transparent;
+  border-left-color: #d6006e;
+}
+
+/* Accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  .notif-wave { animation: none !important; }
 }
 
 /* Estado ACTIVO (notificaciones encendidas) */
@@ -4810,7 +4845,7 @@ ul { list-style: none; }
   margin-top: var(--space-md);
 }
 .rj45-pins::before {
-  content: 'PIN 1 → 8  (clip hacia arriba)';
+  content: 'CABLES DEL PIN 1 AL 8 (IZQUIERDA → DERECHA)';
   position: absolute;
   top: -22px;
   left: 0;
@@ -4837,23 +4872,47 @@ ul { list-style: none; }
   width: 100%;
   height: 50px;
   border-radius: 4px;
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
   position: relative;
   overflow: hidden;
-  box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+  /* Simula un cable con volumen */
+  box-shadow:
+    inset 3px 0 6px rgba(255,255,255,0.25),
+    inset -3px 0 6px rgba(0,0,0,0.35),
+    inset 0 0 8px rgba(0,0,0,0.15),
+    0 2px 4px rgba(0,0,0,0.3);
 }
+/* Textura de rayas — SOLO para cables bicolor (rayados) */
 .rj45-pin__wire::after {
   content: '';
   position: absolute;
   inset: 0;
   background: repeating-linear-gradient(
     90deg,
-    rgba(255,255,255,0.15) 0px,
-    rgba(255,255,255,0.15) 3px,
+    rgba(255,255,255,0.12) 0px,
+    rgba(255,255,255,0.12) 3px,
     transparent 3px,
     transparent 6px
   );
-  opacity: 0.35;
+  opacity: 0.3;
+}
+
+/* Cables SÓLIDOS: sin textura, solo color plano + brillo */
+.rj45-pin__wire--solid::after {
+  display: none;
+}
+
+/* Brillo vertical sutil para dar volumen al cable sólido */
+.rj45-pin__wire--solid {
+  background-image:
+    linear-gradient(90deg,
+      rgba(255,255,255,0.25) 0%,
+      rgba(255,255,255,0.05) 15%,
+      transparent 40%,
+      transparent 60%,
+      rgba(0,0,0,0.15) 85%,
+      rgba(0,0,0,0.25) 100%) !important;
+  background-blend-mode: overlay;
 }
 .rj45-pin__name {
   font-family: var(--font-mono);
@@ -4878,3 +4937,603 @@ ul { list-style: none; }
   .rj45-pin__num { font-size: 0.7rem; }
   .rj45-pin__name { font-size: 0.55rem; }
 }
+
+/* ============================================
+   STACK DE BOTONES FLOTANTES
+   Contenedor flex que apila los 7 botones en
+   la esquina inferior derecha. Cuando uno se
+   oculta (hidden), los demás se reacomodan.
+============================================ */
+.floating-stack {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  z-index: 999;
+  pointer-events: none; /* los hijos re-activan el pointer-events */
+}
+
+/* Todos los botones del stack heredan esto */
+.floating-stack > * {
+  position: relative !important;
+  bottom: auto !important;
+  right: auto !important;
+  top: auto !important;
+  left: auto !important;
+  pointer-events: auto;
+}
+
+/* Instalar: sacar su animación de flecha del flujo del stack */
+.install-btn {
+  position: relative;
+  overflow: visible;
+}
+.install-btn[hidden] {
+  display: none !important;
+}
+
+/* Notif: también respeta hidden */
+.notif-btn[hidden] {
+  display: none !important;
+}
+
+/* Responsive del contenedor */
+@media (max-width: 768px) {
+  .floating-stack {
+    bottom: 24px;
+    right: 16px;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .floating-stack {
+    bottom: 20px;
+    right: 14px;
+    gap: 8px;
+  }
+
+  /* Tamaños reducidos en móvil */
+  .floating-stack .scroll-top,
+  .floating-stack .call-float,
+  .floating-stack .notif-btn,
+  .floating-stack .pay-float,
+  .floating-stack .sound-toggle,
+  .floating-stack .theme-toggle-float,
+  .floating-stack .install-btn {
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 1rem;
+  }
+}
+
+/* ============================================
+   NEUTRALIZAR POSICIONES VIEJAS DE FLOTANTES
+   (override de todas las reglas anteriores)
+============================================ */
+.floating-stack .scroll-top,
+.floating-stack .call-float,
+.floating-stack .notif-btn,
+.floating-stack .pay-float,
+.floating-stack .sound-toggle,
+.floating-stack .theme-toggle-float,
+.floating-stack .install-btn {
+  position: relative !important;
+  bottom: auto !important;
+  right: auto !important;
+  top: auto !important;
+  left: auto !important;
+}
+
+/* Matar los !important de las media queries viejas */
+@media (max-width: 768px) {
+  .floating-stack .scroll-top,
+  .floating-stack .call-float,
+  .floating-stack .notif-btn,
+  .floating-stack .pay-float,
+  .floating-stack .sound-toggle,
+  .floating-stack .theme-toggle-float,
+  .floating-stack .install-btn {
+    bottom: auto !important;
+    right: auto !important;
+    left: auto !important;
+    top: auto !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .floating-stack .scroll-top,
+  .floating-stack .call-float,
+  .floating-stack .notif-btn,
+  .floating-stack .pay-float,
+  .floating-stack .sound-toggle,
+  .floating-stack .theme-toggle-float,
+  .floating-stack .install-btn {
+    bottom: auto !important;
+    right: auto !important;
+    left: auto !important;
+    top: auto !important;
+  }
+}
+
+@media (max-width: 400px) {
+  .floating-stack .scroll-top,
+  .floating-stack .call-float,
+  .floating-stack .notif-btn,
+  .floating-stack .pay-float,
+  .floating-stack .sound-toggle,
+  .floating-stack .theme-toggle-float,
+  .floating-stack .install-btn {
+    bottom: auto !important;
+    right: auto !important;
+    left: auto !important;
+    top: auto !important;
+  }
+}
+
+/* ============ BOTÓN SUBIR · SHOCKWAVE EDITION ============ */
+
+/* El botón necesita position: relative para que los anillos
+   se posicionen desde su centro. Ya lo tiene por el floating-stack,
+   pero lo forzamos por seguridad. */
+.scroll-top {
+  overflow: visible;
+}
+
+/* --- ANILLO DE CHOQUE 1 (se expande al pulsar, como onda) --- */
+.scroll-top .scroll-shock,
+.scroll-top .scroll-shock-2 {
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 2px solid var(--neon-cyan);
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+.scroll-top .scroll-shock {
+  animation: scroll-shock 1.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+.scroll-top .scroll-shock-2 {
+  animation: scroll-shock 1.6s cubic-bezier(0.22, 1, 0.36, 1) infinite 0.5s;
+  border-color: #ffffff;
+}
+
+@keyframes scroll-shock {
+  0%   { opacity: 0;   transform: scale(1);   border-width: 3px; }
+  15%  { opacity: 0.9; transform: scale(1);   border-width: 2.5px; }
+  60%  { opacity: 0.5; transform: scale(1.4); border-width: 1.5px; }
+  100% { opacity: 0;   transform: scale(1.7); border-width: 0.5px; }
+}
+
+/* --- COMETA PRINCIPAL (columna de luz subiendo) --- */
+.scroll-top::after {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  width: 2px;
+  height: 30px;
+  background: linear-gradient(to top,
+    rgba(0,240,255,0)    0%,
+    rgba(0,240,255,0.1)  30%,
+    rgba(0,240,255,0.6)  70%,
+    #ffffff             100%);
+  border-radius: 2px;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow:
+    0 0 4px #ffffff,
+    0 0 10px var(--neon-cyan),
+    0 0 22px rgba(0,240,255,0.4);
+  transform-origin: bottom center;
+  will-change: transform, opacity;
+  animation: scroll-comet 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes scroll-comet {
+  0%   { opacity: 0;    transform: translate(-50%,   0)   scaleY(0.15) scaleX(0.4); }
+  15%  { opacity: 1;    transform: translate(-50%,  -6px) scaleY(1)    scaleX(1);   }
+  70%  { opacity: 0.9;  transform: translate(-50%, -30px) scaleY(1)    scaleX(1);   }
+  100% { opacity: 0;    transform: translate(-50%, -44px) scaleY(0.3)  scaleX(0.6); }
+}
+
+/* --- PARTÍCULA SATÉLITE 1 (izquierda) --- */
+.scroll-top::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow:
+    0 0 6px var(--neon-cyan),
+    0 0 12px var(--neon-cyan);
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+  animation: scroll-particle-a 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+@keyframes scroll-particle-a {
+  0%   { opacity: 0;   transform: translate(-6px,  0)   scale(0.4); }
+  25%  { opacity: 1;   transform: translate(-9px, -10px) scale(1);   }
+  75%  { opacity: 0.7; transform: translate(-6px, -32px) scale(1);   }
+  100% { opacity: 0;   transform: translate(-4px, -46px) scale(0.6); }
+}
+
+/* --- PARTÍCULA SATÉLITE 2 (derecha, dentro del icono) --- */
+.scroll-top i::after {
+  content: '';
+  position: absolute;
+  bottom: calc(100% + 3px);
+  left: 50%;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--neon-cyan);
+  box-shadow:
+    0 0 4px var(--neon-cyan),
+    0 0 10px var(--neon-cyan);
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+  animation: scroll-particle-b 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite 0.35s;
+}
+@keyframes scroll-particle-b {
+  0%   { opacity: 0;   transform: translate(6px,  0)   scale(0.4); }
+  25%  { opacity: 1;   transform: translate(9px, -12px) scale(1);   }
+  75%  { opacity: 0.7; transform: translate(6px, -34px) scale(1);   }
+  100% { opacity: 0;   transform: translate(4px, -48px) scale(0.6); }
+}
+
+/* --- ICONO: lift + microescala --- */
+.scroll-top i {
+  position: relative;
+  animation: scroll-icon-pro 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  will-change: transform;
+}
+@keyframes scroll-icon-pro {
+  0%, 100% { transform: translateY(0)     scale(1);    }
+  25%      { transform: translateY(-4px)  scale(1.08); }
+  55%      { transform: translateY(-1px)  scale(1);    }
+}
+
+/* --- Hover: parar todo y dejar estático --- */
+.scroll-top:hover::after,
+.scroll-top:hover::before,
+.scroll-top:hover i::after,
+.scroll-top:hover .scroll-shock,
+.scroll-top:hover .scroll-shock-2,
+.scroll-top:hover i {
+  animation: none;
+}
+.scroll-top:hover::after,
+.scroll-top:hover::before,
+.scroll-top:hover i::after,
+.scroll-top:hover .scroll-shock,
+.scroll-top:hover .scroll-shock-2 {
+  opacity: 0;
+}
+
+/* --- Modo claro --- */
+[data-theme="light"] .scroll-top .scroll-shock {
+  border-color: #0088cc;
+}
+[data-theme="light"] .scroll-top .scroll-shock-2 {
+  border-color: #ffffff;
+}
+[data-theme="light"] .scroll-top::after {
+  background: linear-gradient(to top,
+    rgba(0,136,204,0)    0%,
+    rgba(0,136,204,0.1)  30%,
+    rgba(0,136,204,0.6)  70%,
+    #ffffff             100%);
+  box-shadow:
+    0 0 4px #ffffff,
+    0 0 10px #0088cc,
+    0 0 22px rgba(0,136,204,0.4);
+}
+[data-theme="light"] .scroll-top::before {
+  box-shadow:
+    0 0 6px #0088cc,
+    0 0 12px #0088cc;
+}
+[data-theme="light"] .scroll-top i::after {
+  background: #0088cc;
+  box-shadow:
+    0 0 4px #0088cc,
+    0 0 10px #0088cc;
+}
+
+/* --- Accesibilidad --- */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-top .scroll-shock,
+  .scroll-top .scroll-shock-2,
+  .scroll-top::after,
+  .scroll-top::before,
+  .scroll-top i::after,
+  .scroll-top i {
+    animation: none !important;
+  }
+  .scroll-top .scroll-shock,
+  .scroll-top .scroll-shock-2,
+  .scroll-top::after,
+  .scroll-top::before,
+  .scroll-top i::after {
+    display: none;
+  }
+}
+/* ============ BOTÓN PAGOS · SCAN LINE ============ */
+
+.pay-scan {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(circle, #000 100%, #000 100%);
+          mask-image: radial-gradient(circle, #000 100%, #000 100%);
+}
+
+.pay-scan::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 12px;
+  background: linear-gradient(90deg,
+    transparent            0%,
+    rgba(0,255,136,0.15)  20%,
+    var(--neon-green)     50%,
+    rgba(0,255,136,0.15)  80%,
+    transparent           100%);
+  box-shadow:
+    0 0 8px var(--neon-green),
+    0 0 16px rgba(0,255,136,0.5);
+  opacity: 0;
+  animation: pay-scan-sweep 2.2s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes pay-scan-sweep {
+  0%   { transform: translateX(-24px); opacity: 0;   }
+  15%  { opacity: 1;                                  }
+  85%  { opacity: 1;                                  }
+  100% { transform: translateX(56px);  opacity: 0;   }
+}
+
+[data-theme="light"] .pay-scan::before {
+  background: linear-gradient(90deg,
+    transparent            0%,
+    rgba(5,150,105,0.15)  20%,
+    #059669               50%,
+    rgba(5,150,105,0.15)  80%,
+    transparent           100%);
+  box-shadow:
+    0 0 8px #059669,
+    0 0 16px rgba(5,150,105,0.5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pay-scan::before { animation: none !important; display: none; }
+}
+
+/* ============ BOTÓN AGENDAR · CHECKMARK PULSE ============ */
+
+/* Ocultar el icono original por defecto cuando el ✓ está activo */
+.call-float {
+  overflow: visible;
+}
+
+.call-float .fa-calendar-check {
+  transition: opacity 0.2s ease;
+}
+
+.call-check {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--neon-green);
+  pointer-events: none;
+  opacity: 0;
+  filter: drop-shadow(0 0 6px var(--neon-green));
+  transform: scale(0.6);
+  animation: call-check-pulse 2.5s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.call-check svg {
+  width: 20px;
+  height: 20px;
+  overflow: visible;
+}
+
+.call-check svg polyline {
+  stroke-dasharray: 30;
+  stroke-dashoffset: 30;
+  animation: call-check-draw 2.5s ease-in-out infinite;
+}
+
+@keyframes call-check-pulse {
+  0%, 20%   { opacity: 0;   transform: scale(0.6); }
+  30%       { opacity: 1;   transform: scale(1.15); }
+  40%       { opacity: 1;   transform: scale(1);    }
+  70%       { opacity: 1;   transform: scale(1);    }
+  85%       { opacity: 0;   transform: scale(1.3);  }
+  100%      { opacity: 0;   transform: scale(0.6);  }
+}
+
+@keyframes call-check-draw {
+  0%, 20%  { stroke-dashoffset: 30; }
+  40%      { stroke-dashoffset: 0;  }
+  100%     { stroke-dashoffset: 0;  }
+}
+
+/* Cuando aparece el ✓, el icono original se desvanece */
+.call-float:hover .fa-calendar-check {
+  opacity: 1;
+}
+
+/* Hover: pausar la animación, dejar el calendario visible */
+.call-float:hover .call-check {
+  animation: none;
+  opacity: 0;
+}
+.call-float:hover .call-check svg polyline {
+  animation: none;
+}
+
+/* Modo claro */
+[data-theme="light"] .call-check {
+  color: #059669;
+  filter: drop-shadow(0 0 6px #059669);
+}
+
+/* Accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  .call-check,
+  .call-check svg polyline {
+    animation: none !important;
+  }
+  .call-check { display: none; }
+}
+
+/* ============ RJ45 · VISUAL DEL CONECTOR ============ */
+.rj45-visual {
+  margin-top: var(--space-md);
+  margin-bottom: var(--space-md);
+  padding: var(--space-md);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  position: relative;
+  overflow: hidden;
+}
+.rj45-visual::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(45deg, transparent 30%, rgba(0,240,255,0.03) 50%, transparent 70%);
+  pointer-events: none;
+}
+
+.rj45-visual__tag {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--neon-cyan);
+  letter-spacing: 0.15em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.8rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 100px;
+  background: rgba(0,240,255,0.04);
+  z-index: 1;
+}
+
+.rj45-visual__svg {
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+  display: block;
+  color: var(--text-secondary);
+  z-index: 1;
+}
+
+/* Cuerpo del conector */
+.rj45-svg-body {
+  fill: none;
+  stroke: var(--text-secondary);
+  stroke-width: 2;
+  opacity: 0.6;
+}
+
+/* Ranuras de los pines */
+.rj45-svg-slots rect {
+  fill: rgba(0,240,255,0.06);
+  stroke: var(--neon-cyan);
+  stroke-width: 1;
+  opacity: 0.7;
+}
+
+/* Números */
+.rj45-svg-nums text {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  fill: var(--neon-cyan);
+  letter-spacing: 0.05em;
+}
+
+/* Marcador PIN 1 */
+.rj45-svg-pin1-dot {
+  fill: var(--neon-green);
+  filter: drop-shadow(0 0 4px var(--neon-green));
+}
+.rj45-svg-pin1-line {
+  stroke: var(--neon-green);
+  stroke-width: 1.5;
+  filter: drop-shadow(0 0 4px var(--neon-green));
+}
+
+/* Clip debajo */
+.rj45-svg-clip {
+  fill: rgba(0,240,255,0.08);
+  stroke: var(--neon-cyan);
+  stroke-width: 1.5;
+  opacity: 0.9;
+}
+
+/* Etiquetas */
+.rj45-svg-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  fill: var(--neon-cyan);
+  letter-spacing: 0.1em;
+  font-weight: 600;
+}
+.rj45-svg-sub-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  fill: var(--neon-green);
+  letter-spacing: 0.08em;
+}
+
+/* Modo claro */
+[data-theme="light"] .rj45-visual::before {
+  background: linear-gradient(45deg, transparent 30%, rgba(0,136,204,0.04) 50%, transparent 70%);
+}
+[data-theme="light"] .rj45-visual__tag {
+  color: #0088cc;
+  border-color: rgba(0,136,204,0.25);
+  background: rgba(0,136,204,0.05);
+}
+[data-theme="light"] .rj45-svg-body {
+  stroke: #64748b;
+}
+[data-theme="light"] .rj45-svg-slots rect {
+  fill: rgba(0,136,204,0.08);
+  stroke: #0088cc;
+}
+[data-theme="light"] .rj45-svg-nums text { fill: #0088cc; }
+[data-theme="light"] .rj45-svg-pin1-dot { fill: #059669; }
+[data-theme="light"] .rj45-svg-pin1-line { stroke: #059669; }
+[data-theme="light"] .rj45-svg-clip {
+  fill: rgba(0,136,204,0.08);
+  stroke: #0088cc;
+}
+[data-theme="light"] .rj45-svg-label { fill: #0088cc; }
+[data-theme="light"] .rj45-svg-sub-label { fill: #059669; }

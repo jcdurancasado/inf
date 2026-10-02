@@ -36,7 +36,7 @@
   <meta name="twitter:title" content="Toolkit Técnico — Julio C. Durán Casado" />
   <meta name="twitter:description" content="Herramientas gratuitas de redes, ciberseguridad y telecomunicaciones." />
   <meta name="twitter:image" content="https://jcdurancasado.github.io/inf/img/foto.png" />
-  <title>Toolkit Técnico — Julio C. Durán Casado</title>
+  <title>JCDC - Toolkit Técnico</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -117,14 +117,16 @@
 
       <nav id="nav-menu" class="nav" data-nav>
         <ul class="nav__list">
-          <li><a href="index.html#inicio" class="nav__link" data-nav-link>INICIO</a></li>
-          <li><a href="index.html#perfil" class="nav__link" data-nav-link>PERFIL</a></li>
-          <li><a href="index.html#servicios" class="nav__link" data-nav-link>SERVICIOS</a></li>
-          <li><a href="index.html#trayectoria" class="nav__link" data-nav-link>TRAYECTORIA</a></li>
-          <li><a href="index.html#enlaces" class="nav__link" data-nav-link>ENLACES</a></li>
+          <li><a href="index.html#inicio" class="nav__link">INICIO</a></li>
+          <li><a href="index.html#perfil" class="nav__link">PERFIL</a></li>
+          <li><a href="index.html#servicios" class="nav__link">SERVICIOS</a></li>
+          <li><a href="index.html#trayectoria" class="nav__link">TRAYECTORIA</a></li>
+          <li><a href="index.html#enlaces" class="nav__link">ENLACES</a></li>
           <li><a href="toolkit.html" class="nav__link nav__link--active">TOOLKIT</a></li>
-          <li><a href="index.html#cursos" class="nav__link" data-nav-link><i class="fa-solid fa-graduation-cap"></i>&nbsp;CURSOS</a></li>
-          <li><a href="index.html#contacto" class="nav__link nav__link--cta" data-nav-link>CONTACTO</a></li>
+          <li><a href="netpro.html" class="nav__link">NETPRO</a></li>
+          <li><a href="index.html#cursos" class="nav__link"><i class="fa-solid fa-graduation-cap"></i>&nbsp;CURSOS</a></li>
+          <li><a href="cotizador.html" class="nav__link nav__link--quote"><i class="fa-solid fa-calculator"></i>&nbsp;COTIZAR</a></li>
+          <li><a href="index.html#contacto" class="nav__link nav__link--cta">CONTACTO</a></li>
         </ul>
       </nav>
 
@@ -159,11 +161,11 @@
 
           <div class="tk-hero__stats">
             <div class="tk-hero__stat">
-              <strong>16</strong>
+              <strong>20</strong>
               <span>HERRAMIENTAS</span>
             </div>
             <div class="tk-hero__stat">
-              <strong>4</strong>
+              <strong>5</strong>
               <span>CATEGORÍAS</span>
             </div>
             <div class="tk-hero__stat">
@@ -181,7 +183,7 @@
         <div class="toolkit-filters toolkit-filters--sticky" data-reveal>
           <button type="button" class="toolkit-filter active" data-filter="all">
             <i class="fa-solid fa-layer-group"></i> TODAS
-            <span class="toolkit-filter__count" data-count="all">16</span>
+            <span class="toolkit-filter__count" data-count="all">20</span>
           </button>
           <button type="button" class="toolkit-filter" data-filter="redes">
             <i class="fa-solid fa-network-wired"></i> REDES
@@ -198,6 +200,10 @@
           <button type="button" class="toolkit-filter" data-filter="info">
             <i class="fa-solid fa-chart-line"></i> INFO
             <span class="toolkit-filter__count" data-count="info">2</span>
+          </button>
+          <button type="button" class="toolkit-filter" data-filter="soporte">
+            <i class="fa-solid fa-screwdriver-wrench"></i> SOPORTE
+            <span class="toolkit-filter__count" data-count="soporte">4</span>
           </button>
         </div>
 
@@ -840,6 +846,119 @@
               <button type="button" class="tool-btn tool-btn--ghost" id="b64Copy"><i class="fa-solid fa-copy"></i> Copiar</button>
             </div>
             <div class="json-status" id="b64Status" hidden></div>
+          </div>
+        </article>
+
+                <!-- HERRAMIENTA 17: Info del Sistema -->
+        <article class="tool-card" data-reveal data-category="soporte">
+          <header class="tool-card__head">
+            <div class="tool-card__icon"><i class="fa-solid fa-laptop-code"></i></div>
+            <div>
+              <h3 class="tool-card__title">Info del Sistema</h3>
+              <p class="tool-card__desc">Datos de tu equipo y navegador detectados automáticamente. Útil para dar soporte.</p>
+            </div>
+          </header>
+          <div class="tool-card__body">
+            <div class="tool-actions" style="justify-content: flex-start; margin-top: 0; margin-bottom: var(--space-md);">
+              <button type="button" class="tool-btn" id="sysDetect"><i class="fa-solid fa-radar"></i> Detectar</button>
+              <button type="button" class="tool-btn tool-btn--ghost" id="sysCopy"><i class="fa-solid fa-copy"></i> Copiar todo</button>
+            </div>
+            <div class="tool-output" id="sysOutput" hidden>
+              <div class="tool-output__row"><span>Sistema</span><code id="sysOS">—</code></div>
+              <div class="tool-output__row"><span>Navegador</span><code id="sysBrowser">—</code></div>
+              <div class="tool-output__row"><span>Pantalla</span><code id="sysScreen">—</code></div>
+              <div class="tool-output__row"><span>Ventana</span><code id="sysViewport">—</code></div>
+              <div class="tool-output__row"><span>Núcleos CPU</span><code id="sysCores">—</code></div>
+              <div class="tool-output__row"><span>Memoria</span><code id="sysRAM">—</code></div>
+              <div class="tool-output__row"><span>Idioma</span><code id="sysLang">—</code></div>
+              <div class="tool-output__row"><span>Zona horaria</span><code id="sysTZ">—</code></div>
+              <div class="tool-output__row"><span>Conexión</span><code id="sysConn">—</code></div>
+              <div class="tool-output__row"><span>Touch</span><code id="sysTouch">—</code></div>
+            </div>
+          </div>
+        </article>
+
+        <!-- HERRAMIENTA 18: Comandos por Sistema -->
+        <article class="tool-card" data-reveal data-category="soporte">
+          <header class="tool-card__head">
+            <div class="tool-card__icon"><i class="fa-solid fa-terminal"></i></div>
+            <div>
+              <h3 class="tool-card__title">Comandos por Sistema</h3>
+              <p class="tool-card__desc">Buscador de +50 comandos esenciales de Linux, Windows y Cisco IOS.</p>
+            </div>
+          </header>
+          <div class="tool-card__body">
+            <div class="ports-controls">
+              <div class="ports-search">
+                <i class="fa-solid fa-magnifying-glass ports-search__icon"></i>
+                <input type="text" id="cmdSearch" class="ports-search__input" placeholder="Buscar: ip, ssh, vlan, ping…" autocomplete="off" spellcheck="false" />
+                <button type="button" class="ports-search__clear" id="cmdSearchClear" aria-label="Limpiar búsqueda" hidden>
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+              <div class="ports-filters" role="tablist">
+                <button type="button" class="ports-filter active" data-os="all">TODOS</button>
+                <button type="button" class="ports-filter" data-os="linux">LINUX</button>
+                <button type="button" class="ports-filter" data-os="windows">WINDOWS</button>
+                <button type="button" class="ports-filter" data-os="cisco">CISCO IOS</button>
+              </div>
+            </div>
+            <div class="ports-count">
+              Mostrando <strong id="cmdCount">0</strong> de <strong id="cmdTotal">0</strong> comandos
+            </div>
+            <div class="cmd-list" id="cmdList"></div>
+            <div class="ports-empty" id="cmdEmpty" hidden>
+              <i class="fa-solid fa-circle-question"></i>
+              No se encontraron resultados.
+            </div>
+          </div>
+        </article>
+
+        <!-- HERRAMIENTA 19: Conversor de Colores -->
+        <article class="tool-card" data-reveal data-category="soporte">
+          <header class="tool-card__head">
+            <div class="tool-card__icon"><i class="fa-solid fa-palette"></i></div>
+            <div>
+              <h3 class="tool-card__title">Conversor de Colores HEX · RGB · HSL</h3>
+              <p class="tool-card__desc">Convierte entre formatos de color. Vista previa en vivo + botón copiar.</p>
+            </div>
+          </header>
+          <div class="tool-card__body">
+            <div class="color-preview" id="colorPreview">
+              <span class="color-preview__hex" id="colorPreviewHex">#00f0ff</span>
+            </div>
+            <div class="tool-form tool-form--grid" style="margin-top: var(--space-md);">
+              <div class="tool-field">
+                <label for="colorHex">HEX</label>
+                <input type="text" id="colorHex" class="tool-input tool-input--mono" value="#00f0ff" autocomplete="off">
+              </div>
+              <div class="tool-field">
+                <label for="colorRgb">RGB</label>
+                <input type="text" id="colorRgb" class="tool-input tool-input--mono" placeholder="0, 240, 255" autocomplete="off">
+              </div>
+              <div class="tool-field">
+                <label for="colorHsl">HSL</label>
+                <input type="text" id="colorHsl" class="tool-input tool-input--mono" placeholder="186, 100%, 50%" autocomplete="off">
+              </div>
+            </div>
+            <div class="tool-actions">
+              <button type="button" class="tool-btn tool-btn--ghost" id="colorRandom"><i class="fa-solid fa-dice"></i> Aleatorio</button>
+              <button type="button" class="tool-btn tool-btn--ghost" id="colorCopy"><i class="fa-solid fa-copy"></i> Copiar HEX</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- HERRAMIENTA 20: Códigos HTTP -->
+        <article class="tool-card" data-reveal data-category="soporte">
+          <header class="tool-card__head">
+            <div class="tool-card__icon"><i class="fa-solid fa-tower-observation"></i></div>
+            <div>
+              <h3 class="tool-card__title">Códigos HTTP</h3>
+              <p class="tool-card__desc">Referencia rápida de status codes: qué significan y cuándo se usan.</p>
+            </div>
+          </header>
+          <div class="tool-card__body">
+            <div class="http-grid" id="httpGrid"></div>
           </div>
         </article>
 

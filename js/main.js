@@ -51,11 +51,14 @@ const Theme = {
     const toggle = document.getElementById('themeToggle');
     const html = document.documentElement;
 
-    // Cargar tema guardado o preferencia del sistema
+    // El tema ya fue aplicado por el script inline en <head>.
+    // Solo aseguramos que esté sincronizado.
     const saved = localStorage.getItem('jcdc_theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const theme = saved || (prefersDark ? 'dark' : 'dark'); // default dark
-    html.setAttribute('data-theme', theme);
+    const theme = saved || (prefersDark ? 'dark' : 'dark');
+    if (html.getAttribute('data-theme') !== theme) {
+      html.setAttribute('data-theme', theme);
+    }
 
     if (!toggle) return;
 
@@ -72,6 +75,8 @@ const Theme = {
 // BOOT SEQUENCE
 // ==========================================
 const Boot = {
+  KEY: 'jcdc_booted',
+
   lines: [
     'Inicializando kernel JCDURANCASADO...',
     'Cargando módulos de red... [OK]',
@@ -86,8 +91,16 @@ const Boot = {
     const status = document.getElementById('boot-status');
     if (!screen) return;
 
+    // ✅ Si ya se mostró el boot en esta sesión, saltarlo
+    const alreadyBooted = sessionStorage.getItem(this.KEY) === '1';
+    if (alreadyBooted) {
+      screen.classList.add('booted');
+      return;
+    }
+
     if (CONFIG.reducedMotion) {
       screen.classList.add('booted');
+      sessionStorage.setItem(this.KEY, '1');
       return;
     }
 
@@ -109,6 +122,7 @@ const Boot = {
         status.textContent = 'SISTEMA LISTO';
         setTimeout(() => {
           screen.classList.add('booted');
+          sessionStorage.setItem(this.KEY, '1');
           Toast.show('Acceso concedido', 'success');
         }, 400);
       }
@@ -181,7 +195,7 @@ const Particles = {
     this.canvas.height = window.innerHeight;
   },
   create() {
-    const count = window.innerWidth < 768 ? 22 : 45;
+    const count = window.innerWidth < 768 ? 12 : 22;
     for (let i = 0; i < count; i++) {
       this.particles.push({
         x: Math.random() * this.canvas.width,
@@ -209,7 +223,7 @@ const Particles = {
       this.ctx.fillStyle = `rgba(${p.color},${p.opacity})`;
       this.ctx.fill();
 
-      for (let j = i + 1; j < this.particles.length; j++) {
+      for (let j = i + 1; j < this.particles.length; j += 2) {
         const p2 = this.particles[j];
         const dx = p.x - p2.x, dy = p.y - p2.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
@@ -1533,6 +1547,701 @@ const RJ45 = {
 };
 
 // ==========================================
+// ANCHO DE BANDA vs LATENCIA
+// ==========================================
+const BandwidthLatency = {
+  // Referencias DOM
+  els: {},
+
+  init() {
+    const bwSlider = document.getElementById('bwSlider');
+    const latSlider = document.getElementById('latSlider');
+    if (!bwSlider || !latSlider) return;
+
+    this.els = {
+      bwSlider,
+      latSlider,
+      bwValue: document.getElementById('bwValue'),
+      latValue: document.getElementById('latValue'),
+      download: {
+        value: document.getElementById('bwlatDownload'),
+        fill: document.getElementById('bwlatDownloadFill'),
+        verdict: document.getElementById('bwlatDownloadVerdict'),
+        card: document.querySelector('[data-scenario="download"]')
+      },
+      video: {
+        value: document.getElementById('bwlatVideo'),
+        fill: document.getElementById('bwlatVideoFill'),
+        verdict: document.getElementById('bwlatVideoVerdict'),
+        card: document.querySelector('[data-scenario="video"]')
+      },
+      game: {
+        value: document.getElementById('bwlatGame'),
+        fill: document.getElementById('bwlatGameFill'),
+        verdict: document.getElementById('bwlatGameVerdict'),
+        card: document.querySelector('[data-scenario="game"]')
+      },
+      stream: {
+        value: document.getElementById('bwlatStream'),
+        fill: document.getElementById('bwlatStreamFill'),
+        verdict: document.getElementById('bwlatStreamVerdict'),
+        card: document.querySelector('[data-scenario="stream"]')
+      }
+    };
+
+    // Listeners
+    bwSlider.addEventListener('input', () => this.update());
+    latSlider.addEventListener('input', () => this.update());
+
+    // Render inicial
+    this.update();
+  },
+
+  update() {
+    const bw = parseInt(this.els.bwSlider.value, 10);
+    const lat = parseInt(this.els.latSlider.value, 10);
+
+    this.els.bwValue.textContent = bw;
+    this.els.latValue.textContent = lat;
+
+    this.evalDownload(bw, lat);
+    this.evalVideo(bw, lat);
+    this.evalGame(bw, lat);
+    this.evalStream(bw, lat);
+  },
+
+  /* --- Descarga: puro ancho de banda (latencia solo añade overhead mínimo) --- */
+  evalDownload(bw, lat) {
+    // Tiempo teórico: 1 GB = 8000 Mb (base decimal) → seg = 8000 / bw
+    const baseSec = 8000 / bw;
+    // Overhead por latencia: +0.3s por cada RTT grande
+    const overhead = Math.max(0, (lat - 20)) * 0.005;
+    const totalSec = baseSec + overhead;
+
+    let display, status, pct, verdict;
+    if (totalSec < 15) {
+      status = 'excellent'; pct = 100; verdict = 'Excelente';
+    } else if (totalSec < 60) {
+      status = 'good'; pct = 75; verdict = 'Aceptable';
+    } else if (totalSec < 300) {
+      status = 'bad'; pct = 40; verdict = 'Lento';
+    } else {
+      status = 'terrible'; pct = 15; verdict = 'Muy lento';
+    }
+
+    display = this.fmtTime(totalSec);
+
+    this.set(this.els.download, display, pct, status, verdict);
+  },
+
+  /* --- Videollamada: requiere latencia baja + mínimo de BW --- */
+  evalVideo(bw, lat) {
+    // Requisitos: BW ≥ 3 Mbps, latencia < 150 ms
+    const bwOk = bw >= 3;
+    const latOk = lat <= 150;
+
+    let status, pct, verdict, display;
+
+    if (!bwOk) {
+      status = 'terrible'; pct = 10;
+      display = 'Imposible';
+      verdict = 'Sin ancho de banda';
+    } else if (!latOk) {
+      status = 'terrible'; pct = 20;
+      display = 'Congelada';
+      verdict = 'Latencia alta';
+    } else if (bw < 8 || lat > 100) {
+      status = 'bad'; pct = 45;
+      display = 'Con cortes';
+      verdict = 'Se congela';
+    } else if (bw < 20 || lat > 60) {
+      status = 'good'; pct = 75;
+      display = '720p OK';
+      verdict = 'Aceptable';
+    } else {
+      status = 'excellent'; pct = 100;
+      display = '1080p HD';
+      verdict = 'Perfecta';
+    }
+
+    this.set(this.els.video, display, pct, status, verdict);
+  },
+
+  /* --- Juego: latencia es REINA, BW mínimo 5 Mbps --- */
+  evalGame(bw, lat) {
+    let status, pct, verdict, display;
+
+    if (bw < 2) {
+      status = 'terrible'; pct = 10;
+      display = 'Injugable';
+      verdict = 'Sin datos';
+    } else if (lat > 150) {
+      status = 'terrible'; pct = 20;
+      display = lat + ' ms';
+      verdict = 'Lag brutal';
+    } else if (lat > 80) {
+      status = 'bad'; pct = 45;
+      display = lat + ' ms';
+      verdict = 'Lag notable';
+    } else if (lat > 40) {
+      status = 'good'; pct = 75;
+      display = lat + ' ms';
+      verdict = 'Jugable';
+    } else if (lat > 20) {
+      status = 'good'; pct = 88;
+      display = lat + ' ms';
+      verdict = 'Bien';
+    } else {
+      status = 'excellent'; pct = 100;
+      display = lat + ' ms';
+      verdict = 'Competitivo';
+    }
+
+    this.set(this.els.game, display, pct, status, verdict);
+  },
+
+  /* --- Streaming 4K: BW alto + latencia estable --- */
+  evalStream(bw, lat) {
+    // Netflix 4K recomendado: 25 Mbps
+    // 1080p: 5 Mbps
+    // 720p: 3 Mbps
+
+    let status, pct, verdict, display;
+
+    if (bw >= 25) {
+      if (lat > 200) {
+        status = 'good'; pct = 85;
+        display = '2160p · Buffering';
+        verdict = 'Se traba al inicio';
+      } else {
+        status = 'excellent'; pct = 100;
+        display = '2160p · Sin cortes';
+        verdict = 'Perfecto 4K';
+      }
+    } else if (bw >= 10) {
+      status = 'good'; pct = 80;
+      display = '1440p';
+      verdict = 'Muy bueno';
+    } else if (bw >= 5) {
+      status = 'good'; pct = 65;
+      display = '1080p HD';
+      verdict = 'Bien';
+    } else if (bw >= 3) {
+      status = 'bad'; pct = 40;
+      display = '720p';
+      verdict = 'Calidad baja';
+    } else {
+      status = 'terrible'; pct = 15;
+      display = '480p o menos';
+      verdict = 'Mala calidad';
+    }
+
+    this.set(this.els.stream, display, pct, status, verdict);
+  },
+
+  /* --- Helper: aplicar valores al DOM --- */
+  set(target, display, pct, status, verdict) {
+    if (!target || !target.value) return;
+    target.value.textContent = display;
+    if (target.fill) target.fill.style.width = pct + '%';
+    if (target.verdict) target.verdict.textContent = verdict;
+    if (target.card) {
+      target.card.dataset.status = status;
+      target.card.classList.add('evaluated');
+    }
+  },
+
+  /* --- Helper: formatear tiempo --- */
+  fmtTime(s) {
+    if (s < 1) return (s * 1000).toFixed(0) + ' ms';
+    if (s < 60) return s.toFixed(1) + ' s';
+    if (s < 3600) return Math.floor(s / 60) + ' min ' + Math.round(s % 60) + ' s';
+    return Math.floor(s / 3600) + ' h ' + Math.round((s % 3600) / 60) + ' min';
+  }
+};
+
+// ==========================================
+// TABLA DE PUERTOS Y PROTOCOLOS
+// ==========================================
+const PortsTable = {
+  data: [
+    // ===== WEB =====
+    { port: 80,    proto: 'TCP',      service: 'HTTP',            cat: 'web',   desc: 'Tráfico web sin cifrar' },
+    { port: 443,   proto: 'TCP',      service: 'HTTPS',           cat: 'web',   desc: 'Tráfico web cifrado con TLS/SSL' },
+    { port: 8080,  proto: 'TCP',      service: 'HTTP-Alt',        cat: 'web',   desc: 'HTTP alternativo / proxies' },
+    { port: 8443,  proto: 'TCP',      service: 'HTTPS-Alt',       cat: 'web',   desc: 'HTTPS alternativo' },
+    { port: 8000,  proto: 'TCP',      service: 'HTTP-Dev',        cat: 'web',   desc: 'Servidores de desarrollo' },
+    { port: 3000,  proto: 'TCP',      service: 'Node.js / Dev',   cat: 'web',   desc: 'Apps de desarrollo (React, Next, etc.)' },
+    { port: 5000,  proto: 'TCP',      service: 'Flask / Dev',     cat: 'web',   desc: 'Servidores Python de desarrollo' },
+
+    // ===== EMAIL =====
+    { port: 25,    proto: 'TCP',      service: 'SMTP',            cat: 'email', desc: 'Envío de correo (servidor a servidor)' },
+    { port: 465,   proto: 'TCP',      service: 'SMTPS',           cat: 'email', desc: 'SMTP sobre SSL (obsoleto pero usado)' },
+    { port: 587,   proto: 'TCP',      service: 'SMTP (STARTTLS)', cat: 'email', desc: 'Envío de correo autenticado moderno' },
+    { port: 110,   proto: 'TCP',      service: 'POP3',            cat: 'email', desc: 'Descarga de correo (sin cifrar)' },
+    { port: 995,   proto: 'TCP',      service: 'POP3S',           cat: 'email', desc: 'POP3 sobre SSL' },
+    { port: 143,   proto: 'TCP',      service: 'IMAP',            cat: 'email', desc: 'Sincronización de correo (sin cifrar)' },
+    { port: 993,   proto: 'TCP',      service: 'IMAPS',           cat: 'email', desc: 'IMAP sobre SSL' },
+
+    // ===== BASE DE DATOS =====
+    { port: 3306,  proto: 'TCP',      service: 'MySQL / MariaDB', cat: 'db',    desc: 'Base de datos relacional MySQL' },
+    { port: 5432,  proto: 'TCP',      service: 'PostgreSQL',      cat: 'db',    desc: 'Base de datos relacional PostgreSQL' },
+    { port: 1433,  proto: 'TCP',      service: 'SQL Server',      cat: 'db',    desc: 'Microsoft SQL Server' },
+    { port: 1521,  proto: 'TCP',      service: 'Oracle DB',       cat: 'db',    desc: 'Listener de Oracle Database' },
+    { port: 27017, proto: 'TCP',      service: 'MongoDB',         cat: 'db',    desc: 'Base de datos NoSQL MongoDB' },
+    { port: 6379,  proto: 'TCP',      service: 'Redis',           cat: 'db',    desc: 'Cache en memoria / cola de mensajes' },
+    { port: 9200,  proto: 'TCP',      service: 'Elasticsearch',   cat: 'db',    desc: 'Motor de búsqueda y logs' },
+
+    // ===== RED =====
+    { port: 53,    proto: 'TCP/UDP',  service: 'DNS',             cat: 'net',   desc: 'Resolución de nombres de dominio' },
+    { port: 67,    proto: 'UDP',      service: 'DHCP Server',     cat: 'net',   desc: 'Servidor DHCP (asigna IP)' },
+    { port: 68,    proto: 'UDP',      service: 'DHCP Client',     cat: 'net',   desc: 'Cliente DHCP' },
+    { port: 123,   proto: 'UDP',      service: 'NTP',             cat: 'net',   desc: 'Sincronización de hora por red' },
+    { port: 161,   proto: 'UDP',      service: 'SNMP',            cat: 'net',   desc: 'Monitoreo de equipos de red' },
+    { port: 162,   proto: 'UDP',      service: 'SNMP Trap',       cat: 'net',   desc: 'Alertas SNMP' },
+    { port: 179,   proto: 'TCP',      service: 'BGP',             cat: 'net',   desc: 'Enrutamiento entre sistemas autónomos' },
+    { port: 520,   proto: 'UDP',      service: 'RIP',             cat: 'net',   desc: 'Enrutamiento interno (obsoleto)' },
+    { port: 1900,  proto: 'UDP',      service: 'SSDP / UPnP',     cat: 'net',   desc: 'Descubrimiento de dispositivos' },
+    { port: 5353,  proto: 'UDP',      service: 'mDNS',            cat: 'net',   desc: 'DNS multicast (Bonjour, Chromecast)' },
+
+    // ===== SEGURIDAD / REMOTO =====
+    { port: 22,    proto: 'TCP',      service: 'SSH',             cat: 'sec',   desc: 'Acceso remoto seguro (Linux/servidores)' },
+    { port: 23,    proto: 'TCP',      service: 'Telnet',          cat: 'sec',   desc: 'Acceso remoto en texto plano (INSEGURO)' },
+    { port: 3389,  proto: 'TCP',      service: 'RDP',             cat: 'sec',   desc: 'Escritorio remoto de Windows' },
+    { port: 5900,  proto: 'TCP',      service: 'VNC',             cat: 'sec',   desc: 'Escritorio remoto multiplataforma' },
+    { port: 1194,  proto: 'UDP',      service: 'OpenVPN',         cat: 'sec',   desc: 'VPN de código abierto' },
+    { port: 500,   proto: 'UDP',      service: 'IKE / IPsec',     cat: 'sec',   desc: 'Negociación de VPN IPsec' },
+    { port: 4500,  proto: 'UDP',      service: 'IPsec NAT-T',     cat: 'sec',   desc: 'IPsec atravesando NAT' },
+    { port: 1723,  proto: 'TCP',      service: 'PPTP',            cat: 'sec',   desc: 'VPN antigua (INSEGURA)' },
+    { port: 1701,  proto: 'UDP',      service: 'L2TP',            cat: 'sec',   desc: 'VPN Layer 2 con IPsec' },
+
+    // ===== ARCHIVOS / TRANSFERENCIA =====
+    { port: 20,    proto: 'TCP',      service: 'FTP-Datos',       cat: 'file',  desc: 'Transferencia FTP (canal de datos)' },
+    { port: 21,    proto: 'TCP',      service: 'FTP-Control',     cat: 'file',  desc: 'Transferencia FTP (canal de control)' },
+    { port: 69,    proto: 'UDP',      service: 'TFTP',            cat: 'file',  desc: 'Transferencia trivial (routers/switches)' },
+    { port: 445,   proto: 'TCP',      service: 'SMB',             cat: 'file',  desc: 'Recursos compartidos Windows' },
+    { port: 139,   proto: 'TCP',      service: 'NetBIOS-SSN',     cat: 'file',  desc: 'Compartición Windows legacy' },
+    { port: 137,   proto: 'UDP',      service: 'NetBIOS-NS',      cat: 'file',  desc: 'Resolución de nombres NetBIOS' },
+    { port: 138,   proto: 'UDP',      service: 'NetBIOS-DGM',     cat: 'file',  desc: 'Datagramas NetBIOS' },
+    { port: 2049,  proto: 'TCP/UDP',  service: 'NFS',             cat: 'file',  desc: 'Sistema de archivos en red (Linux)' },
+    { port: 873,   proto: 'TCP',      service: 'Rsync',           cat: 'file',  desc: 'Sincronización de archivos eficiente' }
+  ],
+
+  activeCat: 'all',
+  searchTerm: '',
+
+  catLabels: {
+    web: 'Web',
+    email: 'Email',
+    db: 'BD',
+    net: 'Red',
+    sec: 'Seguridad',
+    file: 'Archivos'
+  },
+
+  init() {
+    const tbody = document.getElementById('portsTbody');
+    const searchInput = document.getElementById('portsSearch');
+    const searchClear = document.getElementById('portsSearchClear');
+    const filters = document.querySelectorAll('.ports-filter');
+    const emptyEl = document.getElementById('portsEmpty');
+    const countEl = document.getElementById('portsCount');
+    const totalEl = document.getElementById('portsTotal');
+
+    if (!tbody) return;
+
+    // Render inicial
+    this.render();
+    if (totalEl) totalEl.textContent = this.data.length;
+
+    // Buscador en vivo
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        this.searchTerm = searchInput.value.trim().toLowerCase();
+        if (searchClear) searchClear.hidden = !this.searchTerm;
+        this.render();
+      });
+    }
+
+    // Botón limpiar búsqueda
+    if (searchClear) {
+      searchClear.addEventListener('click', () => {
+        searchInput.value = '';
+        this.searchTerm = '';
+        searchClear.hidden = true;
+        searchInput.focus();
+        this.render();
+      });
+    }
+
+    // Filtros por categoría
+    filters.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filters.forEach(b => b.classList.toggle('active', b === btn));
+        this.activeCat = btn.dataset.cat;
+        this.render();
+      });
+    });
+
+    // Copiar puerto (delegado)
+    tbody.addEventListener('click', (e) => {
+      const btn = e.target.closest('.copy-port');
+      if (!btn) return;
+      const port = btn.dataset.port;
+      const text = port;
+
+      const writePromise = navigator.clipboard
+        ? navigator.clipboard.writeText(text)
+        : Promise.reject();
+
+      writePromise
+        .then(() => {
+          btn.classList.add('copied');
+          const icon = btn.querySelector('i');
+          if (icon) icon.className = 'fa-solid fa-check';
+          if (typeof Toast !== 'undefined') Toast.show('Copiado: ' + text, 'success', 1400);
+          setTimeout(() => {
+            btn.classList.remove('copied');
+            if (icon) icon.className = 'fa-solid fa-copy';
+          }, 1200);
+        })
+        .catch(() => {
+          if (typeof Toast !== 'undefined') Toast.show('No se pudo copiar', 'error');
+        });
+    });
+
+    // Exponer referencias para render()
+    this.tbody = tbody;
+    this.emptyEl = emptyEl;
+    this.countEl = countEl;
+  },
+
+  render() {
+    if (!this.tbody) return;
+
+    const term = this.searchTerm;
+    const cat = this.activeCat;
+
+    let visible = 0;
+    let html = '';
+
+    this.data.forEach(row => {
+      // Filtro por categoría
+      if (cat !== 'all' && row.cat !== cat) return;
+
+      // Filtro por búsqueda
+      if (term) {
+        const haystack = (
+          String(row.port) + ' ' +
+          row.proto + ' ' +
+          row.service + ' ' +
+          row.desc + ' ' +
+          (this.catLabels[row.cat] || '')
+        ).toLowerCase();
+        if (!haystack.includes(term)) return;
+      }
+
+      visible++;
+      html += `
+        <tr>
+          <td class="col-port">${row.port}</td>
+          <td class="col-proto">${row.proto}</td>
+          <td class="col-service">${row.service}</td>
+          <td class="col-desc">${row.desc}</td>
+          <td class="col-cat"><span class="cat-badge" data-cat="${row.cat}">${this.catLabels[row.cat] || row.cat}</span></td>
+          <td class="col-copy"><button type="button" class="copy-port" data-port="${row.port}" aria-label="Copiar puerto ${row.port}"><i class="fa-solid fa-copy"></i></button></td>
+        </tr>
+      `;
+    });
+
+    this.tbody.innerHTML = html;
+
+    if (this.countEl) this.countEl.textContent = visible;
+    if (this.emptyEl) this.emptyEl.hidden = visible > 0;
+  }
+};
+
+// ==========================================
+// CANALES WiFi (tabs 2.4 / 5 GHz)
+// ==========================================
+const WiFiChannels = {
+  init() {
+    const tabs = document.querySelectorAll('.wifi-tab');
+    const panels = document.querySelectorAll('.wifi-panel');
+    if (!tabs.length || !panels.length) return;
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const band = tab.dataset.band;
+
+        // Tabs activas
+        tabs.forEach(t => t.classList.toggle('active', t === tab));
+
+        // Panel visible
+        panels.forEach(p => {
+          p.hidden = p.dataset.panel !== band;
+        });
+      });
+    });
+  }
+};
+
+// ==========================================
+// MODELO OSI INTERACTIVO
+// ==========================================
+const OSIModel = {
+  init() {
+    const layers = document.querySelectorAll('.osi-layer');
+    if (!layers.length) return;
+
+    layers.forEach(layer => {
+      const head = layer.querySelector('.osi-layer__head');
+      if (!head) return;
+
+      head.addEventListener('click', () => {
+        const isOpen = layer.classList.contains('open');
+
+        // Cerrar todas
+        layers.forEach(l => {
+          l.classList.remove('open');
+          l.querySelector('.osi-layer__head')?.setAttribute('aria-expanded', 'false');
+        });
+
+        // Si no estaba abierta, abrir la actual
+        if (!isOpen) {
+          layer.classList.add('open');
+          head.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+  }
+};
+
+// ==========================================
+// HERRAMIENTAS DEV · JSON / UUID / TIMESTAMP / BASE64
+// ==========================================
+const JSONTool = {
+  init() {
+    const input = document.getElementById('jsonInput');
+    const out = document.getElementById('jsonResult');
+    const status = document.getElementById('jsonStatus');
+    const wrap = document.getElementById('jsonOutput');
+    const btnFormat = document.getElementById('jsonFormat');
+    const btnMinify = document.getElementById('jsonMinify');
+    const btnClear = document.getElementById('jsonClear');
+    const btnCopy = document.getElementById('jsonCopy');
+    if (!input) return;
+
+    const setStatus = (msg, type) => {
+      status.hidden = false;
+      status.className = 'json-status ' + type;
+      status.innerHTML = `<i class="fa-solid ${type === 'ok' ? 'fa-check-circle' : 'fa-times-circle'}"></i> ${msg}`;
+    };
+
+    const process = (minify) => {
+      try {
+        const parsed = JSON.parse(input.value);
+        const result = JSON.stringify(parsed, null, minify ? 0 : 2);
+        out.textContent = result;
+        wrap.hidden = false;
+        setStatus(minify ? 'JSON minificado ✓' : 'JSON válido y formateado ✓', 'ok');
+      } catch (e) {
+        wrap.hidden = true;
+        setStatus('Error: ' + e.message, 'error');
+      }
+    };
+
+    btnFormat.addEventListener('click', () => process(false));
+    btnMinify.addEventListener('click', () => process(true));
+    btnClear.addEventListener('click', () => {
+      input.value = '';
+      wrap.hidden = true;
+      status.hidden = true;
+      input.focus();
+    });
+    btnCopy.addEventListener('click', () => {
+      if (wrap.hidden) return;
+      navigator.clipboard.writeText(out.textContent).then(() => {
+        Toast.show('Copiado', 'success', 1400);
+      }).catch(() => Toast.show('No se pudo copiar', 'error'));
+    });
+  }
+};
+
+const UUIDTool = {
+  init() {
+    const btn = document.getElementById('uuidGenerate');
+    const btnCopyAll = document.getElementById('uuidCopyAll');
+    const list = document.getElementById('uuidList');
+    const wrap = document.getElementById('uuidOutput');
+    const countInput = document.getElementById('uuidCount');
+    const formatInput = document.getElementById('uuidFormat');
+    if (!btn) return;
+
+    const generate = () => {
+      const count = Math.min(100, Math.max(1, parseInt(countInput.value, 10) || 1));
+      const fmt = formatInput.value;
+
+      let html = '';
+      const all = [];
+      for (let i = 0; i < count; i++) {
+        let id = (crypto.randomUUID && crypto.randomUUID()) || this.fallback();
+        if (fmt === 'upper') id = id.toUpperCase();
+        if (fmt === 'nodash') id = id.replace(/-/g, '');
+        all.push(id);
+        html += `<div class="uuid-list__row"><span>${id}</span><button type="button" class="uuid-list__copy" data-copy="${id}" aria-label="Copiar"><i class="fa-solid fa-copy"></i></button></div>`;
+      }
+      list.innerHTML = html;
+      wrap.hidden = false;
+      list._all = all;
+    };
+
+    btn.addEventListener('click', generate);
+
+    btnCopyAll.addEventListener('click', () => {
+      if (wrap.hidden) generate();
+      const all = (list._all || []).join('\n');
+      navigator.clipboard.writeText(all).then(() => Toast.show(`${list._all.length} UUIDs copiados`, 'success', 1600))
+        .catch(() => Toast.show('No se pudo copiar', 'error'));
+    });
+
+    list.addEventListener('click', (e) => {
+      const c = e.target.closest('.uuid-list__copy');
+      if (!c) return;
+      navigator.clipboard.writeText(c.dataset.copy).then(() => {
+        c.classList.add('copied');
+        const icon = c.querySelector('i');
+        if (icon) icon.className = 'fa-solid fa-check';
+        Toast.show('Copiado', 'success', 1200);
+        setTimeout(() => {
+          c.classList.remove('copied');
+          if (icon) icon.className = 'fa-solid fa-copy';
+        }, 1200);
+      }).catch(() => Toast.show('No se pudo copiar', 'error'));
+    });
+
+    generate();
+  },
+
+  fallback() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = (Math.random() * 16) | 0;
+      const v = c === 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+  }
+};
+
+const TimestampTool = {
+  init() {
+    const input = document.getElementById('tsInput');
+    const btn = document.getElementById('tsConvert');
+    const btnNow = document.getElementById('tsNow');
+    const btnClear = document.getElementById('tsClear');
+    const wrap = document.getElementById('tsOutput');
+    if (!input || !btn) return;
+
+    const convert = () => {
+      const raw = input.value.trim();
+      if (!raw) return;
+      let ts = parseInt(raw, 10);
+      if (isNaN(ts)) return;
+      // Auto-detectar milisegundos
+      if (raw.length > 10) ts = Math.floor(ts / 1000);
+
+      const d = new Date(ts * 1000);
+      if (isNaN(d.getTime())) return;
+
+      document.getElementById('tsUTC').textContent = d.toUTCString();
+      document.getElementById('tsLocal').textContent = d.toLocaleString('es-DO', { dateStyle: 'full', timeStyle: 'medium' });
+      document.getElementById('tsISO').textContent = d.toISOString();
+      document.getElementById('tsRel').textContent = this.relative(d);
+
+      wrap.hidden = false;
+    };
+
+    btn.addEventListener('click', convert);
+    btnNow.addEventListener('click', () => {
+      input.value = Math.floor(Date.now() / 1000);
+      convert();
+    });
+    btnClear.addEventListener('click', () => {
+      input.value = '';
+      wrap.hidden = true;
+      input.focus();
+    });
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') convert(); });
+
+    convert();
+  },
+
+  relative(d) {
+    const diff = Date.now() - d.getTime();
+    const abs = Math.abs(diff);
+    const sec = Math.floor(abs / 1000);
+    const min = Math.floor(sec / 60);
+    const hr = Math.floor(min / 60);
+    const day = Math.floor(hr / 24);
+    const suffix = diff > 0 ? 'atrás' : 'en el futuro';
+    if (sec < 60) return `hace ${sec}s`;
+    if (min < 60) return `hace ${min} min`;
+    if (hr < 24) return `hace ${hr} h`;
+    if (day < 30) return `hace ${day} días`;
+    return suffix;
+  }
+};
+
+const Base64Tool = {
+  init() {
+    const input = document.getElementById('b64Input');
+    const btnEnc = document.getElementById('b64Encode');
+    const btnDec = document.getElementById('b64Decode');
+    const btnClear = document.getElementById('b64Clear');
+    const btnCopy = document.getElementById('b64Copy');
+    const status = document.getElementById('b64Status');
+    if (!input) return;
+
+    const setStatus = (msg, type) => {
+      status.hidden = false;
+      status.className = 'json-status ' + type;
+      status.innerHTML = `<i class="fa-solid ${type === 'ok' ? 'fa-check-circle' : 'fa-times-circle'}"></i> ${msg}`;
+    };
+
+    btnEnc.addEventListener('click', () => {
+      try {
+        const encoded = btoa(unescape(encodeURIComponent(input.value)));
+        input.value = encoded;
+        setStatus('Texto codificado a Base64 ✓', 'ok');
+      } catch (e) {
+        setStatus('Error al codificar', 'error');
+      }
+    });
+
+    btnDec.addEventListener('click', () => {
+      try {
+        const decoded = decodeURIComponent(escape(atob(input.value.trim())));
+        input.value = decoded;
+        setStatus('Base64 decodificado ✓', 'ok');
+      } catch (e) {
+        setStatus('Base64 inválido', 'error');
+      }
+    });
+
+    btnClear.addEventListener('click', () => {
+      input.value = '';
+      status.hidden = true;
+      input.focus();
+    });
+
+    btnCopy.addEventListener('click', () => {
+      if (!input.value) return;
+      navigator.clipboard.writeText(input.value).then(() => Toast.show('Copiado', 'success', 1200))
+        .catch(() => Toast.show('No se pudo copiar', 'error'));
+    });
+  }
+};
+
+// ==========================================
 // INIT
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
@@ -1563,6 +2272,14 @@ document.addEventListener('DOMContentLoaded', () => {
   PasswordTool.init();
   BandwidthCalc.init();
   RJ45.init();
+  OSIModel.init();
+  WiFiChannels.init();
+  PortsTable.init();
+  BandwidthLatency.init();
+  JSONTool.init();
+  UUIDTool.init();
+  TimestampTool.init();
+  Base64Tool.init();
   Sounds.init();
   Notifications.init();
   PWA.init();

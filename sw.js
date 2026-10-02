@@ -3,7 +3,7 @@
    Cache-first para assets estáticos
 ============================================ */
 
-const CACHE_NAME = 'jcdc-v1.0.2';
+const CACHE_NAME = 'jcdc-v1.0.3';
 
 const ASSETS = [
   './',

@@ -8311,7 +8311,7 @@ html.jcdc-booted .boot-sequence {
 }
 .dns-record {
   display: grid;
-  grid-template-columns: 80px 1fr auto;
+  grid-template-columns: 130px 1fr auto;
   gap: var(--space-md);
   align-items: center;
   padding: 0.7rem 1rem;
@@ -8328,6 +8328,13 @@ html.jcdc-booted .boot-sequence {
   border-radius: 100px;
   text-align: center;
   border: 1px solid;
+  /* Ancho uniforme para que TODOS los badges midan igual,
+     sin importar si el texto es "A" o "DESCONOCIDO" */
+  width: 100%;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .dns-record__type[data-type="A"]     { color: #4a8bff; border-color: rgba(0,102,255,0.4);   background: rgba(0,102,255,0.08); }
 .dns-record__type[data-type="AAAA"]  { color: #b829dd; border-color: rgba(184,41,221,0.4);  background: rgba(184,41,221,0.08); }
@@ -8391,8 +8398,9 @@ html.jcdc-booted .boot-sequence {
   .netpro-grid { grid-template-columns: repeat(2, 1fr); }
   .netpro-ip-big { padding: var(--space-md); gap: 0.6rem; }
   .netpro-ip-big__flag { font-size: 1.6rem; }
-  .dns-record { grid-template-columns: 64px 1fr; gap: 0.5rem; }
+  .dns-record { grid-template-columns: 120px 1fr; gap: 0.5rem; }
   .dns-record__ttl { grid-column: 2; }
+  .dns-record__type { font-size: 0.62rem; letter-spacing: 0.06em; }
 }
 
 @media (max-width: 480px) {

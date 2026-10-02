@@ -880,6 +880,59 @@
               <button type="button" class="rj45-tab active" data-std="B">T568B (estándar EE.UU.)</button>
               <button type="button" class="rj45-tab" data-std="A">T568A (estándar Europa)</button>
             </div>
+
+            <!-- VISUAL DEL CONECTOR RJ45 (cómo sujetarlo) -->
+            <div class="rj45-visual" aria-hidden="true">
+              <div class="rj45-visual__tag">
+                <i class="fa-solid fa-hand-pointer"></i> CÓMO SUJETAR EL CONECTOR
+              </div>
+              <svg viewBox="0 0 420 170" class="rj45-visual__svg" xmlns="http://www.w3.org/2000/svg">
+                <!-- Números de pines arriba -->
+                <g class="rj45-svg-nums">
+                  <text x="90"  y="20" text-anchor="middle">1</text>
+                  <text x="130" y="20" text-anchor="middle">2</text>
+                  <text x="170" y="20" text-anchor="middle">3</text>
+                  <text x="210" y="20" text-anchor="middle">4</text>
+                  <text x="250" y="20" text-anchor="middle">5</text>
+                  <text x="290" y="20" text-anchor="middle">6</text>
+                  <text x="330" y="20" text-anchor="middle">7</text>
+                  <text x="370" y="20" text-anchor="middle">8</text>
+                </g>
+
+                <!-- Cuerpo del conector -->
+                <rect x="70" y="30" width="320" height="55" rx="5" class="rj45-svg-body"/>
+
+                <!-- Ranuras de los 8 pines -->
+                <g class="rj45-svg-slots">
+                  <rect x="80"  y="36" width="20" height="43" rx="2"/>
+                  <rect x="120" y="36" width="20" height="43" rx="2"/>
+                  <rect x="160" y="36" width="20" height="43" rx="2"/>
+                  <rect x="200" y="36" width="20" height="43" rx="2"/>
+                  <rect x="240" y="36" width="20" height="43" rx="2"/>
+                  <rect x="280" y="36" width="20" height="43" rx="2"/>
+                  <rect x="320" y="36" width="20" height="43" rx="2"/>
+                  <rect x="360" y="36" width="20" height="43" rx="2"/>
+                </g>
+
+                <!-- Marcador PIN 1 (punto + línea) -->
+                <circle cx="90" cy="27" r="3" class="rj45-svg-pin1-dot"/>
+                <line x1="90" y1="24" x2="90" y2="30" class="rj45-svg-pin1-line"/>
+
+                <!-- Clip / pestaña debajo -->
+                <path d="M 200 85 L 260 85 L 260 115 Q 230 128 200 115 Z" class="rj45-svg-clip"/>
+
+                <!-- Etiqueta CLIP -->
+                <text x="230" y="148" text-anchor="middle" class="rj45-svg-label">
+                  CLIP (PESTAÑA) HACIA ABAJO
+                </text>
+
+                <!-- Etiqueta PIN 1 -->
+                <text x="90" y="165" text-anchor="middle" class="rj45-svg-sub-label">
+                  PIN 1 = IZQUIERDA
+                </text>
+              </svg>
+            </div>
+
             <div class="rj45-pins" id="rj45Pins"></div>
           </div>
         </article>
@@ -1646,39 +1699,62 @@
     </div>
   </footer>
 
+  <!-- STACK DE BOTONES FLOTANTES (arriba → abajo: subir, agendar, campana, pagos, sonido, tema, instalar) -->
+  <div class="floating-stack" aria-hidden="false">
+
+    <button class="scroll-top" id="scrollTop" aria-label="Subir al inicio">
+      <span class="scroll-shock" aria-hidden="true"></span>
+      <span class="scroll-shock-2" aria-hidden="true"></span>
+      <i class="fa-solid fa-arrow-up"></i>
+    </button>
+
+    <a href="https://calendly.com/jcdurancasado" target="_blank" rel="noopener" class="call-float" id="callFloat" aria-label="Agendar llamada">
+      <i class="fa-solid fa-calendar-check"></i>
+      <span class="call-check" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </span>
+      <span class="call-float__tooltip">Agendar llamada</span>
+    </a>
+
   <button class="notif-btn" id="notifBtn" aria-label="Activar notificaciones" hidden>
+    <span class="notif-waves notif-waves--left" aria-hidden="true">
+      <span class="notif-wave"></span>
+      <span class="notif-wave"></span>
+      <span class="notif-wave"></span>
+    </span>
+    <span class="notif-waves notif-waves--right" aria-hidden="true">
+      <span class="notif-wave"></span>
+      <span class="notif-wave"></span>
+      <span class="notif-wave"></span>
+    </span>
     <i class="fa-solid fa-bell"></i>
     <span class="notif-btn__tooltip">Activar notificaciones</span>
   </button>
 
-  <button class="install-btn" id="installBtn" aria-label="Instalar aplicación" hidden>
-    <i class="fa-solid fa-download"></i>
-    <span class="install-btn__tooltip">Instalar app</span>
-  </button>
+    <a href="#payments" class="pay-float" aria-label="Ver métodos de pago">
+      <span class="pay-scan" aria-hidden="true"></span>
+      <i class="fa-solid fa-credit-card"></i>
+      <span class="float-tooltip">Ver pagos</span>
+    </a>
 
-  <button class="sound-toggle" id="soundToggle" aria-label="Sonidos" aria-pressed="false">
-    <i class="fa-solid fa-volume-xmark"></i>
-    <span class="float-tooltip" id="soundTooltip">Activar sonidos</span>
-  </button>
+    <button class="sound-toggle" id="soundToggle" aria-label="Sonidos" aria-pressed="false">
+      <i class="fa-solid fa-volume-xmark"></i>
+      <span class="float-tooltip" id="soundTooltip">Activar sonidos</span>
+    </button>
 
-  <button class="scroll-top" id="scrollTop" aria-label="Subir al inicio">
-    <i class="fa-solid fa-arrow-up"></i>
-  </button>
+    <button class="theme-toggle-float" id="themeToggle" aria-label="Cambiar tema">
+      <i class="fa-solid fa-circle-half-stroke"></i>
+      <span class="float-tooltip">Cambiar tema</span>
+    </button>
 
-  <a href="#payments" class="pay-float" aria-label="Ver métodos de pago">
-    <i class="fa-solid fa-credit-card"></i>
-    <span class="float-tooltip">Ver pagos</span>
-  </a>
+    <button class="install-btn" id="installBtn" aria-label="Instalar aplicación" hidden>
+      <i class="fa-solid fa-download"></i>
+      <span class="install-btn__tooltip">Instalar app</span>
+    </button>
 
-  <a href="https://calendly.com/jcdurancasado" target="_blank" rel="noopener" class="call-float" id="callFloat" aria-label="Agendar llamada">
-    <i class="fa-solid fa-calendar-check"></i>
-    <span class="call-float__tooltip">Agendar llamada</span>
-  </a>
-
-  <button class="theme-toggle-float" id="themeToggle" aria-label="Cambiar tema">
-    <i class="fa-solid fa-circle-half-stroke"></i>
-    <span class="float-tooltip">Cambiar tema</span>
-  </button>
+  </div>
 
   <script src="js/main.js"></script>
 </body>

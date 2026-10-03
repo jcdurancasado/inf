@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('jcdc_theme');
+        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var theme = saved || (prefersDark ? 'dark' : 'dark');
+        document.documentElement.setAttribute('data-theme', theme);
+        if (sessionStorage.getItem('jcdc_booted') === '1') {
+          document.documentElement.classList.add('jcdc-booted');
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="description" content="Cursos gratuitos y certificados de CTC, Cisco Networking Academy e INFOTEP. Formación técnica en redes, ciberseguridad y telecomunicaciones." />
+  <meta name="author" content="Julio César Durán Casado" />
+  <meta name="theme-color" content="#00ff88" />
+  <meta property="og:title" content="Cursos Gratuitos — Julio C. Durán Casado" />
+  <meta property="og:description" content="Formación técnica gratuita con certificación: CTC, Cisco e INFOTEP." />
+  <meta property="og:image" content="https://jcdurancasado.github.io/inf/img/foto.png" />
+  <meta property="og:url" content="https://jcdurancasado.github.io/inf/cursos.html" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <title>JCDC - Cursos</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Rajdhani:wght@400;500;600&family=Share+Tech+Mono&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Rajdhani:wght@400;500;600&family=Share+Tech+Mono&display=swap" media="print" onload="this.media='all'" />
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Rajdhani:wght@400;500;600&family=Share+Tech+Mono&display=swap" />
+  </noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="icon" type="image/png" href="img/foto.png" />
+  <link rel="apple-touch-icon" href="img/icons/icon-192.png" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+
+  <div class="scroll-progress" aria-hidden="true">
+    <div class="scroll-progress__bar" id="scrollProgressBar"></div>
+  </div>
+
+  <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+  <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+  <div class="scanlines" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+  <div class="cyber-grid" aria-hidden="true"></div>
+  <canvas id="particles" class="particles" aria-hidden="true"></canvas>
+
+  <div class="toast-container" aria-live="polite"></div>
+
+  <div class="boot-sequence" id="boot-sequence">
+    <div class="boot-content">
+      <div class="boot-logo"><span class="boot-text">JCDURANCASADO · NETCORE</span></div>
+      <div class="boot-lines" id="boot-lines"></div>
+      <div class="boot-progress"><div class="boot-bar" id="boot-bar"></div></div>
+      <div class="boot-status" id="boot-status">Inicializando NETCORE...</div>
+    </div>
+  </div>
+
+  <header class="header" data-header>
+    <div class="header__scanline"></div>
+    <div class="container header__container">
+      <a href="index.html" class="logo" aria-label="Inicio">
+        <div class="logo__symbol">
+          <svg viewBox="0 0 100 100" class="logo__svg logo__svg--nexus">
+            <path d="M50 4 L88 26 L88 62 Q88 88 50 96 Q12 88 12 62 L12 26 Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-dasharray="240" stroke-dashoffset="240" class="nexus-shield"/>
+            <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.3" stroke-dasharray="3 6" class="nexus-ring nexus-ring--1"/>
+            <circle cx="50" cy="50" r="34" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5" stroke-dasharray="8 4" class="nexus-ring nexus-ring--2"/>
+            <circle cx="50" cy="50" r="26" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.6" stroke-dasharray="2 3" class="nexus-ring nexus-ring--3"/>
+            <path d="M50 50 L50 8 A42 42 0 0 1 85 28 Z" fill="currentColor" opacity="0.09" class="nexus-sweep"/>
+            <path d="M50 38 L60 44 L60 56 L50 62 L40 56 L40 44 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" class="nexus-core"/>
+            <circle cx="50" cy="50" r="4" fill="currentColor" class="nexus-center"/>
+            <circle cx="50" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="1.5" class="nexus-pulse nexus-pulse--1"/>
+            <circle cx="50" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="1.5" class="nexus-pulse nexus-pulse--2"/>
+            <circle cx="50" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="1.5" class="nexus-pulse nexus-pulse--3"/>
+            <line x1="50" y1="50" x2="50" y2="14" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--1"/>
+            <line x1="50" y1="50" x2="81" y2="32" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--2"/>
+            <line x1="50" y1="50" x2="81" y2="68" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--3"/>
+            <line x1="50" y1="50" x2="50" y2="86" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--4"/>
+            <line x1="50" y1="50" x2="19" y2="68" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--5"/>
+            <line x1="50" y1="50" x2="19" y2="32" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--6"/>
+            <circle cx="50" cy="14" r="2.5" fill="currentColor" class="nexus-node nexus-node--1"/>
+            <circle cx="81" cy="32" r="2.5" fill="currentColor" class="nexus-node nexus-node--2"/>
+            <circle cx="81" cy="68" r="2.5" fill="currentColor" class="nexus-node nexus-node--3"/>
+            <circle cx="50" cy="86" r="2.5" fill="currentColor" class="nexus-node nexus-node--4"/>
+            <circle cx="19" cy="68" r="2.5" fill="currentColor" class="nexus-node nexus-node--5"/>
+            <circle cx="19" cy="32" r="2.5" fill="currentColor" class="nexus-node nexus-node--6"/>
+            <line x1="50" y1="4"  x2="50" y2="9"  stroke="currentColor" stroke-width="1.8"/>
+            <line x1="88" y1="26" x2="83" y2="29" stroke="currentColor" stroke-width="1.8"/>
+            <line x1="88" y1="62" x2="83" y2="59" stroke="currentColor" stroke-width="1.8"/>
+            <line x1="50" y1="96" x2="50" y2="91" stroke="currentColor" stroke-width="1.8"/>
+            <line x1="12" y1="62" x2="17" y2="59" stroke="currentColor" stroke-width="1.8"/>
+            <line x1="12" y1="26" x2="17" y2="29" stroke="currentColor" stroke-width="1.8"/>
+          </svg>
+        </div>
+      </a>
+
+      <nav id="nav-menu" class="nav" data-nav>
+        <ul class="nav__list">
+          <li><a href="index.html#inicio" class="nav__link">INICIO</a></li>
+          <li><a href="index.html#perfil" class="nav__link">PERFIL</a></li>
+          <li><a href="index.html#servicios" class="nav__link">SERVICIOS</a></li>
+          <li><a href="index.html#trayectoria" class="nav__link">TRAYECTORIA</a></li>
+          <li><a href="index.html#enlaces" class="nav__link">ENLACES</a></li>
+          <li><a href="toolkit.html" class="nav__link">TOOLKIT</a></li>
+          <li><a href="netpro.html" class="nav__link">NETPRO</a></li>
+          <li><a href="cursos.html" class="nav__link nav__link--active"><i class="fa-solid fa-graduation-cap"></i>&nbsp;CURSOS</a></li>
+          <li><a href="cotizador.html" class="nav__link nav__link--quote"><i class="fa-solid fa-calculator"></i>&nbsp;COTIZAR</a></li>
+          <li><a href="index.html#contacto" class="nav__link nav__link--cta">CONTACTO</a></li>
+        </ul>
+      </nav>
+
+      <button class="nav-toggle" aria-label="Menú" aria-expanded="false" aria-controls="nav-menu" data-nav-toggle>
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- CURSOS HERO -->
+    <section class="cursos-hero" aria-labelledby="cursos-title">
+      <div class="cursos-hero__bg" aria-hidden="true">
+        <div class="cursos-hero__grid"></div>
+        <div class="cursos-hero__glow"></div>
+      </div>
+
+      <div class="container cursos-hero__container">
+        <div class="cursos-hero__content" data-reveal="left">
+          <span class="section__eyebrow">[ FORMACIÓN TÉCNICA GRATUITA ]</span>
+          <h1 id="cursos-title" class="cursos-hero__title">
+            APRENDE.<br>
+            CERTIFÍCATE.<br>
+            <span class="text-gradient">CRECE.</span>
+          </h1>
+          <p class="cursos-hero__subtitle">
+            Programas gratuitos con certificación oficial de <strong>CTC</strong>, <strong>Cisco Networking Academy</strong> e <strong>INFOTEP</strong>. Formación práctica que abre puertas reales.
+          </p>
+          <div class="cursos-hero__actions">
+            <a href="#plataformas" class="cyber-btn cyber-btn--primary cyber-btn--large">
+              <span>EXPLORAR PLATAFORMAS</span>
+              <i class="fa-solid fa-arrow-down"></i>
+            </a>
+            <a href="index.html#contacto" class="cyber-btn cyber-btn--secondary cyber-btn--large">
+              <span>PREGUNTAR</span>
+              <i class="fa-solid fa-comments"></i>
+            </a>
+          </div>
+
+          <div class="cursos-hero__stats">
+            <div class="cursos-hero__stat"><strong>3</strong><span>PLATAFORMAS</span></div>
+            <div class="cursos-hero__stat"><strong>100%</strong><span>GRATUITO</span></div>
+            <div class="cursos-hero__stat"><strong>∞</strong><span>OPORTUNIDADES</span></div>
+          </div>
+        </div>
+
+        <div class="cursos-hero__visual" data-reveal="right">
+          <div class="cursos-hero__orbit" id="cursosOrbit">
+            <div class="cursos-hero__ring cursos-hero__ring--1"></div>
+            <div class="cursos-hero__ring cursos-hero__ring--2"></div>
+            <div class="cursos-hero__ring cursos-hero__ring--3"></div>
+
+            <!-- Chispas orbitales (decorativo) -->
+            <div class="cursos-hero__sparks" aria-hidden="true">
+              <div class="cursos-hero__spark-track" style="--dur: 18s; --delay: 0s;">
+                <span class="cursos-hero__spark" style="--spark-color: var(--neon-cyan);"></span>
+              </div>
+              <div class="cursos-hero__spark-track" style="--dur: 24s; --delay: -8s;">
+                <span class="cursos-hero__spark" style="--spark-color: var(--neon-green);"></span>
+              </div>
+              <div class="cursos-hero__spark-track cursos-hero__spark-track--mid" style="--dur: 14s; --delay: -4s;">
+                <span class="cursos-hero__spark" style="--spark-color: var(--neon-purple);"></span>
+              </div>
+              <div class="cursos-hero__spark-track cursos-hero__spark-track--mid" style="--dur: 20s; --delay: -12s;">
+                <span class="cursos-hero__spark" style="--spark-color: var(--neon-cyan);"></span>
+              </div>
+              <div class="cursos-hero__spark-track cursos-hero__spark-track--inner" style="--dur: 12s; --delay: -2s;">
+                <span class="cursos-hero__spark" style="--spark-color: var(--neon-yellow);"></span>
+              </div>
+            </div>
+
+            <!-- Satélites interactivos -->
+            <a href="#plataforma-ctc" class="cursos-hero__sat cursos-hero__sat--1" aria-label="Ir a cursos CTC">
+              <i class="fa-solid fa-rocket"></i>
+              <span class="cursos-hero__sat-label">CTC</span>
+            </a>
+            <a href="#plataforma-cisco" class="cursos-hero__sat cursos-hero__sat--2" aria-label="Ir a cursos Cisco">
+              <i class="fa-solid fa-network-wired"></i>
+              <span class="cursos-hero__sat-label">CISCO</span>
+            </a>
+            <a href="#plataforma-infotep" class="cursos-hero__sat cursos-hero__sat--3" aria-label="Ir a cursos INFOTEP">
+              <i class="fa-solid fa-graduation-cap"></i>
+              <span class="cursos-hero__sat-label">INFOTEP</span>
+            </a>
+
+            <div class="cursos-hero__core"><i class="fa-solid fa-graduation-cap"></i></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS BAND -->
+    <section class="cursos-stats" aria-label="Cursos en cifras">
+      <div class="container">
+        <div class="cursos-stats__grid" data-reveal>
+          <div class="cursos-stat" data-count="10000" data-suffix="+">
+            <div class="cursos-stat__icon"><i class="fa-solid fa-users"></i></div>
+            <div class="cursos-stat__value"><span class="cursos-stat__num">0</span><span class="cursos-stat__suf">+</span></div>
+            <div class="cursos-stat__label">Estudiantes formados</div>
+          </div>
+          <div class="cursos-stat" data-count="5000" data-suffix="+">
+            <div class="cursos-stat__icon"><i class="fa-solid fa-clock"></i></div>
+            <div class="cursos-stat__value"><span class="cursos-stat__num">0</span><span class="cursos-stat__suf">+</span></div>
+            <div class="cursos-stat__label">Horas impartidas</div>
+          </div>
+          <div class="cursos-stat" data-count="15" data-suffix="+">
+            <div class="cursos-stat__icon"><i class="fa-solid fa-certificate"></i></div>
+            <div class="cursos-stat__value"><span class="cursos-stat__num">0</span><span class="cursos-stat__suf">+</span></div>
+            <div class="cursos-stat__label">Cursos disponibles</div>
+          </div>
+          <div class="cursos-stat" data-count="98" data-suffix="%">
+            <div class="cursos-stat__icon"><i class="fa-solid fa-star"></i></div>
+            <div class="cursos-stat__value"><span class="cursos-stat__num">0</span><span class="cursos-stat__suf">%</span></div>
+            <div class="cursos-stat__label">Satisfacción</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLATAFORMAS -->
+    <section class="plataformas" id="plataformas" aria-labelledby="plataformas-title">
+      <div class="cyber-section__bg" aria-hidden="true"><div class="cyber-lines"></div></div>
+      <div class="container">
+        <header class="section__header" data-reveal>
+          <span class="section__eyebrow">[ PLATAFORMAS DISPONIBLES ]</span>
+          <h2 id="plataformas-title" class="section__title">DÓNDE PUEDES ESTUDIAR</h2>
+          <p class="section__lead">Tres caminos, un mismo destino: certificarte con habilidades reales.</p>
+        </header>
+
+        <!-- Buscador + Filtros -->
+        <div class="plataformas-controls" data-reveal>
+          <div class="plataformas-search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="cursosSearch" placeholder="Buscar plataforma, tema o palabra clave…" autocomplete="off" spellcheck="false">
+            <button type="button" class="plataformas-search__clear" id="cursosSearchClear" aria-label="Limpiar" hidden><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <div class="plataformas-filters" role="tablist">
+            <button type="button" class="plataforma-filter active" data-filter="all"><i class="fa-solid fa-layer-group"></i> Todas</button>
+            <button type="button" class="plataforma-filter" data-filter="gratis"><i class="fa-solid fa-tag"></i> Gratuitas</button>
+            <button type="button" class="plataforma-filter" data-filter="certificado"><i class="fa-solid fa-certificate"></i> Con certificado</button>
+            <button type="button" class="plataforma-filter" data-filter="virtual"><i class="fa-solid fa-laptop"></i> Virtual</button>
+          </div>
+        </div>
+
+        <div class="plataformas__grid" id="plataformasGrid">
+
+          <article id="plataforma-ctc" class="plataforma plataforma--ctc" data-reveal data-tags="gratis certificado virtual presencial">
+            <div class="plataforma__num">01</div>
+            <div class="plataforma__header">
+              <div class="plataforma__icon"><i class="fa-solid fa-rocket"></i></div>
+              <span class="plataforma__tag">CTC</span>
+            </div>
+            <h3 class="plataforma__title">Centros Tecnológicos Comunitarios</h3>
+            <p class="plataforma__desc">Red nacional de centros de formación tecnológica. Programas prácticos para entrar al mundo laboral con habilidades reales.</p>
+            <ul class="plataforma__list">
+              <li><i class="fa-solid fa-check"></i> Modalidad presencial y virtual</li>
+              <li><i class="fa-solid fa-check"></i> Enfoque 100% práctico</li>
+              <li><i class="fa-solid fa-check"></i> Certificación al finalizar</li>
+              <li><i class="fa-solid fa-check"></i> Acceso comunitario y gratuito</li>
+            </ul>
+            <a href="https://www.ctccomendador.com/cursos" target="_blank" rel="noopener" class="plataforma__btn">
+              <span>Ver cursos CTC</span>
+              <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            </a>
+          </article>
+
+          <article id="plataforma-cisco" class="plataforma plataforma--cisco" data-reveal data-tags="gratis certificado virtual">
+            <div class="plataforma__num">02</div>
+            <div class="plataforma__header">
+              <div class="plataforma__icon"><i class="fa-solid fa-network-wired"></i></div>
+              <span class="plataforma__tag">CISCO</span>
+            </div>
+            <h3 class="plataforma__title">Cisco Networking Academy</h3>
+            <p class="plataforma__desc">Programa oficial global de Cisco. Certificaciones reconocidas internacionalmente en redes, ciberseguridad, IoT y programación.</p>
+            <ul class="plataforma__list">
+              <li><i class="fa-solid fa-check"></i> Certificación internacional</li>
+              <li><i class="fa-solid fa-check"></i> Ruta IT Essentials → CCNA → CCNP</li>
+              <li><i class="fa-solid fa-check"></i> CyberOps Associate</li>
+              <li><i class="fa-solid fa-check"></i> Acceso desde cualquier dispositivo</li>
+            </ul>
+            <a href="https://www.netacad.com/catalogs/learn?category=course" target="_blank" rel="noopener" class="plataforma__btn">
+              <span>Ver cursos Cisco</span>
+              <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            </a>
+          </article>
+
+          <article id="plataforma-infotep" class="plataforma plataforma--infotep" data-reveal data-tags="gratis certificado virtual presencial">
+            <div class="plataforma__num">03</div>
+            <div class="plataforma__header">
+              <div class="plataforma__icon"><i class="fa-solid fa-graduation-cap"></i></div>
+              <span class="plataforma__tag">INFOTEP</span>
+            </div>
+            <h3 class="plataforma__title">INFOTEP</h3>
+            <p class="plataforma__desc">Instituto Nacional de Formación Técnico Profesional. Formación gratuita certificada por el Estado en múltiples áreas técnicas.</p>
+            <ul class="plataforma__list">
+              <li><i class="fa-solid fa-check"></i> Cursos gratuitos para todos</li>
+              <li><i class="fa-solid fa-check"></i> Certificado oficial del Estado</li>
+              <li><i class="fa-solid fa-check"></i> Múltiples áreas técnicas</li>
+              <li><i class="fa-solid fa-check"></i> Modalidad virtual y presencial</li>
+            </ul>
+            <a href="https://infotepvirtual.com/index.php/component/gestion/?contr=oferta&task=oferta&Itemid=121" target="_blank" rel="noopener" class="plataforma__btn">
+              <span>Ver cursos INFOTEP</span>
+              <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            </a>
+          </article>
+
+        </div>
+
+        <div class="plataformas-empty" id="plataformasEmpty" hidden>
+          <i class="fa-solid fa-circle-question"></i>
+          <p>No encontramos plataformas con esos criterios.</p>
+          <button type="button" class="cyber-btn cyber-btn--secondary" id="plataformasReset">Limpiar filtros</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CÓMO FUNCIONA -->
+    <section class="como" aria-labelledby="como-title">
+      <div class="container">
+        <header class="section__header" data-reveal>
+          <span class="section__eyebrow">[ CÓMO FUNCIONA ]</span>
+          <h2 id="como-title" class="section__title">TRES PASOS PARA EMPEZAR</h2>
+          <p class="section__lead">No hay excusas. El proceso es simple.</p>
+        </header>
+
+        <div class="como__grid">
+          <div class="como__step" data-reveal>
+            <div class="como__num">01</div>
+            <div class="como__icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+            <h3 class="como__title">Elige tu plataforma</h3>
+            <p class="como__desc">CTC, Cisco o INFOTEP. Cada una tiene su enfoque, pero todas certifican.</p>
+          </div>
+          <div class="como__step" data-reveal>
+            <div class="como__num">02</div>
+            <div class="como__icon"><i class="fa-solid fa-book-open-reader"></i></div>
+            <h3 class="como__title">Inscríbete gratis</h3>
+            <p class="como__desc">Ninguna plataforma cobra. Solo necesitas ganas de aprender y tiempo.</p>
+          </div>
+          <div class="como__step" data-reveal>
+            <div class="como__num">03</div>
+            <div class="como__icon"><i class="fa-solid fa-certificate"></i></div>
+            <h3 class="como__title">Certifícate</h3>
+            <p class="como__desc">Al terminar recibes un certificado oficial que suma en tu CV real.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPARADOR DE PLATAFORMAS -->
+    <section class="comparador" aria-labelledby="comparador-title">
+      <div class="container">
+        <header class="section__header" data-reveal>
+          <span class="section__eyebrow">[ COMPARADOR ]</span>
+          <h2 id="comparador-title" class="section__title">¿CUÁL TE CONVIENE MÁS?</h2>
+          <p class="section__lead">Compara las 3 plataformas lado a lado.</p>
+        </header>
+
+        <div class="comparador__wrap" data-reveal>
+          <table class="comparador__table">
+            <thead>
+              <tr>
+                <th scope="col">Característica</th>
+                <th scope="col" class="comparador__col comparador__col--ctc"><span class="comparador__badge">CTC</span></th>
+                <th scope="col" class="comparador__col comparador__col--cisco"><span class="comparador__badge">CISCO</span></th>
+                <th scope="col" class="comparador__col comparador__col--infotep"><span class="comparador__badge">INFOTEP</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Costo</th>
+                <td><i class="fa-solid fa-check ok"></i> Gratis</td>
+                <td><i class="fa-solid fa-check ok"></i> Gratis</td>
+                <td><i class="fa-solid fa-check ok"></i> Gratis</td>
+              </tr>
+              <tr>
+                <th scope="row">Certificación</th>
+                <td>Nacional</td>
+                <td>Internacional</td>
+                <td>Oficial del Estado</td>
+              </tr>
+              <tr>
+                <th scope="row">Modalidad</th>
+                <td>Presencial / Virtual</td>
+                <td>100% Virtual</td>
+                <td>Presencial / Virtual</td>
+              </tr>
+              <tr>
+                <th scope="row">Nivel</th>
+                <td>Inicial a Intermedio</td>
+                <td>Inicial a Avanzado</td>
+                <td>Inicial a Intermedio</td>
+              </tr>
+              <tr>
+                <th scope="row">Duración</th>
+                <td>Semanas a meses</td>
+                <td>Meses a un año</td>
+                <td>Semanas a meses</td>
+              </tr>
+              <tr>
+                <th scope="row">Ideal para</th>
+                <td>Empezar en tech</td>
+                <td>Certificarse internacional</td>
+                <td>Título oficial rápido</td>
+              </tr>
+              <tr>
+                <th scope="row">Reconocimiento</th>
+                <td><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></td>
+                <td><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></td>
+                <td><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- RUTA DE APRENDIZAJE -->
+    <section class="ruta" aria-labelledby="ruta-title">
+      <div class="container">
+        <header class="section__header" data-reveal>
+          <span class="section__eyebrow">[ RUTA SUGERIDA ]</span>
+          <h2 id="ruta-title" class="section__title">TU CAMINO HACIA CCNP</h2>
+          <p class="section__lead">Del nivel cero al profesional avanzado en 4 etapas.</p>
+        </header>
+
+        <div class="ruta__timeline">
+          <div class="ruta__line" aria-hidden="true"></div>
+
+          <div class="ruta__step" data-reveal>
+            <div class="ruta__marker">
+              <span class="ruta__dot"></span>
+              <span class="ruta__num">01</span>
+            </div>
+            <div class="ruta__card">
+              <div class="ruta__icon"><i class="fa-solid fa-seedling"></i></div>
+              <h3 class="ruta__title">Nivelación</h3>
+              <p class="ruta__desc">Sin conocimientos previos. Aquí empiezas a familiarizarte con hardware, software y redes básicas.</p>
+              <ul class="ruta__list">
+                <li><i class="fa-solid fa-arrow-right"></i> IT Essentials</li>
+                <li><i class="fa-solid fa-arrow-right"></i> Habilitación Digital</li>
+                <li><i class="fa-solid fa-arrow-right"></i> Fundamentos de Redes</li>
+              </ul>
+              <span class="ruta__time">~3 meses</span>
+            </div>
+          </div>
+
+          <div class="ruta__step" data-reveal>
+            <div class="ruta__marker">
+              <span class="ruta__dot ruta__dot--active"></span>
+              <span class="ruta__num">02</span>
+            </div>
+            <div class="ruta__card">
+              <div class="ruta__icon"><i class="fa-solid fa-network-wired"></i></div>
+              <h3 class="ruta__title">CCNA Complete</h3>
+              <p class="ruta__desc">Los 3 módulos oficiales. Aquí ya construyes y configuras redes reales.</p>
+              <ul class="ruta__list">
+                <li><i class="fa-solid fa-arrow-right"></i> Introducción a Redes (1/3)</li>
+                <li><i class="fa-solid fa-arrow-right"></i> Switching y Routing (2/3)</li>
+                <li><i class="fa-solid fa-arrow-right"></i> Enterprise, Security, Automation (3/3)</li>
+              </ul>
+              <span class="ruta__time">~6 meses</span>
+            </div>
+          </div>
+
+          <div class="ruta__step" data-reveal>
+            <div class="ruta__marker">
+              <span class="ruta__dot"></span>
+              <span class="ruta__num">03</span>
+            </div>
+            <div class="ruta__card">
+              <div class="ruta__icon"><i class="fa-solid fa-shield-halved"></i></div>
+              <h3 class="ruta__title">Especialización</h3>
+              <p class="ruta__desc">Elige tu área: ciberseguridad defensiva con CyberOps o fundamentos de seguridad ofensiva.</p>
+              <ul class="ruta__list">
+                <li><i class="fa-solid fa-arrow-right"></i> CyberOps Associate</li>
+                <li><i class="fa-solid fa-arrow-right"></i> Networking Security</li>
+                <li><i class="fa-solid fa-arrow-right"></i> Introducción a IoT</li>
+              </ul>
+              <span class="ruta__time">~4 meses</span>
+            </div>
+          </div>
+
+          <div class="ruta__step" data-reveal>
+            <div class="ruta__marker">
+              <span class="ruta__dot"></span>
+              <span class="ruta__num">04</span>
+            </div>
+            <div class="ruta__card">
+              <div class="ruta__icon"><i class="fa-solid fa-crown"></i></div>
+              <h3 class="ruta__title">CCNP Enterprise</h3>
+              <p class="ruta__desc">Nivel profesional. Enrutamiento avanzado y arquitecturas empresariales.</p>
+              <ul class="ruta__list">
+                <li><i class="fa-solid fa-arrow-right"></i> Redes Básicas (1/2)</li>
+                <li><i class="fa-solid fa-arrow-right"></i> Enrutamiento Avanzado (2/2)</li>
+                <li><i class="fa-solid fa-arrow-right"></i> Automatización de Redes</li>
+              </ul>
+              <span class="ruta__time">~8 meses</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CERTIFICACIONES OBTENIBLES -->
+    <section class="section section--cyber certificaciones-obtenibles" aria-labelledby="cert-ob-title">
+      <div class="cyber-section__bg" aria-hidden="true"><div class="cyber-lines"></div></div>
+      <div class="container">
+        <header class="section__header" data-reveal>
+          <span class="section__eyebrow">[ CERTIFICACIONES ]</span>
+          <h2 id="cert-ob-title" class="section__title">LO QUE PUEDES OBTENER</h2>
+          <p class="section__lead">Badges y certificados verificables al terminar cada ruta.</p>
+        </header>
+
+        <div class="cert-grid-ob" data-reveal>
+          <div class="cert-ob" data-cert="ccna">
+            <div class="cert-ob__icon"><i class="fa-solid fa-network-wired"></i></div>
+            <span class="cert-ob__name">CCNA</span>
+            <span class="cert-ob__org">Cisco</span>
+          </div>
+          <div class="cert-ob" data-cert="ccnp">
+            <div class="cert-ob__icon"><i class="fa-solid fa-crown"></i></div>
+            <span class="cert-ob__name">CCNP Enterprise</span>
+            <span class="cert-ob__org">Cisco</span>
+          </div>
+          <div class="cert-ob" data-cert="cyberops">
+            <div class="cert-ob__icon"><i class="fa-solid fa-shield-halved"></i></div>
+            <span class="cert-ob__name">CyberOps Associate</span>
+            <span class="cert-ob__org">Cisco</span>
+          </div>
+          <div class="cert-ob" data-cert="ite">
+            <div class="cert-ob__icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+            <span class="cert-ob__name">IT Essentials</span>
+            <span class="cert-ob__org">Cisco</span>
+          </div>
+          <div class="cert-ob" data-cert="netsec">
+            <div class="cert-ob__icon"><i class="fa-solid fa-lock"></i></div>
+            <span class="cert-ob__name">Networking Security</span>
+            <span class="cert-ob__org">Cisco</span>
+          </div>
+          <div class="cert-ob" data-cert="ctc">
+            <div class="cert-ob__icon"><i class="fa-solid fa-rocket"></i></div>
+            <span class="cert-ob__name">Certificación CTC</span>
+            <span class="cert-ob__org">Nacional</span>
+          </div>
+          <div class="cert-ob" data-cert="infotep">
+            <div class="cert-ob__icon"><i class="fa-solid fa-graduation-cap"></i></div>
+            <span class="cert-ob__name">Certificado INFOTEP</span>
+            <span class="cert-ob__org">Oficial RD</span>
+          </div>
+          <div class="cert-ob" data-cert="hab">
+            <div class="cert-ob__icon"><i class="fa-solid fa-laptop-code"></i></div>
+            <span class="cert-ob__name">Habilitación Digital</span>
+            <span class="cert-ob__org">INFOTEP</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TESTIMONIOS CURSOS -->
+    <section class="section" aria-labelledby="testi-cursos-title">
+      <div class="container">
+        <header class="section__header" data-reveal>
+          <span class="section__eyebrow">[ VOCES DE ESTUDIANTES ]</span>
+          <h2 id="testi-cursos-title" class="section__title">HISTORIAS REALES</h2>
+          <p class="section__lead">Lo que dicen quienes ya pasaron por los cursos.</p>
+        </header>
+
+        <div class="testi-cursos__grid" data-reveal>
+          <figure class="testi-cursos__card">
+            <div class="testi-cursos__stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+            <blockquote class="testi-cursos__text">"Entré sin saber qué era un switch. Al terminar CCNA conseguí trabajo como técnico de redes en 2 meses."</blockquote>
+            <figcaption class="testi-cursos__author">
+              <div class="testi-cursos__avatar">JM</div>
+              <div>
+                <strong>José M.</strong>
+                <span>Ing. en Redes · Cisco Academy</span>
+              </div>
+            </figcaption>
+          </figure>
+
+          <figure class="testi-cursos__card">
+            <div class="testi-cursos__stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+            <blockquote class="testi-cursos__text">"El curso de CyberOps me abrió la puerta a un puesto de analista SOC. La práctica con Wireshark fue clave."</blockquote>
+            <figcaption class="testi-cursos__author">
+              <div class="testi-cursos__avatar">AR</div>
+              <div>
+                <strong>Ana R.</strong>
+                <span>Analista SOC · CyberOps Associate</span>
+              </div>
+            </figcaption>
+          </figure>
+
+          <figure class="testi-cursos__card">
+            <div class="testi-cursos__stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+            <blockquote class="testi-cursos__text">"Hice IT Essentials + Habilitación Digital en paralelo. En 6 meses ya estaba dando soporte técnico remoto."</blockquote>
+            <figcaption class="testi-cursos__author">
+              <div class="testi-cursos__avatar">LC</div>
+              <div>
+                <strong>Luis C.</strong>
+                <span>Soporte TI · INFOTEP + Cisco</span>
+              </div>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ CURSOS -->
+    <section class="section section--cyber" aria-labelledby="faq-cursos-title">
+      <div class="cyber-section__bg" aria-hidden="true"><div class="cyber-hexagons"></div></div>
+      <div class="container">
+        <header class="section__header" data-reveal>
+          <span class="section__eyebrow">[ PREGUNTAS FRECUENTES ]</span>
+          <h2 id="faq-cursos-title" class="section__title">DUDAS SOBRE CURSOS</h2>
+        </header>
+
+        <div class="faq" data-reveal>
+          <details class="faq__item">
+            <summary class="faq__question"><span>¿Los cursos son realmente gratis?</span><i class="fa-solid fa-chevron-down"></i></summary>
+            <div class="faq__answer"><p>Sí, todos. CTC, Cisco Academy e INFOTEP ofrecen formación gratuita. Algunas certificaciones internacionales opcionales tienen costo, pero los cursos en sí no.</p></div>
+          </details>
+          <details class="faq__item">
+            <summary class="faq__question"><span>¿Necesito conocimientos previos?</span><i class="fa-solid fa-chevron-down"></i></summary>
+            <div class="faq__answer"><p>No. Cada plataforma tiene rutas desde nivel cero: IT Essentials y Habilitación Digital para empezar, luego CCNA y especializaciones.</p></div>
+          </details>
+          <details class="faq__item">
+            <summary class="faq__question"><span>¿Cuánto duran los cursos?</span><i class="fa-solid fa-chevron-down"></i></summary>
+            <div class="faq__answer"><p>Varía según el curso. Hay desde talleres de 20 horas hasta rutas completas de varios meses. Cada plataforma indica la duración exacta.</p></div>
+          </details>
+          <details class="faq__item">
+            <summary class="faq__question"><span>¿Los certificados tienen validez real?</span><i class="fa-solid fa-chevron-down"></i></summary>
+            <div class="faq__answer"><p>Sí. Cisco Networking Academy emite certificados internacionales verificables vía Credly. INFOTEP emite certificados oficiales del Estado dominicano. CTC emite certificación reconocida a nivel nacional.</p></div>
+          </details>
+          <details class="faq__item">
+            <summary class="faq__question"><span>¿Puedo tomar varios cursos a la vez?</span><i class="fa-solid fa-chevron-down"></i></summary>
+            <div class="faq__answer"><p>Sí, siempre que puedas con la carga. Muchos estudiantes combinan IT Essentials + Habilitación Digital como base antes de saltar a CCNA.</p></div>
+          </details>
+          <details class="faq__item">
+            <summary class="faq__question"><span>¿Tienes tú algún curso propio?</span><i class="fa-solid fa-chevron-down"></i></summary>
+            <div class="faq__answer"><p>Actualmente soy facilitador de CTC e instructor oficial de Cisco Networking Academy. Puedes ver mi perfil completo en la <a href="index.html#perfil" style="color: var(--neon-cyan); font-weight: 600;">página principal</a>.</p></div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA FINAL -->
+    <section class="section cursos-cta-final" aria-labelledby="cursos-cta-title">
+      <div class="container">
+        <div class="cursos-cta-final__card" data-reveal>
+          <div class="cursos-cta-final__glow" aria-hidden="true"></div>
+          <span class="section__eyebrow">[ ¿LISTO PARA EMPEZAR? ]</span>
+          <h2 id="cursos-cta-title" class="cursos-cta-final__title">
+            TU FUTURO TÉCNICO<br>
+            <span class="text-gradient">EMPIEZA HOY</span>
+          </h2>
+          <p class="cursos-cta-final__text">Déjame tu email y te aviso cuando abran nuevos cupos. También puedes escribirme directo si quieres asesoría personalizada.</p>
+
+          <form class="cursos-newsletter" id="cursosNewsletter" novalidate>
+            <div class="cursos-newsletter__field">
+              <i class="fa-solid fa-envelope"></i>
+              <input type="email" id="cursosEmail" placeholder="tu@email.com" autocomplete="email" required>
+            </div>
+            <button type="submit" class="cyber-btn cyber-btn--primary">
+              <span>AVÍSAME</span>
+              <i class="fa-solid fa-bell"></i>
+            </button>
+          </form>
+          <p class="cursos-newsletter__status" id="cursosNewsletterStatus" aria-live="polite"></p>
+
+          <div class="cursos-cta-final__actions">
+            <a href="index.html#contacto" class="cyber-btn cyber-btn--primary cyber-btn--large">
+              <span>CONTACTAR</span>
+              <i class="fa-solid fa-tower-broadcast"></i>
+            </a>
+            <a href="https://calendly.com/jcdurancasado" target="_blank" rel="noopener" class="cyber-btn cyber-btn--secondary cyber-btn--large">
+              <span>AGENDAR LLAMADA</span>
+              <i class="fa-solid fa-calendar-check"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="footer__grid-lines" aria-hidden="true"></div>
+    <div class="container">
+      <div class="footer__main">
+        <div class="footer__brand">
+          <a href="index.html" class="logo logo--footer" aria-label="Inicio">
+            <div class="logo__symbol">
+              <svg viewBox="0 0 100 100" class="logo__svg logo__svg--nexus">
+                <path d="M50 4 L88 26 L88 62 Q88 88 50 96 Q12 88 12 62 L12 26 Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-dasharray="240" stroke-dashoffset="240" class="nexus-shield"/>
+                <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.3" stroke-dasharray="3 6" class="nexus-ring nexus-ring--1"/>
+                <circle cx="50" cy="50" r="34" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5" stroke-dasharray="8 4" class="nexus-ring nexus-ring--2"/>
+                <circle cx="50" cy="50" r="26" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.6" stroke-dasharray="2 3" class="nexus-ring nexus-ring--3"/>
+                <path d="M50 50 L50 8 A42 42 0 0 1 85 28 Z" fill="currentColor" opacity="0.09" class="nexus-sweep"/>
+                <path d="M50 38 L60 44 L60 56 L50 62 L40 56 L40 44 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" class="nexus-core"/>
+                <circle cx="50" cy="50" r="4" fill="currentColor" class="nexus-center"/>
+              </svg>
+            </div>
+          </a>
+          <div class="footer__status"><span class="badge__text"><i class="fa-solid fa-signal"></i> DISPONIBLE PARA PROYECTOS</span></div>
+        </div>
+
+        <div class="footer__nav">
+          <div class="footer__col">
+            <h4>[ NAVEGACIÓN ]</h4>
+            <ul>
+              <li><a href="index.html#inicio">Inicio</a></li>
+              <li><a href="index.html#perfil">Perfil</a></li>
+              <li><a href="index.html#servicios">Servicios</a></li>
+              <li><a href="index.html#enlaces">Enlaces</a></li>
+            </ul>
+          </div>
+          <div class="footer__col">
+            <h4>[ RECURSOS ]</h4>
+            <ul>
+              <li><a href="toolkit.html">Toolkit</a></li>
+              <li><a href="netpro.html">NetPro</a></li>
+              <li><a href="cotizador.html">Cotizador</a></li>
+              <li><a href="index.html#faq">FAQ</a></li>
+            </ul>
+          </div>
+          <div class="footer__col">
+            <h4>[ CONTACTO ]</h4>
+            <ul>
+              <li><a href="mailto:jcdurancasado@gmail.com">Email</a></li>
+              <li><a href="https://wa.me/18090000000" target="_blank" rel="noopener">WhatsApp</a></li>
+              <li><a href="https://linkedin.com/in/jcdurancasado" target="_blank" rel="noopener">LinkedIn</a></li>
+              <li><a href="https://t.me/jcdurancasado" target="_blank" rel="noopener">Telegram</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer__bottom"><p>&copy; <span data-year>2024</span> JCDURANCASADO · TODOS LOS DERECHOS RESERVADOS.</p></div>
+    </div>
+  </footer>
+
+  <div class="floating-stack" aria-hidden="false">
+    <button class="scroll-top" id="scrollTop" aria-label="Subir al inicio"><span class="scroll-shock" aria-hidden="true"></span><span class="scroll-shock-2" aria-hidden="true"></span><i class="fa-solid fa-arrow-up"></i></button>
+    <a href="https://calendly.com/jcdurancasado" target="_blank" rel="noopener" class="call-float" id="callFloat" aria-label="Agendar llamada"><i class="fa-solid fa-calendar-check"></i><span class="call-check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="call-float__tooltip">Agendar llamada</span></a>
+    <button class="notif-btn" id="notifBtn" aria-label="Activar notificaciones" hidden><span class="notif-waves notif-waves--left" aria-hidden="true"><span class="notif-wave"></span><span class="notif-wave"></span><span class="notif-wave"></span></span><span class="notif-waves notif-waves--right" aria-hidden="true"><span class="notif-wave"></span><span class="notif-wave"></span><span class="notif-wave"></span></span><i class="fa-solid fa-bell"></i><span class="notif-btn__tooltip">Activar notificaciones</span></button>
+    <a href="index.html#payments" class="pay-float" aria-label="Ver métodos de pago"><span class="pay-scan" aria-hidden="true"></span><i class="fa-solid fa-credit-card"></i><span class="float-tooltip">Ver pagos</span></a>
+    <button class="sound-toggle" id="soundToggle" aria-label="Sonidos" aria-pressed="false"><i class="fa-solid fa-volume-xmark"></i><span class="float-tooltip" id="soundTooltip">Activar sonidos</span></button>
+    <button class="theme-toggle-float" id="themeToggle" aria-label="Cambiar tema"><i class="fa-solid fa-circle-half-stroke"></i><span class="float-tooltip">Cambiar tema</span></button>
+    <button class="install-btn" id="installBtn" aria-label="Instalar aplicación" hidden><i class="fa-solid fa-download"></i><span class="install-btn__tooltip">Instalar app</span></button>
+  </div>
+
+  <script src="js/main.js"></script>
+
+  <!-- Interactividad de la galaxia de cursos -->
+  <script>
+    (function() {
+      'use strict';
+      var orbit = document.getElementById('cursosOrbit');
+      var hero = document.querySelector('.cursos-hero');
+      if (!orbit || !hero) return;
+
+      var isTouch = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+      var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (isTouch || reduced) return;
+
+      var rafId = null;
+
+      hero.addEventListener('mousemove', function(e) {
+        if (rafId) return;
+        rafId = requestAnimationFrame(function() {
+          rafId = null;
+          var rect = hero.getBoundingClientRect();
+          var cx = rect.left + rect.width / 2;
+          var cy = rect.top + rect.height / 2;
+          var dx = (e.clientX - cx) / (rect.width / 2);
+          var dy = (e.clientY - cy) / (rect.height / 2);
+          dx = Math.max(-1, Math.min(1, dx));
+          dy = Math.max(-1, Math.min(1, dy));
+          orbit.style.transform = 'perspective(1000px) rotateY(' + (dx * 6) + 'deg) rotateX(' + (-dy * 6) + 'deg)';
+
+          var oRect = orbit.getBoundingClientRect();
+          var ocx = oRect.left + oRect.width / 2;
+          var ocy = oRect.top + oRect.height / 2;
+          var dist = Math.hypot(e.clientX - ocx, e.clientY - ocy);
+          var threshold = oRect.width * 0.28;
+          orbit.classList.toggle('is-near-core', dist < threshold);
+        });
+      });
+
+      hero.addEventListener('mouseleave', function() {
+        orbit.style.transform = '';
+        orbit.classList.remove('is-near-core');
+      });
+
+      // Click en satélites → scroll suave a la card
+      document.querySelectorAll('.cursos-hero__sat').forEach(function(sat) {
+        sat.addEventListener('click', function(e) {
+          var href = sat.getAttribute('href') || '';
+          if (href.charAt(0) !== '#') return;
+          var target = document.querySelector(href);
+          if (!target) return;
+          e.preventDefault();
+          var header = document.querySelector('[data-header]');
+          var offset = header ? header.offsetHeight : 70;
+          var top = target.getBoundingClientRect().top + window.pageYOffset - offset - 20;
+          window.scrollTo({ top: top, behavior: 'smooth' });
+          history.pushState(null, '', href);
+        });
+      });
+    })();
+
+    /* ========== CONTADORES ANIMADOS ========== */
+    (function() {
+      'use strict';
+      var stats = document.querySelectorAll('.cursos-stat[data-count]');
+      if (!stats.length || !('IntersectionObserver' in window)) {
+        stats.forEach(function(s) {
+          var n = parseInt(s.dataset.count, 10) || 0;
+          var num = s.querySelector('.cursos-stat__num');
+          if (num) num.textContent = n.toLocaleString('es-DO');
+        });
+        return;
+      }
+      var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var obs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (!entry.isIntersecting || entry.target.dataset.counted) return;
+          entry.target.dataset.counted = '1';
+          var el = entry.target;
+          var num = el.querySelector('.cursos-stat__num');
+          var target = parseInt(el.dataset.count, 10) || 0;
+          if (!num) return;
+          if (reduced) {
+            num.textContent = target.toLocaleString('es-DO');
+            return;
+          }
+          var dur = 1800, start = performance.now();
+          var ease = function(t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); };
+          var tick = function(now) {
+            var p = Math.min((now - start) / dur, 1);
+            var c = Math.floor(ease(p) * target);
+            num.textContent = c.toLocaleString('es-DO');
+            if (p < 1) requestAnimationFrame(tick);
+            else num.textContent = target.toLocaleString('es-DO');
+          };
+          requestAnimationFrame(tick);
+          obs.unobserve(el);
+        });
+      }, { threshold: 0.4 });
+      stats.forEach(function(s) { obs.observe(s); });
+    })();
+
+    /* ========== BUSCADOR Y FILTROS DE PLATAFORMAS ========== */
+    (function() {
+      'use strict';
+      var input = document.getElementById('cursosSearch');
+      var clearBtn = document.getElementById('cursosSearchClear');
+      var filters = document.querySelectorAll('.plataforma-filter');
+      var cards = document.querySelectorAll('.plataforma[data-tags]');
+      var empty = document.getElementById('plataformasEmpty');
+      var reset = document.getElementById('plataformasReset');
+      if (!input || !cards.length) return;
+
+      var activeFilter = 'all';
+      var term = '';
+
+      function apply() {
+        var visible = 0;
+        cards.forEach(function(card) {
+          var tags = (card.dataset.tags || '').toLowerCase();
+          var text = (card.textContent || '').toLowerCase();
+          var matchFilter = activeFilter === 'all' || tags.indexOf(activeFilter) !== -1;
+          var matchTerm = !term || text.indexOf(term) !== -1 || tags.indexOf(term) !== -1;
+          var show = matchFilter && matchTerm;
+          card.dataset.hidden = show ? 'false' : 'true';
+          if (show) visible++;
+        });
+        if (empty) empty.hidden = visible > 0;
+      }
+
+      input.addEventListener('input', function() {
+        term = input.value.trim().toLowerCase();
+        if (clearBtn) clearBtn.hidden = !term;
+        apply();
+      });
+
+      if (clearBtn) clearBtn.addEventListener('click', function() {
+        input.value = '';
+        term = '';
+        clearBtn.hidden = true;
+        input.focus();
+        apply();
+      });
+
+      filters.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          filters.forEach(function(b) { b.classList.toggle('active', b === btn); });
+          activeFilter = btn.dataset.filter || 'all';
+          apply();
+        });
+      });
+
+      if (reset) reset.addEventListener('click', function() {
+        input.value = '';
+        term = '';
+        if (clearBtn) clearBtn.hidden = true;
+        activeFilter = 'all';
+        filters.forEach(function(b) { b.classList.toggle('active', b.dataset.filter === 'all'); });
+        apply();
+      });
+    })();
+
+    /* ========== NEWSLETTER ========== */
+    (function() {
+      'use strict';
+      var form = document.getElementById('cursosNewsletter');
+      var email = document.getElementById('cursosEmail');
+      var status = document.getElementById('cursosNewsletterStatus');
+      if (!form || !email || !status) return;
+
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var val = email.value.trim();
+        var re = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+        if (!re.test(val)) {
+          status.className = 'cursos-newsletter__status error';
+          status.textContent = '❌ Email inválido. Verifica y vuelve a intentar.';
+          return;
+        }
+        status.className = 'cursos-newsletter__status ok';
+        status.textContent = '✅ ¡Listo! Te avisaré cuando abran nuevos cupos.';
+        email.value = '';
+        if (typeof Toast !== 'undefined') {
+          Toast.show('Suscripción registrada', 'success', 2500);
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

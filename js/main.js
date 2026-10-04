@@ -2701,3 +2701,4 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('%cJCDURANCASADO · v8.0', 'color: #00f0ff; font-family: Orbitron; font-size: 18px;');
   console.log('%c"No hablo en técnico cuando explico. La tecnología debe servir a las personas, no al revés."', 'color: #b829dd; font-style: italic;');
 });
+      

@@ -6,7 +6,7 @@
       try {
         var saved = localStorage.getItem('jcdc_theme');
         var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        var theme = saved || (prefersDark ? 'dark' : 'dark');
+        var theme = saved || (prefersDark ? 'dark' : 'light');
         document.documentElement.setAttribute('data-theme', theme);
         if (sessionStorage.getItem('jcdc_booted') === '1') {
           document.documentElement.classList.add('jcdc-booted');
@@ -21,7 +21,7 @@
   <meta name="format-detection" content="telephone=no" />
   <meta name="description" content="Cursos gratuitos y certificados de CTC, Cisco Networking Academy e INFOTEP. Formación técnica en redes, ciberseguridad y telecomunicaciones." />
   <meta name="author" content="Julio César Durán Casado" />
-  <meta name="theme-color" content="#00ff88" />
+  <meta name="theme-color" content="#00f0ff" />
   <meta property="og:title" content="Cursos Gratuitos — Julio C. Durán Casado" />
   <meta property="og:description" content="Formación técnica gratuita con certificación: CTC, Cisco e INFOTEP." />
   <meta property="og:image" content="https://jcdurancasado.github.io/inf/img/foto.png" />
@@ -392,45 +392,45 @@
             <tbody>
               <tr>
                 <th scope="row">Costo</th>
-                <td><i class="fa-solid fa-check ok"></i> Gratis</td>
-                <td><i class="fa-solid fa-check ok"></i> Gratis</td>
-                <td><i class="fa-solid fa-check ok"></i> Gratis</td>
+                <td data-label="CTC"><i class="fa-solid fa-check ok" aria-hidden="true"></i> Gratis</td>
+                <td data-label="Cisco"><i class="fa-solid fa-check ok" aria-hidden="true"></i> Gratis</td>
+                <td data-label="INFOTEP"><i class="fa-solid fa-check ok" aria-hidden="true"></i> Gratis</td>
               </tr>
               <tr>
                 <th scope="row">Certificación</th>
-                <td>Nacional</td>
-                <td>Internacional</td>
-                <td>Oficial del Estado</td>
+                <td data-label="CTC">Nacional</td>
+                <td data-label="Cisco">Internacional</td>
+                <td data-label="INFOTEP">Oficial del Estado</td>
               </tr>
               <tr>
                 <th scope="row">Modalidad</th>
-                <td>Presencial / Virtual</td>
-                <td>100% Virtual</td>
-                <td>Presencial / Virtual</td>
+                <td data-label="CTC">Presencial / Virtual</td>
+                <td data-label="Cisco">100% Virtual</td>
+                <td data-label="INFOTEP">Presencial / Virtual</td>
               </tr>
               <tr>
                 <th scope="row">Nivel</th>
-                <td>Inicial a Intermedio</td>
-                <td>Inicial a Avanzado</td>
-                <td>Inicial a Intermedio</td>
+                <td data-label="CTC">Inicial a Intermedio</td>
+                <td data-label="Cisco">Inicial a Avanzado</td>
+                <td data-label="INFOTEP">Inicial a Intermedio</td>
               </tr>
               <tr>
                 <th scope="row">Duración</th>
-                <td>Semanas a meses</td>
-                <td>Meses a un año</td>
-                <td>Semanas a meses</td>
+                <td data-label="CTC">Semanas a meses</td>
+                <td data-label="Cisco">Meses a un año</td>
+                <td data-label="INFOTEP">Semanas a meses</td>
               </tr>
               <tr>
                 <th scope="row">Ideal para</th>
-                <td>Empezar en tech</td>
-                <td>Certificarse internacional</td>
-                <td>Título oficial rápido</td>
+                <td data-label="CTC">Empezar en tech</td>
+                <td data-label="Cisco">Certificarse internacional</td>
+                <td data-label="INFOTEP">Título oficial rápido</td>
               </tr>
               <tr>
                 <th scope="row">Reconocimiento</th>
-                <td><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></td>
-                <td><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></td>
-                <td><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></td>
+                <td data-label="CTC"><i class="fa-solid fa-star" aria-hidden="true"></i><i class="fa-solid fa-star" aria-hidden="true"></i><i class="fa-solid fa-star" aria-hidden="true"></i><span class="sr-only">3 de 5 estrellas</span></td>
+                <td data-label="Cisco"><i class="fa-solid fa-star" aria-hidden="true"></i><i class="fa-solid fa-star" aria-hidden="true"></i><i class="fa-solid fa-star" aria-hidden="true"></i><i class="fa-solid fa-star" aria-hidden="true"></i><i class="fa-solid fa-star" aria-hidden="true"></i><span class="sr-only">5 de 5 estrellas</span></td>
+                <td data-label="INFOTEP"><i class="fa-solid fa-star" aria-hidden="true"></i><i class="fa-solid fa-star" aria-hidden="true"></i><i class="fa-solid fa-star" aria-hidden="true"></i><i class="fa-solid fa-star" aria-hidden="true"></i><span class="sr-only">4 de 5 estrellas</span></td>
               </tr>
             </tbody>
           </table>
@@ -714,7 +714,7 @@
         <div class="footer__brand">
           <a href="index.html" class="logo logo--footer" aria-label="Inicio">
             <div class="logo__symbol">
-              <svg viewBox="0 0 100 100" class="logo__svg logo__svg--nexus">
+                            <svg viewBox="0 0 100 100" class="logo__svg logo__svg--nexus">
                 <path d="M50 4 L88 26 L88 62 Q88 88 50 96 Q12 88 12 62 L12 26 Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-dasharray="240" stroke-dashoffset="240" class="nexus-shield"/>
                 <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.3" stroke-dasharray="3 6" class="nexus-ring nexus-ring--1"/>
                 <circle cx="50" cy="50" r="34" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5" stroke-dasharray="8 4" class="nexus-ring nexus-ring--2"/>
@@ -722,6 +722,27 @@
                 <path d="M50 50 L50 8 A42 42 0 0 1 85 28 Z" fill="currentColor" opacity="0.09" class="nexus-sweep"/>
                 <path d="M50 38 L60 44 L60 56 L50 62 L40 56 L40 44 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" class="nexus-core"/>
                 <circle cx="50" cy="50" r="4" fill="currentColor" class="nexus-center"/>
+                <circle cx="50" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="1.5" class="nexus-pulse nexus-pulse--1"/>
+                <circle cx="50" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="1.5" class="nexus-pulse nexus-pulse--2"/>
+                <circle cx="50" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="1.5" class="nexus-pulse nexus-pulse--3"/>
+                <line x1="50" y1="50" x2="50" y2="14" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--1"/>
+                <line x1="50" y1="50" x2="81" y2="32" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--2"/>
+                <line x1="50" y1="50" x2="81" y2="68" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--3"/>
+                <line x1="50" y1="50" x2="50" y2="86" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--4"/>
+                <line x1="50" y1="50" x2="19" y2="68" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--5"/>
+                <line x1="50" y1="50" x2="19" y2="32" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--6"/>
+                <circle cx="50" cy="14" r="2.5" fill="currentColor" class="nexus-node nexus-node--1"/>
+                <circle cx="81" cy="32" r="2.5" fill="currentColor" class="nexus-node nexus-node--2"/>
+                <circle cx="81" cy="68" r="2.5" fill="currentColor" class="nexus-node nexus-node--3"/>
+                <circle cx="50" cy="86" r="2.5" fill="currentColor" class="nexus-node nexus-node--4"/>
+                <circle cx="19" cy="68" r="2.5" fill="currentColor" class="nexus-node nexus-node--5"/>
+                <circle cx="19" cy="32" r="2.5" fill="currentColor" class="nexus-node nexus-node--6"/>
+                <line x1="50" y1="4"  x2="50" y2="9"  stroke="currentColor" stroke-width="1.8"/>
+                <line x1="88" y1="26" x2="83" y2="29" stroke="currentColor" stroke-width="1.8"/>
+                <line x1="88" y1="62" x2="83" y2="59" stroke="currentColor" stroke-width="1.8"/>
+                <line x1="50" y1="96" x2="50" y2="91" stroke="currentColor" stroke-width="1.8"/>
+                <line x1="12" y1="62" x2="17" y2="59" stroke="currentColor" stroke-width="1.8"/>
+                <line x1="12" y1="26" x2="17" y2="29" stroke="currentColor" stroke-width="1.8"/>
               </svg>
             </div>
           </a>

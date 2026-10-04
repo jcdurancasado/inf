@@ -10249,3 +10249,94 @@ html.jcdc-booted .boot-sequence {
 }
 
 /* Aviso: si aún tienes el CSS viejo de .cursos-btn, dejamos que conviva */
+
+/* ============================================
+   CONTADOR DE VISITAS · Index
+============================================ */
+.visitor-counter { padding: var(--space-2xl) 0; background: var(--bg-primary); }
+
+.visitor-counter__card {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: var(--space-xl);
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.visitor-counter__card:hover {
+  border-color: var(--border-medium);
+  box-shadow: 0 12px 40px rgba(0, 240, 255, 0.08);
+}
+
+.visitor-counter__title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--neon-cyan);
+  margin-bottom: var(--space-lg);
+  letter-spacing: 0.05em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.visitor-counter__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.visitor-counter__stat { display: flex; flex-direction: column; gap: 0.35rem; }
+.visitor-counter__label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.visitor-counter__value {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.visitor-counter__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--neon-cyan);
+  text-decoration: none;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: gap 0.3s ease;
+}
+.visitor-counter__link:hover { gap: 0.9rem; }
+
+[data-theme="light"] .visitor-counter__card {
+  background: #ffffff;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+}
+[data-theme="light"] .visitor-counter__title,
+[data-theme="light"] .visitor-counter__link { color: #0088cc; }
+[data-theme="light"] .visitor-counter__value {
+  background: linear-gradient(135deg, #0088cc, #7c3aed);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+@media (max-width: 480px) {
+  .visitor-counter__stats { grid-template-columns: 1fr; }
+  .visitor-counter__value { font-size: 1.7rem; }
+}

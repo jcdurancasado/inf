@@ -467,17 +467,40 @@
         <strong>Sin pagar nada. Sin requisitos raros. Sin excusas.</strong>
       </p>
 
-      <div class="cursos-banner__actions">
-        <a href="#curso-ctc" class="cursos-btn cursos-btn--ctc">
-          <i class="fa-solid fa-rocket"></i> Cursos CTC
-        </a>
-        <a href="#curso-cisco" class="cursos-btn cursos-btn--cisco">
-          <i class="fa-solid fa-network-wired"></i> Cisco Academy
-        </a>
-        <a href="#curso-infotep" class="cursos-btn cursos-btn--infotep">
-          <i class="fa-solid fa-graduation-cap"></i> INFOTEP
-        </a>
+      <!-- Chips informativos de plataformas (no son botones, solo contenido) -->
+      <div class="cursos-platforms" role="list" aria-label="Plataformas disponibles">
+        <div class="cursos-platform" role="listitem" data-platform="ctc">
+          <div class="cursos-platform__icon"><i class="fa-solid fa-rocket" aria-hidden="true"></i></div>
+          <div class="cursos-platform__body">
+            <span class="cursos-platform__name">CTC</span>
+            <span class="cursos-platform__meta">Centros Comunitarios</span>
+          </div>
+        </div>
+
+        <div class="cursos-platform" role="listitem" data-platform="cisco">
+          <div class="cursos-platform__icon"><i class="fa-solid fa-network-wired" aria-hidden="true"></i></div>
+          <div class="cursos-platform__body">
+            <span class="cursos-platform__name">Cisco Academy</span>
+            <span class="cursos-platform__meta">Certificación internacional</span>
+          </div>
+        </div>
+
+        <div class="cursos-platform" role="listitem" data-platform="infotep">
+          <div class="cursos-platform__icon"><i class="fa-solid fa-graduation-cap" aria-hidden="true"></i></div>
+          <div class="cursos-platform__body">
+            <span class="cursos-platform__name">INFOTEP</span>
+            <span class="cursos-platform__meta">Certificado oficial del Estado</span>
+          </div>
+        </div>
       </div>
+
+      <!-- CTA principal: único botón real de la sección -->
+      <a href="cursos.html" class="cursos-cta-main">
+        <span class="cursos-cta-main__label">EXPLORAR CATÁLOGO COMPLETO</span>
+        <span class="cursos-cta-main__arrow">
+          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+        </span>
+      </a>
 
       <div class="cursos-banner__meta">
         <span><i class="fa-solid fa-shield-halved"></i> Facilitador CTC</span>

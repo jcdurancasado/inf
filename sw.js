@@ -5,7 +5,7 @@
    · Assets → cache-first (rápido + offline)
 ============================================ */
 
-const CACHE_NAME = 'jcdc-v1.0.10';
+const CACHE_NAME = 'jcdc-v1.0.11';
 
 const ASSETS = [
   // Páginas
@@ -137,4 +137,61 @@ self.addEventListener('message', (event) => {
   if (event.data === 'SKIP_WAITING') {
     self.skipWaiting();
   }
+});
+
+/* ============================================
+   PUSH NOTIFICATIONS
+   · El SW recibe la orden de mostrar la notificación
+   · Al hacer clic, abre/enfoca la ventana
+============================================ */
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+
+  const targetUrl = (event.notification.data && event.notification.data.url) || './';
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then((clientList) => {
+        for (const client of clientList) {
+          if ('focus' in client) {
+            client.focus();
+            if ('navigate' in client && targetUrl !== './') {
+              client.navigate(targetUrl);
+            }
+            return;
+          }
+        }
+        if (clients.openWindow) {
+          return clients.openWindow(targetUrl);
+        }
+      })
+  );
+});
+
+/* ============================================
+   PUSH (servidor → cliente, preparado para futuro)
+============================================ */
+self.addEventListener('push', (event) => {
+  if (!event.data) return;
+
+  let payload = {
+    title: 'JCDC',
+    body: 'Nuevo aviso',
+    url: './'
+  };
+
+  try {
+    payload = Object.assign({}, payload, event.data.json());
+  } catch (e) {
+    payload.body = event.data.text();
+  }
+
+  event.waitUntil(
+    self.registration.showNotification(payload.title, {
+      body: payload.body,
+      icon: './img/icons/icon-192.png',
+      badge: './img/icons/icon-192.png',
+      data: { url: payload.url }
+    })
+  );
 });

@@ -8,7 +8,7 @@
         // 1. Tema
         var saved = localStorage.getItem('jcdc_theme');
         var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        var theme = saved || (prefersDark ? 'dark' : 'dark');
+        var theme = saved || (prefersDark ? 'dark' : 'light');
         document.documentElement.setAttribute('data-theme', theme);
 
         // 2. Boot ya visto en esta sesión → marcar html
@@ -164,63 +164,6 @@
           <line x1="12" y1="62" x2="17" y2="59" stroke="currentColor" stroke-width="1.8"/>
           <line x1="12" y1="26" x2="17" y2="29" stroke="currentColor" stroke-width="1.8"/>
         </svg>
-        <!--<svg viewBox="0 0 100 100" class="logo__svg logo__svg--nexus">
-          <path d="M50 4 L88 26 L88 62 Q88 88 50 96 Q12 88 12 62 L12 26 Z"
-                fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"
-                stroke-dasharray="240" stroke-dashoffset="240" class="nexus-shield"/>
-
-          <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="0.8"
-                  opacity="0.3" stroke-dasharray="3 6" class="nexus-ring nexus-ring--1"/>
-
-          <circle cx="50" cy="50" r="34" fill="none" stroke="currentColor" stroke-width="1"
-                  opacity="0.5" stroke-dasharray="8 4" class="nexus-ring nexus-ring--2"/>
-
-          <circle cx="50" cy="50" r="26" fill="none" stroke="currentColor" stroke-width="1.2"
-                  opacity="0.6" stroke-dasharray="2 3" class="nexus-ring nexus-ring--3"/>
-
-          <path d="M50 50 L50 8 A42 42 0 0 1 85 28 Z" fill="currentColor" opacity="0.09"
-                class="nexus-sweep"/>
-
-          <path d="M50 38 L60 44 L60 56 L50 62 L40 56 L40 44 Z"
-                fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"
-                class="nexus-core"/>
-
-          <circle cx="50" cy="50" r="4" fill="currentColor" class="nexus-center"/>
-
-          <circle cx="50" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="1.5"
-                  class="nexus-pulse nexus-pulse--1"/>
-          <circle cx="50" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="1.5"
-                  class="nexus-pulse nexus-pulse--2"/>
-          <circle cx="50" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="1.5"
-                  class="nexus-pulse nexus-pulse--3"/>
-
-          <line x1="50" y1="50" x2="50" y2="14" stroke="currentColor" stroke-width="0.9"
-                class="nexus-data nexus-data--1"/>
-          <line x1="50" y1="50" x2="81" y2="32" stroke="currentColor" stroke-width="0.9"
-                class="nexus-data nexus-data--2"/>
-          <line x1="50" y1="50" x2="81" y2="68" stroke="currentColor" stroke-width="0.9"
-                class="nexus-data nexus-data--3"/>
-          <line x1="50" y1="50" x2="50" y2="86" stroke="currentColor" stroke-width="0.9"
-                class="nexus-data nexus-data--4"/>
-          <line x1="50" y1="50" x2="19" y2="68" stroke="currentColor" stroke-width="0.9"
-                class="nexus-data nexus-data--5"/>
-          <line x1="50" y1="50" x2="19" y2="32" stroke="currentColor" stroke-width="0.9"
-                class="nexus-data nexus-data--6"/>
-
-          <circle cx="50" cy="14" r="2.5" fill="currentColor" class="nexus-node nexus-node--1"/>
-          <circle cx="81" cy="32" r="2.5" fill="currentColor" class="nexus-node nexus-node--2"/>
-          <circle cx="81" cy="68" r="2.5" fill="currentColor" class="nexus-node nexus-node--3"/>
-          <circle cx="50" cy="86" r="2.5" fill="currentColor" class="nexus-node nexus-node--4"/>
-          <circle cx="19" cy="68" r="2.5" fill="currentColor" class="nexus-node nexus-node--5"/>
-          <circle cx="19" cy="32" r="2.5" fill="currentColor" class="nexus-node nexus-node--6"/>
-
-          <line x1="50" y1="4"  x2="50" y2="9"  stroke="currentColor" stroke-width="1.8"/>
-          <line x1="88" y1="26" x2="83" y2="29" stroke="currentColor" stroke-width="1.8"/>
-          <line x1="88" y1="62" x2="83" y2="59" stroke="currentColor" stroke-width="1.8"/>
-          <line x1="50" y1="96" x2="50" y2="91" stroke="currentColor" stroke-width="1.8"/>
-          <line x1="12" y1="62" x2="17" y2="59" stroke="currentColor" stroke-width="1.8"/>
-          <line x1="12" y1="26" x2="17" y2="29" stroke="currentColor" stroke-width="1.8"/>
-        </svg>-->
         </div>
       </a>
 
@@ -233,7 +176,7 @@
           <li><a href="#enlaces" class="nav__link" data-nav-link>ENLACES</a></li>
           <li><a href="toolkit.html" class="nav__link">TOOLKIT</a></li>
           <li><a href="netpro.html" class="nav__link">NETPRO</a></li>
-          <li><a href="#cursos" class="nav__link" data-nav-link><i class="fa-solid fa-graduation-cap"></i>&nbsp;CURSOS</a></li>
+          <li><a href="cursos.html" class="nav__link"><i class="fa-solid fa-graduation-cap"></i>&nbsp;CURSOS</a></li>
           <li><a href="cotizador.html" class="nav__link nav__link--quote"><i class="fa-solid fa-calculator"></i>&nbsp;COTIZAR</a></li>
           <li><a href="#contacto" class="nav__link nav__link--cta" data-nav-link>CONTACTO</a></li>
         </ul>
@@ -270,7 +213,7 @@
           </h1>
 
           <p class="hero__subtitle">
-            <span class="typing-text" data-text="Especialista en diseñar, implementar y proteger infraestructuras tecnológicas modernas. Combino redes empresariales Cisco, ciberseguridad avanzada y docencia técnica para entregar soluciones medibles, seguras y sostenibles."></span>
+            <span class="typing-text" data-text="Especialista en diseñar, implementar y proteger infraestructuras tecnológicas modernas. Combino redes empresariales Cisco, ciberseguridad avanzada y docencia técnica para entregar soluciones medibles, seguras y sostenibles.">Especialista en diseñar, implementar y proteger infraestructuras tecnológicas modernas. Combino redes empresariales Cisco, ciberseguridad avanzada y docencia técnica para entregar soluciones medibles, seguras y sostenibles.</span>
           </p>
 
           <div class="hero__actions">
@@ -372,7 +315,7 @@
                 <span>CREDENTIAL</span>
                 <i class="fa-solid fa-award"></i>
               </a>
-              <a href="files/CV - Julio C. Duran Casado - Actualizado 01-10-2016.pdf" download="CV - Julio C. Duran Casado - Actualizado 01-10-2016.pdf" class="cyber-btn cyber-btn--primary">
+              <a href="files/CV - Julio C. Duran Casado.pdf" download="CV - Julio C. Duran Casado.pdf" class="cyber-btn cyber-btn--primary">
                 <span>DESCARGAR CV</span>
                 <i class="fa-solid fa-download"></i>
               </a>
@@ -543,60 +486,6 @@
       </div>
     </div>
 
-    <div class="cursos-grid">
-
-      <article id="curso-ctc" class="curso-card curso-card--ctc" data-reveal="left">
-        <span class="curso-card__tag">CTC</span>
-        <div class="curso-card__icon"><i class="fa-solid fa-rocket"></i></div>
-        <h3 class="curso-card__title">Capacitación CTC</h3>
-        <p class="curso-card__desc">
-          Programas prácticos de formación técnica para quienes quieren entrar al mundo laboral con habilidades reales.
-        </p>
-        <ul class="curso-card__list">
-          <li><i class="fa-solid fa-check"></i> Modalidad presencial y virtual</li>
-          <li><i class="fa-solid fa-check"></i> Enfoque 100% práctico</li>
-          <li><i class="fa-solid fa-check"></i> Certificación al finalizar</li>
-        </ul>
-        <a href="https://www.ctccomendador.com/cursos" target="_blank" rel="noopener" class="curso-card__btn">
-          Ver cursos <i class="fa-solid fa-arrow-right"></i>
-        </a>
-      </article>
-
-      <article id="curso-cisco" class="curso-card curso-card--cisco" data-reveal>
-        <span class="curso-card__tag">CISCO</span>
-        <div class="curso-card__icon"><i class="fa-solid fa-network-wired"></i></div>
-        <h3 class="curso-card__title">Cisco Networking Academy</h3>
-        <p class="curso-card__desc">
-          Cursos oficiales de redes, ciberseguridad, IoT y programación. Certificaciones reconocidas a nivel mundial.
-        </p>
-        <ul class="curso-card__list">
-          <li><i class="fa-solid fa-check"></i> Certificación internacional</li>
-          <li><i class="fa-solid fa-check"></i> Ruta: IT Essentials → CCNA</li>
-          <li><i class="fa-solid fa-check"></i> Acceso desde cualquier dispositivo</li>
-        </ul>
-        <a href="https://www.netacad.com/catalogs/learn?category=course" target="_blank" rel="noopener" class="curso-card__btn">
-          Ver cursos <i class="fa-solid fa-arrow-right"></i>
-        </a>
-      </article>
-
-      <article id="curso-infotep" class="curso-card curso-card--infotep" data-reveal="right">
-        <span class="curso-card__tag">INFOTEP</span>
-        <div class="curso-card__icon"><i class="fa-solid fa-graduation-cap"></i></div>
-        <h3 class="curso-card__title">INFOTEP</h3>
-        <p class="curso-card__desc">
-          Formación técnica gratuita y certificada por el Estado. Ideal para dar los primeros pasos sin excusas.
-        </p>
-        <ul class="curso-card__list">
-          <li><i class="fa-solid fa-check"></i> Cursos gratuitos</li>
-          <li><i class="fa-solid fa-check"></i> Certificado oficial</li>
-          <li><i class="fa-solid fa-check"></i> Múltiples áreas técnicas</li>
-        </ul>
-        <a href="https://infotepvirtual.com/index.php/component/gestion/?contr=oferta&task=oferta&Itemid=121" target="_blank" rel="noopener" class="curso-card__btn">
-          Ver cursos <i class="fa-solid fa-arrow-right"></i>
-        </a>
-      </article>
-
-    </div>
   </div>
 </section>
     
@@ -1408,7 +1297,7 @@
   </footer>
 
   <!-- STACK DE BOTONES FLOTANTES (arriba → abajo: subir, agendar, campana, pagos, sonido, tema, instalar) -->
-  <div class="floating-stack" aria-hidden="false">
+  <div class="floating-stack">
 
     <button class="scroll-top" id="scrollTop" aria-label="Subir al inicio">
       <span class="scroll-shock" aria-hidden="true"></span>

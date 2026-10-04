@@ -425,32 +425,6 @@
       </div>
     </section>
       
-        <!-- CONTADOR DE VISITAS -->
-    <section class="visitor-counter" aria-labelledby="visitor-title">
-      <div class="container">
-        <div class="visitor-counter__card" data-reveal>
-          <h2 id="visitor-title" class="visitor-counter__title">
-            <i class="fa-solid fa-chart-simple" aria-hidden="true"></i> Tráfico del sitio
-          </h2>
-
-          <div class="visitor-counter__stats">
-            <div class="visitor-counter__stat">
-              <span class="visitor-counter__label">Visitas este mes</span>
-              <span class="visitor-counter__value" id="visitsMonth">—</span>
-            </div>
-            <div class="visitor-counter__stat">
-              <span class="visitor-counter__label">Visitas totales</span>
-              <span class="visitor-counter__value" id="visitsTotal">—</span>
-            </div>
-          </div>
-
-          <a href="estadisticas.html" class="visitor-counter__link">
-            Ver más detalles <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
-          </a>
-        </div>
-      </div>
-    </section>
-
     <!-- SERVICIOS -->
     <section class="section" id="servicios" aria-labelledby="servicios-title">
       <div class="container">
@@ -968,6 +942,57 @@
         </div>
       </div>
     </section>
+
+<!-- CONTADOR DE VISITAS -->
+<section class="visitor-counter" aria-labelledby="visitor-title">
+  <div class="container">
+    <header class="visitor-counter__head" data-reveal>
+      <span class="section__eyebrow">[ TRÁFICO DEL SITIO ]</span>
+      <h2 id="visitor-title" class="visitor-counter__title">
+        MÉTRICAS REALES DE VISITANTES
+      </h2>
+      <div class="visitor-counter__live-row">
+        <span class="visitor-counter__live">
+          <span class="visitor-counter__pulse" aria-hidden="true"></span>
+          EN VIVO
+        </span>
+      </div>
+    </header>
+
+    <div class="visitor-counter__grid" data-reveal>
+      <div class="visitor-counter__item">
+        <div class="visitor-counter__icon"><i class="fa-solid fa-infinity"></i></div>
+        <div class="visitor-counter__value" id="visitsTotal">—</div>
+        <div class="visitor-counter__label">Visitas totales</div>
+      </div>
+
+      <div class="visitor-counter__item">
+        <div class="visitor-counter__icon"><i class="fa-solid fa-calendar-day"></i></div>
+        <div class="visitor-counter__value" id="visitsMonth">—</div>
+        <div class="visitor-counter__label">Este mes</div>
+      </div>
+
+      <div class="visitor-counter__item">
+        <div class="visitor-counter__icon"><i class="fa-solid fa-calendar-week"></i></div>
+        <div class="visitor-counter__value" id="visitsLastMonth">—</div>
+        <div class="visitor-counter__label">Mes anterior</div>
+      </div>
+
+      <div class="visitor-counter__item">
+        <div class="visitor-counter__icon"><i class="fa-solid fa-globe"></i></div>
+        <div class="visitor-counter__value" id="visitsCountries">—</div>
+        <div class="visitor-counter__label">Países</div>
+      </div>
+    </div>
+
+    <div class="visitor-counter__actions" data-reveal>
+      <a href="estadisticas.html" class="cyber-btn cyber-btn--primary cyber-btn--large">
+        <span>VER MÁS DETALLES</span>
+        <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+      </a>
+    </div>
+  </div>
+</section>
 
     <!-- FAQ -->
     <section class="section" id="faq" aria-labelledby="faq-title">

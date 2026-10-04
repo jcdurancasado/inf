@@ -168,10 +168,16 @@ const QuoteWizard = {
   },
 
   updateNextBtn() {
+    // Siguiente: bloqueado solo en paso 1 sin servicio elegido
     if (this.currentStep === 1 && !this.service) {
       this.els.next.disabled = true;
     } else {
       this.els.next.disabled = false;
+    }
+
+    // ✅ NUEVO: Atrás se habilita a partir del paso 2
+    if (this.els.back) {
+      this.els.back.disabled = this.currentStep <= 1;
     }
 
     // Último paso: ocultar botón "siguiente"

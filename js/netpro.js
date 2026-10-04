@@ -5,6 +5,19 @@
 'use strict';
 
 /* ==========================================
+   Helper · fetch con timeout compatible
+   (AbortSignal.timeout no existe en Safari < 16)
+   ========================================== */
+function fetchWithTimeout(url, opts = {}, ms = 8000) {
+  if (typeof AbortSignal !== 'undefined' && 'timeout' in AbortSignal) {
+    return fetch(url, { ...opts, signal: AbortSignal.timeout(ms) });
+  }
+  const ctrl = new AbortController();
+  const id = setTimeout(() => ctrl.abort(), ms);
+  return fetch(url, { ...opts, signal: ctrl.signal }).finally(() => clearTimeout(id));
+}
+
+/* ==========================================
    Helpers · IP con fallback multi-proveedor
    ========================================== */
 function countryToFlag(code) {
@@ -104,7 +117,7 @@ async function fetchMacVendor(mac) {
   let lastErr;
   for (const p of providers) {
     try {
-      const r = await fetch(p.url, { signal: AbortSignal.timeout(8000) });
+      const r = await fetchWithTimeout(p.url, {}, 8000);
       if (!r.ok) {
         if (r.status === 429) throw new Error('Rate limit. Espera un momento.');
         if (r.status === 404 || r.status === 204) throw new Error('MAC no encontrada');
@@ -243,9 +256,7 @@ async function fetchASN(query) {
     throw new Error('Esta API consulta por IP. Introduce una IP del ASN (ej. 8.8.8.8 para Google, 1.1.1.1 para Cloudflare).');
   }
 
-  const r = await fetch('https://ipinfo.io/' + encodeURIComponent(clean) + '/json', {
-    signal: AbortSignal.timeout(10000)
-  });
+  const r = await fetchWithTimeout('https://ipinfo.io/' + encodeURIComponent(clean) + '/json', {}, 10000);
   if (!r.ok) {
     if (r.status === 404) throw new Error('IP no encontrada');
     if (r.status === 429) throw new Error('Rate limit (50k/mes). Espera un momento.');

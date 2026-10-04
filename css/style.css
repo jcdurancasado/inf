@@ -11108,3 +11108,104 @@ html.jcdc-booted .boot-sequence {
   background: #059669 !important;
   color: #ffffff !important;
 }
+
+/* ============================================
+   CONTADOR · RESPONSIVE COMPLETO
+   (sobrescribe cualquier cosa anterior)
+============================================ */
+
+/* Desktop grande: 4 columnas */
+.visitor-counter__grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: var(--space-lg) !important;
+  max-width: 1100px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* Tablet (≤900px): 2 columnas */
+@media (max-width: 900px) {
+  .visitor-counter__grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: var(--space-md) !important;
+  }
+  .visitor-counter__item:not(:last-child)::after {
+    display: none !important;
+  }
+}
+
+/* Móvil (≤640px): 2 columnas más compactas */
+@media (max-width: 640px) {
+  .visitor-counter {
+    padding: var(--space-xl) 0;
+  }
+  .visitor-counter__grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: var(--space-sm) !important;
+    padding: 0 var(--space-sm);
+  }
+  .visitor-counter__item {
+    padding: var(--space-md) var(--space-xs);
+    text-align: center;
+  }
+  .visitor-counter__icon {
+    width: 44px;
+    height: 44px;
+    font-size: 1rem;
+    margin-bottom: var(--space-sm);
+  }
+  .visitor-counter__value {
+    font-size: clamp(1.5rem, 6vw, 2rem);
+    margin-bottom: 0.3rem;
+  }
+  .visitor-counter__label {
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+  }
+  .visitor-counter__head {
+    margin-bottom: var(--space-lg);
+    padding: 0 var(--space-md);
+  }
+  .visitor-counter__title {
+    font-size: clamp(1.1rem, 4.5vw, 1.4rem);
+    line-height: 1.2;
+  }
+  .visitor-counter__head .section__eyebrow {
+    font-size: 0.68rem;
+    padding: 0.4rem 0.9rem;
+  }
+  .visitor-counter__actions {
+    margin-top: var(--space-lg);
+    padding: 0 var(--space-md);
+  }
+  .visitor-counter__actions .cyber-btn {
+    width: 100%;
+    justify-content: center;
+    font-size: 0.78rem;
+    padding: 0.85rem 1.2rem;
+  }
+}
+
+/* Móvil muy pequeño (≤380px): 2 columnas aún más pequeñas */
+@media (max-width: 380px) {
+  .visitor-counter__grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.5rem !important;
+  }
+  .visitor-counter__item {
+    padding: var(--space-sm) var(--space-xs);
+  }
+  .visitor-counter__icon {
+    width: 38px;
+    height: 38px;
+    font-size: 0.9rem;
+  }
+  .visitor-counter__value {
+    font-size: 1.4rem;
+  }
+  .visitor-counter__label {
+    font-size: 0.55rem;
+  }
+}

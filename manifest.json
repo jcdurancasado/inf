@@ -1,15 +1,19 @@
 {
-  "name": "JCDC",
+  "id": "jcdurancasado-inf",
+  "name": "JCDC · Redes y Telecomunicaciones",
   "short_name": "JCDC",
   "description": "Ingeniero en Redes y Telecomunicaciones. Cisco, ciberseguridad y docencia técnica.",
-  "start_url": "./",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "orientation": "portrait-primary",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
   "background_color": "#0a0a0f",
   "theme_color": "#00f0ff",
   "lang": "es-DO",
+  "dir": "ltr",
   "categories": ["education", "productivity", "business"],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "img/icons/icon-192.png",
@@ -21,26 +25,32 @@
       "src": "img/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ],
   "shortcuts": [
     {
       "name": "Contacto",
       "short_name": "Contacto",
-      "url": "./#contacto",
+      "url": "./index.html#contacto",
       "icons": [{ "src": "img/icons/icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Toolkit Técnico",
       "short_name": "Toolkit",
-      "url": "./#toolkit",
+      "url": "./toolkit.html",
       "icons": [{ "src": "img/icons/icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Cursos",
       "short_name": "Cursos",
-      "url": "./#cursos",
+      "url": "./cursos.html",
+      "icons": [{ "src": "img/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Cotizador",
+      "short_name": "Cotizar",
+      "url": "./cotizador.html",
       "icons": [{ "src": "img/icons/icon-192.png", "sizes": "192x192" }]
     }
   ]

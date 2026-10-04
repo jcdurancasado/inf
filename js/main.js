@@ -985,6 +985,17 @@ const Notifications = {
     const saved = localStorage.getItem(this.KEY);
     this.enabled = saved === 'on' && Notification.permission === 'granted';
 
+    // Detectar iOS
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+                      || window.navigator.standalone === true;
+
+    // En iOS solo funciona si la PWA está instalada (iOS 16.4+)
+    if (isIOS && !isStandalone) {
+      this.btn.hidden = true;
+      return;
+    }
+
     // Si está bloqueado por el navegador, ocultar botón
     if (Notification.permission === 'denied') {
       this.btn.hidden = true;
@@ -1056,32 +1067,57 @@ const Notifications = {
     }
   },
 
-  sendWelcome() {
+  async sendWelcome() {
     if (!this.enabled || Notification.permission !== 'granted') return;
-    const notif = new Notification('¡Bienvenido a JCDurán!', {
+
+    const payload = {
       body: 'Recibirás avisos de nuevos cursos, tutoriales y proyectos.',
-      icon: '/img/icons/icon-192.png',
+      icon: './img/icons/icon-192.png',
+      badge: './img/icons/icon-192.png',
       tag: 'welcome',
-    });
-    notif.onclick = () => {
-      window.focus();
-      notif.close();
+      data: { url: './' }
     };
+
+    try {
+      if ('serviceWorker' in navigator) {
+        const reg = await navigator.serviceWorker.ready;
+        if (reg && reg.showNotification) {
+          return reg.showNotification('¡Bienvenido a JCDurán!', payload);
+        }
+      }
+      if (typeof Notification !== 'undefined') {
+        new Notification('¡Bienvenido a JCDurán!', payload);
+      }
+    } catch (err) {
+      console.warn('[Notif] No se pudo mostrar la bienvenida:', err);
+    }
   },
 
   // API pública
-  push(title, body, url) {
+  async push(title, body, url) {
     if (!this.enabled || Notification.permission !== 'granted') return;
-    const notif = new Notification(title, {
+
+    const payload = {
       body: body,
-      icon: '/img/icons/icon-192.png',
+      icon: './img/icons/icon-192.png',
+      badge: './img/icons/icon-192.png',
       tag: 'custom-' + Date.now(),
-    });
-    notif.onclick = () => {
-      window.focus();
-      if (url) window.location.href = url;
-      notif.close();
+      data: { url: url || './' }
     };
+
+    try {
+      if ('serviceWorker' in navigator) {
+        const reg = await navigator.serviceWorker.ready;
+        if (reg && reg.showNotification) {
+          return reg.showNotification(title, payload);
+        }
+      }
+      if (typeof Notification !== 'undefined') {
+        new Notification(title, payload);
+      }
+    } catch (err) {
+      console.warn('[Notif] push falló:', err);
+    }
   }
 };
 

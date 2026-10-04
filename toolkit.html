@@ -8,7 +8,7 @@
         // 1. Tema
         var saved = localStorage.getItem('jcdc_theme');
         var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        var theme = saved || (prefersDark ? 'dark' : 'dark');
+        var theme = saved || (prefersDark ? 'dark' : 'light');
         document.documentElement.setAttribute('data-theme', theme);
 
         // 2. Boot ya visto en esta sesión → marcar html
@@ -124,7 +124,7 @@
           <li><a href="index.html#enlaces" class="nav__link">ENLACES</a></li>
           <li><a href="toolkit.html" class="nav__link nav__link--active">TOOLKIT</a></li>
           <li><a href="netpro.html" class="nav__link">NETPRO</a></li>
-          <li><a href="index.html#cursos" class="nav__link"><i class="fa-solid fa-graduation-cap"></i>&nbsp;CURSOS</a></li>
+          <li><a href="cursos.html" class="nav__link"><i class="fa-solid fa-graduation-cap"></i>&nbsp;CURSOS</a></li>
           <li><a href="cotizador.html" class="nav__link nav__link--quote"><i class="fa-solid fa-calculator"></i>&nbsp;COTIZAR</a></li>
           <li><a href="index.html#contacto" class="nav__link nav__link--cta">CONTACTO</a></li>
         </ul>
@@ -1129,7 +1129,7 @@
   </footer>
 
   <!-- STACK DE BOTONES FLOTANTES -->
-  <div class="floating-stack" aria-hidden="false">
+  <div class="floating-stack">
 
     <button class="scroll-top" id="scrollTop" aria-label="Subir al inicio">
       <span class="scroll-shock" aria-hidden="true"></span>

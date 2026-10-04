@@ -55,7 +55,7 @@ const Theme = {
     // Solo aseguramos que esté sincronizado.
     const saved = localStorage.getItem('jcdc_theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const theme = saved || (prefersDark ? 'dark' : 'dark');
+    const theme = saved || (prefersDark ? 'dark' : 'light');
     if (html.getAttribute('data-theme') !== theme) {
       html.setAttribute('data-theme', theme);
     }
@@ -669,14 +669,23 @@ const CustomCursor = {
 
     const interactiveSelector = 'a, button, input, textarea, select, [role="button"], .term-chip, .cyber-btn, .link-card, .pay-card, .stack-chip';
 
+    let hoveredEl = null;
+
     document.addEventListener('mouseover', (e) => {
-      if (e.target.closest(interactiveSelector)) {
+      const el = e.target.closest(interactiveSelector);
+      if (el && el !== hoveredEl) {
+        hoveredEl = el;
         document.body.classList.add('cursor-hover');
       }
     });
 
     document.addEventListener('mouseout', (e) => {
-      if (e.target.closest(interactiveSelector)) {
+      const el = e.target.closest(interactiveSelector);
+      const next = e.relatedTarget && e.relatedTarget.closest
+        ? e.relatedTarget.closest(interactiveSelector)
+        : null;
+      if (el === hoveredEl && !next) {
+        hoveredEl = null;
         document.body.classList.remove('cursor-hover');
       }
     });
@@ -1857,12 +1866,17 @@ const PortsTable = {
     const tbody = document.getElementById('portsTbody');
     const searchInput = document.getElementById('portsSearch');
     const searchClear = document.getElementById('portsSearchClear');
-    const filters = document.querySelectorAll('.ports-filter');
+    const filters = document.querySelectorAll('.ports-filter[data-cat]');
     const emptyEl = document.getElementById('portsEmpty');
     const countEl = document.getElementById('portsCount');
     const totalEl = document.getElementById('portsTotal');
 
     if (!tbody) return;
+
+    // ✅ Asignar referencias ANTES del primer render
+    this.tbody = tbody;
+    this.emptyEl = emptyEl;
+    this.countEl = countEl;
 
     // Render inicial
     this.render();
@@ -1924,10 +1938,6 @@ const PortsTable = {
         });
     });
 
-    // Exponer referencias para render()
-    this.tbody = tbody;
-    this.emptyEl = emptyEl;
-    this.countEl = countEl;
   },
 
   render() {
@@ -2396,7 +2406,7 @@ const CmdList = {
     const list = document.getElementById('cmdList');
     const searchInput = document.getElementById('cmdSearch');
     const searchClear = document.getElementById('cmdSearchClear');
-    const filters = document.querySelectorAll('[data-os]');
+    const filters = document.querySelectorAll('.ports-filter[data-os]');
     const empty = document.getElementById('cmdEmpty');
     const countEl = document.getElementById('cmdCount');
     const totalEl = document.getElementById('cmdTotal');

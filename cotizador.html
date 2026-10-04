@@ -6,7 +6,7 @@
       try {
         var saved = localStorage.getItem('jcdc_theme');
         var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        var theme = saved || (prefersDark ? 'dark' : 'dark');
+        var theme = saved || (prefersDark ? 'dark' : 'light');
         document.documentElement.setAttribute('data-theme', theme);
         if (sessionStorage.getItem('jcdc_booted') === '1') {
           document.documentElement.classList.add('jcdc-booted');
@@ -115,7 +115,7 @@
           <li><a href="index.html#enlaces" class="nav__link">ENLACES</a></li>
           <li><a href="toolkit.html" class="nav__link">TOOLKIT</a></li>
           <li><a href="netpro.html" class="nav__link">NETPRO</a></li>
-          <li><a href="index.html#cursos" class="nav__link"><i class="fa-solid fa-graduation-cap"></i>&nbsp;CURSOS</a></li>
+          <li><a href="cursos.html" class="nav__link"><i class="fa-solid fa-graduation-cap"></i>&nbsp;CURSOS</a></li>
           <li><a href="cotizador.html" class="nav__link nav__link--quote nav__link--active"><i class="fa-solid fa-calculator"></i>&nbsp;COTIZAR</a></li>
           <li><a href="index.html#contacto" class="nav__link nav__link--cta">CONTACTO</a></li>
         </ul>
@@ -324,15 +324,36 @@
         <div class="footer__brand">
           <a href="index.html" class="logo logo--footer" aria-label="Inicio">
             <div class="logo__symbol">
-              <svg viewBox="0 0 100 100" class="logo__svg logo__svg--nexus">
-                <path d="M50 4 L88 26 L88 62 Q88 88 50 96 Q12 88 12 62 L12 26 Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-dasharray="240" stroke-dashoffset="240" class="nexus-shield"/>
-                <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.3" stroke-dasharray="3 6" class="nexus-ring nexus-ring--1"/>
-                <circle cx="50" cy="50" r="34" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5" stroke-dasharray="8 4" class="nexus-ring nexus-ring--2"/>
-                <circle cx="50" cy="50" r="26" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.6" stroke-dasharray="2 3" class="nexus-ring nexus-ring--3"/>
-                <path d="M50 50 L50 8 A42 42 0 0 1 85 28 Z" fill="currentColor" opacity="0.09" class="nexus-sweep"/>
-                <path d="M50 38 L60 44 L60 56 L50 62 L40 56 L40 44 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" class="nexus-core"/>
-                <circle cx="50" cy="50" r="4" fill="currentColor" class="nexus-center"/>
-              </svg>
+                              <svg viewBox="0 0 100 100" class="logo__svg logo__svg--nexus">
+                  <path d="M50 4 L88 26 L88 62 Q88 88 50 96 Q12 88 12 62 L12 26 Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-dasharray="240" stroke-dashoffset="240" class="nexus-shield"/>
+                  <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.3" stroke-dasharray="3 6" class="nexus-ring nexus-ring--1"/>
+                  <circle cx="50" cy="50" r="34" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5" stroke-dasharray="8 4" class="nexus-ring nexus-ring--2"/>
+                  <circle cx="50" cy="50" r="26" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.6" stroke-dasharray="2 3" class="nexus-ring nexus-ring--3"/>
+                  <path d="M50 50 L50 8 A42 42 0 0 1 85 28 Z" fill="currentColor" opacity="0.09" class="nexus-sweep"/>
+                  <path d="M50 38 L60 44 L60 56 L50 62 L40 56 L40 44 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" class="nexus-core"/>
+                  <circle cx="50" cy="50" r="4" fill="currentColor" class="nexus-center"/>
+                  <circle cx="50" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="1.5" class="nexus-pulse nexus-pulse--1"/>
+                  <circle cx="50" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="1.5" class="nexus-pulse nexus-pulse--2"/>
+                  <circle cx="50" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="1.5" class="nexus-pulse nexus-pulse--3"/>
+                  <line x1="50" y1="50" x2="50" y2="14" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--1"/>
+                  <line x1="50" y1="50" x2="81" y2="32" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--2"/>
+                  <line x1="50" y1="50" x2="81" y2="68" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--3"/>
+                  <line x1="50" y1="50" x2="50" y2="86" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--4"/>
+                  <line x1="50" y1="50" x2="19" y2="68" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--5"/>
+                  <line x1="50" y1="50" x2="19" y2="32" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--6"/>
+                  <circle cx="50" cy="14" r="2.5" fill="currentColor" class="nexus-node nexus-node--1"/>
+                  <circle cx="81" cy="32" r="2.5" fill="currentColor" class="nexus-node nexus-node--2"/>
+                  <circle cx="81" cy="68" r="2.5" fill="currentColor" class="nexus-node nexus-node--3"/>
+                  <circle cx="50" cy="86" r="2.5" fill="currentColor" class="nexus-node nexus-node--4"/>
+                  <circle cx="19" cy="68" r="2.5" fill="currentColor" class="nexus-node nexus-node--5"/>
+                  <circle cx="19" cy="32" r="2.5" fill="currentColor" class="nexus-node nexus-node--6"/>
+                  <line x1="50" y1="4"  x2="50" y2="9"  stroke="currentColor" stroke-width="1.8"/>
+                  <line x1="88" y1="26" x2="83" y2="29" stroke="currentColor" stroke-width="1.8"/>
+                  <line x1="88" y1="62" x2="83" y2="59" stroke="currentColor" stroke-width="1.8"/>
+                  <line x1="50" y1="96" x2="50" y2="91" stroke="currentColor" stroke-width="1.8"/>
+                  <line x1="12" y1="62" x2="17" y2="59" stroke="currentColor" stroke-width="1.8"/>
+                  <line x1="12" y1="26" x2="17" y2="29" stroke="currentColor" stroke-width="1.8"/>
+                </svg>
             </div>
           </a>
           <div class="footer__status">
@@ -377,7 +398,7 @@
     </div>
   </footer>
 
-  <div class="floating-stack" aria-hidden="false">
+  <div class="floating-stack">
 
     <button class="scroll-top" id="scrollTop" aria-label="Subir al inicio">
       <span class="scroll-shock" aria-hidden="true"></span>

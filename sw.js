@@ -1,67 +1,140 @@
 /* ============================================
    JCDURANCASADO · Service Worker
-   Cache-first para assets estáticos
+   Estrategia mixta:
+   · HTML → network-first (siempre la versión nueva)
+   · Assets → cache-first (rápido + offline)
 ============================================ */
 
-const CACHE_NAME = 'jcdc-v1.0.6';
+const CACHE_NAME = 'jcdc-v1.0.7';
 
 const ASSETS = [
+  // Páginas
   './',
   './index.html',
+  './toolkit.html',
+  './netpro.html',
+  './cotizador.html',
+  './cursos.html',
+  // Estilos
   './css/style.css',
+  // Scripts
   './js/main.js',
-  './img/foto.png',
+  './js/cotizador.js',
+  './js/netpro.js',
+  // Manifest y assets
   './manifest.json',
+  './img/foto.png',
   './img/icons/icon-192.png',
   './img/icons/icon-512.png'
 ];
 
-/* INSTALL — precachear assets */
+/* ============================================
+   INSTALL — precachear assets
+============================================ */
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(ASSETS).catch(() => {}))
+      .then((cache) => {
+        // addAll falla si UN solo asset falla. Los agregamos uno a uno
+        // para que un icono faltante no rompa toda la instalación.
+        return Promise.all(
+          ASSETS.map((url) =>
+            cache.add(url).catch((err) => {
+              console.warn('[SW] No se pudo cachear:', url, err);
+            })
+          )
+        );
+      })
       .then(() => self.skipWaiting())
   );
 });
 
-/* ACTIVATE — limpiar caches viejos */
+/* ============================================
+   ACTIVATE — limpiar caches viejos
+============================================ */
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
       .then((keys) =>
         Promise.all(
-          keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))
+          keys
+            .filter((k) => k !== CACHE_NAME)
+            .map((k) => caches.delete(k))
         )
       )
       .then(() => self.clients.claim())
   );
 });
 
-/* FETCH — cache-first con fallback a red */
+/* ============================================
+   FETCH — estrategia mixta
+============================================ */
 self.addEventListener('fetch', (event) => {
   const req = event.request;
 
   // Solo GET
   if (req.method !== 'GET') return;
 
-  // No cachear el formulario de contacto ni APIs externas
   const url = new URL(req.url);
+
+  // No interceptar APIs externas ni el backend de contacto
   if (url.pathname.includes('/api/')) return;
   if (url.origin !== self.location.origin) return;
 
+  // ----------------------------------------
+  // HTML (navegación) → network-first
+  // ----------------------------------------
+  if (req.mode === 'navigate') {
+    event.respondWith(
+      fetch(req)
+        .then((resp) => {
+          if (resp && resp.status === 200 && resp.type === 'basic') {
+            const clone = resp.clone();
+            caches.open(CACHE_NAME).then((c) => c.put(req, clone));
+          }
+          return resp;
+        })
+        .catch(() =>
+          caches.match(req).then((c) => c || caches.match('./index.html'))
+        )
+    );
+    return;
+  }
+
+  // ----------------------------------------
+  // Assets (CSS / JS / imágenes / fuentes locales) → cache-first
+  // ----------------------------------------
   event.respondWith(
     caches.match(req).then((cached) => {
       if (cached) return cached;
 
       return fetch(req)
         .then((resp) => {
-          if (!resp || resp.status !== 200 || resp.type !== 'basic') return resp;
+          // Solo cachear respuestas válidas del mismo origen
+          if (!resp || resp.status !== 200 || resp.type !== 'basic') {
+            return resp;
+          }
           const clone = resp.clone();
           caches.open(CACHE_NAME).then((c) => c.put(req, clone));
           return resp;
         })
-        .catch(() => caches.match('./index.html'));
+        .catch(() => {
+          // Offline y no está en cache → error silencioso (no HTML)
+          return new Response('', {
+            status: 408,
+            statusText: 'Offline'
+          });
+        });
     })
   );
+});
+
+/* ============================================
+   MESSAGE — permite forzar skipWaiting desde main.js
+   (opcional: úsalo si quieres aplicar updates al instante)
+============================================ */
+self.addEventListener('message', (event) => {
+  if (event.data === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });

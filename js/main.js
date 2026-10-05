@@ -1082,11 +1082,11 @@ const Notifications = {
       if ('serviceWorker' in navigator) {
         const reg = await navigator.serviceWorker.ready;
         if (reg && reg.showNotification) {
-          return reg.showNotification('¡Bienvenido a JCDurán!', payload);
+          return reg.showNotification('¡Bienvenido a JCDURANCASADO!', payload);
         }
       }
       if (typeof Notification !== 'undefined') {
-        new Notification('¡Bienvenido a JCDurán!', payload);
+        new Notification('¡Bienvenido a JCDURANCASADO!', payload);
       }
     } catch (err) {
       console.warn('[Notif] No se pudo mostrar la bienvenida:', err);

@@ -1296,6 +1296,44 @@ const QuoteWizard = {
       }
       // === FIN SUBIR A FIRESTORE ===
 
+      // === ENVIAR EMAIL AL ADMIN (solo una vez por documento) ===
+      try {
+        this._emailsEnviados = this._emailsEnviados || {};
+        if (!this._emailsEnviados[codigoVC]) {
+          this._emailsEnviados[codigoVC] = true;
+
+          var payload = {
+            tipo: isFactura ? 'factura' : 'cotizacion',
+            numero: numDoc,
+            codigoVC: codigoVC,
+            cliente: rep ? (rep.cliente.nombre || 'Sin nombre') : 'Sin nombre',
+            total: total,
+            moneda: isReparacion ? 'DOP' : 'USD',
+            fecha: date
+          };
+
+          fetch('https://jcdcapi.vercel.app/api/enviar-cotizacion', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          })
+          .then(function (r) { return r.json(); })
+          .then(function (d) {
+            if (d && d.ok) {
+              console.log('[JCDC] ✓ Email enviado al admin:', numDoc);
+            } else {
+              console.warn('[JCDC] Email no enviado:', d);
+            }
+          })
+          .catch(function (err) {
+            console.warn('[JCDC] No se pudo enviar email (no bloquea):', err);
+          });
+        }
+      } catch (e) {
+        console.warn('[JCDC] Error enviando email:', e);
+      }
+      // === FIN ENVIAR EMAIL ===
+
       return codigoVC;
     } catch (e) {
       console.error('[JCDC] Error guardando registro:', e);

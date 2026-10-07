@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <!-- Anti-flash: aplica tema Y oculta boot ANTES de pintar -->
+  <script>
+    (function() {
+      try {
+        // 1. Tema
+        var saved = localStorage.getItem('jcdc_theme');
+        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var theme = saved || (prefersDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+
+        // 2. Boot ya visto en esta sesión → marcar html
+        if (sessionStorage.getItem('jcdc_booted') === '1') {
+          document.documentElement.classList.add('jcdc-booted');
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
+
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="format-detection" content="telephone=no" />
+  
+  <!-- SEO -->
+  <meta name="description" content="Julio C. Durán Casado - Ingeniero en Redes y Telecomunicaciones. Diseño, implementación y protección de infraestructuras tecnológicas modernas." />
+  <link rel="canonical" href="https://jcdurancasado.github.io/inf/" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="keywords" content="Julio Durán Casado, redes, Cisco, CCNA, CCNP, CyberOps, ciberseguridad, telecomunicaciones, República Dominicana" />
+  <meta name="author" content="Julio César Durán Casado" />
+  <meta name="theme-color" content="#00f0ff" />
+
+  <!-- Open Graph (Facebook, WhatsApp, LinkedIn) -->
+  <meta property="og:title" content="Julio C. Durán Casado - Ingeniero en Redes y Telecomunicaciones" />
+  <meta property="og:description" content="Especialista en diseñar, implementar y proteger infraestructuras tecnológicas modernas." />
+  <meta property="og:image" content="https://jcdurancasado.github.io/inf/img/foto.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:url" content="https://jcdurancasado.github.io/inf/" />
+  <meta property="og:site_name" content="JCDC · Redes y Telecomunicaciones" />
+  <meta property="og:locale" content="es_DO" />
+  <meta property="og:type" content="website" />
+
+    <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Julio C. Durán Casado - Ingeniero en Redes y Telecomunicaciones" />
+  <meta name="twitter:description" content="Especialista en diseñar, implementar y proteger infraestructuras tecnológicas modernas." />
+  <meta name="twitter:image" content="https://jcdurancasado.github.io/inf/img/foto.png" />
+
+  <title>JCDC - Principal</title>
+
+  <!-- Fuentes y estilos -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Rajdhani:wght@400;500;600&family=Share+Tech+Mono&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Rajdhani:wght@400;500;600&family=Share+Tech+Mono&display=swap" media="print" onload="this.media='all'" />
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Rajdhani:wght@400;500;600&family=Share+Tech+Mono&display=swap" />
+  </noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="icon" type="image/png" href="img/foto.png" />
+  <link rel="apple-touch-icon" href="img/icons/icon-192.png" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="css/style.css" />
+
+  <!-- Analytics · GoatCounter (sin cookies, 2 KB) -->
+  <script data-goatcounter="https://jcdurancasado.goatcounter.com/count"
+          async src="//gc.zgo.at/count.js"></script>
+
+  <!-- Structured Data: Person (ayuda a Google a mostrar tu foto en búsquedas) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Julio César Durán Casado",
+    "alternateName": "JCDC",
+    "url": "https://jcdurancasado.github.io/inf/",
+    "image": "https://jcdurancasado.github.io/inf/img/foto.png",
+    "jobTitle": "Ingeniero en Redes y Telecomunicaciones",
+    "description": "Especialista en diseño, implementación y protección de infraestructuras tecnológicas modernas. Instructor Cisco Networking Academy y facilitador CTC.",
+    "worksFor": [
+      {
+        "@type": "Organization",
+        "name": "Cisco Networking Academy"
+      },
+      {
+        "@type": "Organization",
+        "name": "Centros Tecnológicos Comunitarios (CTC)"
+      }
+    ],
+    "alumniOf": {
+      "@type": "CollegeOrUniversity",
+      "name": "UNICARIBE"
+    },
+    "knowsAbout": [
+      "Redes Cisco",
+      "Ciberseguridad",
+      "Telecomunicaciones",
+      "CCNA",
+      "CCNP",
+      "CyberOps",
+      "Docencia técnica",
+      "Modelo OSI",
+      "Enrutamiento y conmutación"
+    ],
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "DO"
+    },
+    "sameAs": [
+      "https://linkedin.com/in/jcdurancasado",
+      "https://github.com/jcdurancasado",
+      "https://twitter.com/jcdurancasado",
+      "https://instagram.com/jcdurancasado",
+      "https://www.credly.com/users/jcdurancasado",
+      "https://eu.credential.net/profile/jcdurancasado"
+    ]
+  }
+  </script>
+</head>
+
+<body>
+
+  <!-- BARRA DE PROGRESO DE SCROLL -->
+<div class="scroll-progress" aria-hidden="true">
+  <div class="scroll-progress__bar" id="scrollProgressBar"></div>
+</div>
+
+<!-- CURSOR PERSONALIZADO -->
+<div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+<div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+  <div class="scanlines" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+  <div class="cyber-grid" aria-hidden="true"></div>
+  <canvas id="particles" class="particles" aria-hidden="true"></canvas>
+
+  <div class="toast-container" aria-live="polite"></div>
+
+  <div class="boot-sequence" id="boot-sequence">
+    <div class="boot-content">
+      <div class="boot-logo"><span class="boot-text">JCDURANCASADO · NETCORE</span></div>
+      <div class="boot-lines" id="boot-lines"></div>
+      <div class="boot-progress"><div class="boot-bar" id="boot-bar"></div></div>
+      <div class="boot-status" id="boot-status">Inicializando NETCORE...</div>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header class="header" data-header>
+    <div class="header__scanline"></div>
+    <div class="container header__container">
+      <a href="#inicio" class="logo" aria-label="Inicio">
+        <div class="logo__symbol">
+        <svg viewBox="0 0 100 100" class="logo__svg logo__svg--nexus">
+          <!-- Escudo exterior que se dibuja -->
+          <path d="M50 4 L88 26 L88 62 Q88 88 50 96 Q12 88 12 62 L12 26 Z"
+                fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"
+                stroke-dasharray="240" stroke-dashoffset="240" class="nexus-shield"/>
+
+          <!-- Anillo exterior punteado -->
+          <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="0.8"
+                  opacity="0.3" stroke-dasharray="3 6" class="nexus-ring nexus-ring--1"/>
+
+          <!-- Anillo medio girando al revés -->
+          <circle cx="50" cy="50" r="34" fill="none" stroke="currentColor" stroke-width="1"
+                  opacity="0.5" stroke-dasharray="8 4" class="nexus-ring nexus-ring--2"/>
+
+          <!-- Anillo interior punteado -->
+          <circle cx="50" cy="50" r="26" fill="none" stroke="currentColor" stroke-width="1.2"
+                  opacity="0.6" stroke-dasharray="2 3" class="nexus-ring nexus-ring--3"/>
+
+          <!-- Barrido radar -->
+          <path d="M50 50 L50 8 A42 42 0 0 1 85 28 Z" fill="currentColor" opacity="0.09"
+                class="nexus-sweep"/>
+
+          <!-- Hexágono núcleo -->
+          <path d="M50 38 L60 44 L60 56 L50 62 L40 56 L40 44 Z"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"
+                class="nexus-core"/>
+
+          <!-- Punto central -->
+          <circle cx="50" cy="50" r="4" fill="currentColor" class="nexus-center"/>
+
+          <!-- 3 Ondas expansivas en cascada -->
+          <circle cx="50" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="1.5"
+                  class="nexus-pulse nexus-pulse--1"/>
+          <circle cx="50" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="1.5"
+                  class="nexus-pulse nexus-pulse--2"/>
+          <circle cx="50" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="1.5"
+                  class="nexus-pulse nexus-pulse--3"/>
+
+          <!-- Líneas de datos fluyendo -->
+          <line x1="50" y1="50" x2="50" y2="14" stroke="currentColor" stroke-width="0.9"
+                class="nexus-data nexus-data--1"/>
+          <line x1="50" y1="50" x2="81" y2="32" stroke="currentColor" stroke-width="0.9"
+                class="nexus-data nexus-data--2"/>
+          <line x1="50" y1="50" x2="81" y2="68" stroke="currentColor" stroke-width="0.9"
+                class="nexus-data nexus-data--3"/>
+          <line x1="50" y1="50" x2="50" y2="86" stroke="currentColor" stroke-width="0.9"
+                class="nexus-data nexus-data--4"/>
+          <line x1="50" y1="50" x2="19" y2="68" stroke="currentColor" stroke-width="0.9"
+                class="nexus-data nexus-data--5"/>
+          <line x1="50" y1="50" x2="19" y2="32" stroke="currentColor" stroke-width="0.9"
+                class="nexus-data nexus-data--6"/>
+
+          <!-- 6 Nodos periféricos -->
+          <circle cx="50" cy="14" r="2.5" fill="currentColor" class="nexus-node nexus-node--1"/>
+          <circle cx="81" cy="32" r="2.5" fill="currentColor" class="nexus-node nexus-node--2"/>
+          <circle cx="81" cy="68" r="2.5" fill="currentColor" class="nexus-node nexus-node--3"/>
+          <circle cx="50" cy="86" r="2.5" fill="currentColor" class="nexus-node nexus-node--4"/>
+          <circle cx="19" cy="68" r="2.5" fill="currentColor" class="nexus-node nexus-node--5"/>
+          <circle cx="19" cy="32" r="2.5" fill="currentColor" class="nexus-node nexus-node--6"/>
+
+          <!-- Marcas HUD en las 6 puntas del escudo -->
+          <line x1="50" y1="4"  x2="50" y2="9"  stroke="currentColor" stroke-width="1.8"/>
+          <line x1="88" y1="26" x2="83" y2="29" stroke="currentColor" stroke-width="1.8"/>
+          <line x1="88" y1="62" x2="83" y2="59" stroke="currentColor" stroke-width="1.8"/>
+          <line x1="50" y1="96" x2="50" y2="91" stroke="currentColor" stroke-width="1.8"/>
+          <line x1="12" y1="62" x2="17" y2="59" stroke="currentColor" stroke-width="1.8"/>
+          <line x1="12" y1="26" x2="17" y2="29" stroke="currentColor" stroke-width="1.8"/>
+        </svg>
+        </div>
+      </a>
+
+      <nav id="nav-menu" class="nav" data-nav aria-label="Navegación principal">
+        <ul class="nav__list">
+          <li><a href="#inicio" class="nav__link nav__link--active" data-nav-link>INICIO</a></li>
+          <li><a href="#perfil" class="nav__link" data-nav-link>PERFIL</a></li>
+          <li><a href="#servicios" class="nav__link" data-nav-link>SERVICIOS</a></li>
+          <li><a href="#trayectoria" class="nav__link" data-nav-link>TRAYECTORIA</a></li>
+          <li><a href="#enlaces" class="nav__link" data-nav-link>ENLACES</a></li>
+          <li><a href="toolkit.html" class="nav__link">TOOLKIT</a></li>
+          <li><a href="netpro.html" class="nav__link">NETPRO</a></li>
+          <li><a href="cursos.html" class="nav__link"><i class="fa-solid fa-graduation-cap"></i>&nbsp;CURSOS</a></li>
+          <li><a href="cotizador.html" class="nav__link nav__link--quote"><i class="fa-solid fa-calculator"></i>&nbsp;COTIZAR</a></li>
+          <li><a href="#contacto" class="nav__link nav__link--cta" data-nav-link>CONTACTO</a></li>
+        </ul>
+      </nav>
+
+      <button class="nav-toggle" aria-label="Menú" aria-expanded="false" aria-controls="nav-menu" data-nav-toggle>
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero" id="inicio" aria-labelledby="hero-title">
+      <div class="hero__bg" aria-hidden="true">
+        <div class="hero__gradient"></div>
+        <div class="hero__grid-perspective"></div>
+      </div>
+
+      <div class="container hero__container">
+        <div class="hero__content" data-reveal="left">
+          <div class="hero__badge">
+            <span class="badge__text">
+              <i class="fa-solid fa-signal"></i>
+              DISPONIBLE PARA PROYECTOS
+            </span>
+          </div>
+
+          <h1 id="hero-title" class="hero__title">
+            <span class="hero__prefix">INGENIERO EN</span>
+            <span class="text-gradient">REDES Y TELECOMUNICACIONES</span>
+          </h1>
+
+          <p class="hero__subtitle">
+            <span class="typing-text" data-text="Especialista en diseñar, implementar y proteger infraestructuras tecnológicas modernas. Combino redes empresariales Cisco, ciberseguridad avanzada y docencia técnica para entregar soluciones medibles, seguras y sostenibles.">Especialista en diseñar, implementar y proteger infraestructuras tecnológicas modernas. Combino redes empresariales Cisco, ciberseguridad avanzada y docencia técnica para entregar soluciones medibles, seguras y sostenibles.</span>
+          </p>
+
+          <div class="hero__actions">
+            <a href="#contacto" class="cyber-btn cyber-btn--primary cyber-btn--large" data-scroll-to="contacto">
+              <span>CONTACTAR</span>
+              <i class="fa-solid fa-tower-broadcast"></i>
+            </a>
+            <a href="#perfil" class="cyber-btn cyber-btn--secondary cyber-btn--large" data-scroll-to="perfil">
+              <span>VER PERFIL</span>
+              <i class="fa-solid fa-user-astronaut"></i>
+            </a>
+          </div>
+        </div>
+
+        <div class="hero__visual" data-reveal="right">
+          <div class="hologram-container">
+            <div class="hologram-ring hologram-ring--1"></div>
+            <div class="hologram-ring hologram-ring--2"></div>
+            <div class="hologram-ring hologram-ring--3"></div>
+            <div class="hologram-core">
+              <img src="img/foto.png" alt="Julio C. Durán Casado" class="hologram-img" loading="eager" fetchpriority="high" decoding="async" width="400" height="400" />
+            </div>
+            <div class="hologram-scan"></div>
+            <div class="hologram-data">
+              <div class="data-line"><span class="data-label">ROL:</span> ENGINEER</div>
+              <div class="data-line"><span class="data-label">ESPECIALIDAD:</span> REDES · CIBERSEGURIDAD</div>
+              <div class="data-line"><span class="data-label">UBICACIÓN:</span> REP. DOMINICANA</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PERFIL -->
+    <section class="section section--cyber" id="perfil" aria-labelledby="perfil-title">
+      <div class="cyber-section__bg" aria-hidden="true"><div class="cyber-lines"></div></div>
+
+      <div class="container">
+        <header class="section__header" data-reveal>
+          <span class="section__eyebrow">[ PERFIL PROFESIONAL ]</span>
+          <h2 id="perfil-title" class="section__title">QUIÉN SOY · QUÉ HAGO</h2>
+        </header>
+
+        <div class="profile" data-reveal>
+          <aside class="profile__id">
+            <div class="id-card">
+              <div class="id-card__header">
+                <span class="id-card__chip"></span>
+                <span class="id-card__type">CREDENCIAL DIGITAL</span>
+              </div>
+              <div class="id-card__photo">
+                <img src="img/foto.png" alt="Julio Durán" loading="lazy" />
+                <div class="id-card__scan"></div>
+              </div>
+              <div class="id-card__name">JULIO C. DURÁN CASADO</div>
+              <div class="id-card__role">NETWORK AND TELECOMMUNICATIONS ENGINEERING</div>
+              <div class="id-card__id">ID: RD · 001 · JCDC</div>
+            </div>
+          </aside>
+
+          <div class="profile__body">
+            <div class="profile__block">
+              <h3 class="profile__subtitle"><i class="fa-solid fa-user-astronaut"></i> QUIÉN SOY</h3>
+              <p>Ingeniero en <strong>Redes y Telecomunicaciones</strong> graduado de <strong>UNICARIBE</strong>. Especialista certificado en infraestructura <strong>Cisco</strong>, ciberseguridad y educación tecnológica, con más de <strong>7 años</strong> de experiencia activa.</p>
+            </div>
+
+            <div class="profile__block">
+              <h3 class="profile__subtitle"><i class="fa-solid fa-microchip"></i> QUÉ HAGO</h3>
+              <ul class="profile__list">
+                <li><i class="fa-solid fa-network-wired"></i> Diseño e implementación de redes empresariales Cisco</li>
+                <li><i class="fa-solid fa-shield-halved"></i> Auditoría y protección de infraestructuras (Zero Trust)</li>
+                <li><i class="fa-solid fa-chalkboard-user"></i> Instructor oficial Cisco Networking Academy</li>
+                <li><i class="fa-solid fa-screwdriver-wrench"></i> Soporte técnico y optimización de sistemas</li>
+              </ul>
+            </div>
+
+            <div class="profile__block">
+              <h3 class="profile__subtitle"><i class="fa-solid fa-id-badge"></i> DATOS RÁPIDOS</h3>
+              <div class="profile__specs">
+                <div class="spec"><span class="spec__label">UBICACIÓN</span><span class="spec__value">República Dominicana</span></div>
+                <div class="spec"><span class="spec__label">DISPONIBILIDAD</span><span class="spec__value spec__value--active">HORARIA Y GEOGRÁFICA</span></div>
+                <div class="spec"><span class="spec__label">IDIOMAS</span><span class="spec__value">Español nativo</span></div>
+                <div class="spec"><span class="spec__label">EXPERIENCIA</span><span class="spec__value">7+ años activo</span></div>
+                <div class="spec"><span class="spec__label">ESTUDIANTES</span><span class="spec__value">10,000+ capacitados</span></div>
+              </div>
+            </div>
+
+            <div class="profile__manifesto">
+              <i class="fa-solid fa-quote-left"></i>
+              No hablo en técnico cuando explico. La tecnología debe servir a las personas, no al revés.
+            </div>
+
+            <div class="profile__actions">
+              <a href="https://www.credly.com/users/jcdurancasado" target="_blank" rel="me noopener" class="cyber-btn cyber-btn--primary">
+                <span>CREDLY</span>
+                <i class="fa-solid fa-certificate"></i>
+              </a>
+              <a href="https://eu.credential.net/profile/jcdurancasado" target="_blank" rel="me noopener" class="cyber-btn cyber-btn--secondary">
+                <span>CREDENTIAL</span>
+                <i class="fa-solid fa-award"></i>
+              </a>
+              <a href="files/CV - Julio C. Duran Casado.pdf" download="CV - Julio C. Duran Casado.pdf" class="cyber-btn cyber-btn--primary">
+                <span>DESCARGAR CV</span>
+                <i class="fa-solid fa-download"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+      <!-- ESTADÍSTICAS -->
+    <section class="stats" aria-label="Estadísticas profesionales">
+      <div class="container">
+        <div class="stats__grid" data-reveal>
+    
+          <div class="stat" data-count="10000" data-suffix="+">
+            <div class="stat__icon"><i class="fa-solid fa-users"></i></div>
+            <div class="stat__value">
+              <span class="stat__number">0</span><span class="stat__suffix">+</span>
+            </div>
+            <div class="stat__label">Personas capacitadas</div>
+          </div>
+    
+          <div class="stat" data-count="7" data-suffix="+">
+            <div class="stat__icon"><i class="fa-solid fa-briefcase"></i></div>
+            <div class="stat__value">
+              <span class="stat__number">0</span><span class="stat__suffix">+</span>
+            </div>
+            <div class="stat__label">Años de experiencia</div>
+          </div>
+    
+          <div class="stat" data-count="15" data-suffix="+">
+            <div class="stat__icon"><i class="fa-solid fa-certificate"></i></div>
+            <div class="stat__value">
+              <span class="stat__number">0</span><span class="stat__suffix">+</span>
+            </div>
+            <div class="stat__label">Certificaciones</div>
+          </div>
+    
+          <div class="stat" data-count="5000" data-suffix="+">
+            <div class="stat__icon"><i class="fa-solid fa-chalkboard-user"></i></div>
+            <div class="stat__value">
+              <span class="stat__number">0</span><span class="stat__suffix">+</span>
+            </div>
+            <div class="stat__label">Horas de docencia</div>
+          </div>
+    
+        </div>
+      </div>
+    </section>
+      
+    <!-- SERVICIOS -->
+    <section class="section" id="servicios" aria-labelledby="servicios-title">
+      <div class="container">
+        <header class="section__header" data-reveal>
+          <span class="section__eyebrow">[ SERVICIOS ]</span>
+          <h2 id="servicios-title" class="section__title">ÁREAS DE ESPECIALIDAD</h2>
+          <p class="section__lead">Soluciones basadas en certificaciones Cisco y frameworks de seguridad.</p>
+        </header>
+
+        <div class="services-grid" data-reveal>
+          <article class="service-card">
+            <div class="service-card__icon"><i class="fa-solid fa-network-wired"></i></div>
+            <h3 class="service-card__title">Redes Empresariales</h3>
+            <p class="service-card__desc">Arquitectura de red Cisco, routing, switching, VLANs, VPNs y documentación técnica completa.</p>
+            <ul class="service-card__list">
+              <li><i class="fa-solid fa-check"></i> Topología eficiente</li>
+              <li><i class="fa-solid fa-check"></i> Config Router/Switch</li>
+              <li><i class="fa-solid fa-check"></i> VLANs, VPNs, ACLs</li>
+            </ul>
+          </article>
+
+          <article class="service-card service-card--accent">
+            <div class="service-card__icon"><i class="fa-solid fa-shield-halved"></i></div>
+            <h3 class="service-card__title">Ciberseguridad</h3>
+            <p class="service-card__desc">Auditoría, análisis de riesgos y protección de infraestructuras críticas con enfoque Zero Trust.</p>
+            <ul class="service-card__list">
+              <li><i class="fa-solid fa-check"></i> Auditoría de red</li>
+              <li><i class="fa-solid fa-check"></i> Análisis de vulnerabilidades</li>
+              <li><i class="fa-solid fa-check"></i> Hardening de sistemas</li>
+            </ul>
+          </article>
+
+          <article class="service-card">
+            <div class="service-card__icon"><i class="fa-solid fa-chalkboard-user"></i></div>
+            <h3 class="service-card__title">Capacitación Técnica</h3>
+            <p class="service-card__desc">Formación oficial Cisco Networking Academy en CCNA, CyberOps e IT Essentials.</p>
+            <ul class="service-card__list">
+              <li><i class="fa-solid fa-check"></i> CCNA Complete Track</li>
+              <li><i class="fa-solid fa-check"></i> CyberOps Associate</li>
+              <li><i class="fa-solid fa-check"></i> Habilitación digital</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- STACK TECNOLÓGICO -->
+    <section class="section section--cyber" id="stack" aria-labelledby="stack-title">
+      <div class="cyber-section__bg" aria-hidden="true"><div class="cyber-hexagons"></div></div>
+
+      <div class="container">
+        <header class="section__header" data-reveal>
+          <span class="section__eyebrow">[ STACK TECNOLÓGICO ]</span>
+          <h2 id="stack-title" class="section__title">HERRAMIENTAS Y TECNOLOGÍAS</h2>
+        </header>
+
+        <div class="stack-grid" data-reveal>
+          <div class="stack-chip"><i class="fa-solid fa-network-wired"></i><span>Cisco IOS</span></div>
+          <div class="stack-chip"><i class="fa-solid fa-diagram-project"></i><span>Packet Tracer</span></div>
+          <div class="stack-chip"><i class="fa-solid fa-shield-halved"></i><span>Wireshark</span></div>
+          <div class="stack-chip"><i class="fa-solid fa-bullseye"></i><span>Nmap</span></div>
+          <div class="stack-chip"><i class="fa-solid fa-terminal"></i><span>Kali Linux</span></div>
+          <div class="stack-chip"><i class="fa-brands fa-linux"></i><span>Linux</span></div>
+          <div class="stack-chip"><i class="fa-brands fa-windows"></i><span>Windows Server</span></div>
+          <div class="stack-chip"><i class="fa-solid fa-cloud"></i><span>AWS Cloud</span></div>
+          <div class="stack-chip"><i class="fa-brands fa-python"></i><span>Python</span></div>
+          <div class="stack-chip"><i class="fa-solid fa-database"></i><span>SQL / Oracle</span></div>
+          <div class="stack-chip"><i class="fa-brands fa-git-alt"></i><span>Git</span></div>
+          <div class="stack-chip"><i class="fa-brands fa-html5"></i><span>HTML/CSS</span></div>
+          <div class="stack-chip"><i class="fa-brands fa-js"></i><span>JavaScript</span></div>
+        </div>
+      </div>
+    </section>
+
+    
+<section id="cursos" class="section section--cyber cursos-section">
+  <div class="cyber-section__bg">
+    <div class="cyber-lines"></div>
+    <div class="cyber-hexagons"></div>
+  </div>
+
+  <div class="container">
+
+    <div class="cursos-banner" data-reveal>
+      <div class="cursos-banner__scan"></div>
+      <div class="cursos-banner__corners"></div>
+
+      <span class="cursos-banner__badge">
+        <i class="fa-solid fa-bolt"></i> FORMACIÓN GRATUITA · CUPOS ABIERTOS
+      </span>
+
+      <h2 class="cursos-banner__title">
+        EL MEJOR MOMENTO PARA EMPEZAR<br>
+        <span class="text-gradient">FUE AYER. EL SEGUNDO MEJOR, HOY.</span>
+      </h2>
+
+      <p class="cursos-banner__text">
+        Cursos gratuitos y certificados de CTC, Cisco e INFOTEP.
+        <strong>Sin pagar nada. Sin requisitos raros. Sin excusas.</strong>
+      </p>
+
+      <!-- Chips informativos de plataformas (no son botones, solo contenido) -->
+      <div class="cursos-platforms" role="list" aria-label="Plataformas disponibles">
+        <div class="cursos-platform" role="listitem" data-platform="ctc">
+          <div class="cursos-platform__icon"><i class="fa-solid fa-rocket" aria-hidden="true"></i></div>
+          <div class="cursos-platform__body">
+            <span class="cursos-platform__name">CTC</span>
+            <span class="cursos-platform__meta">Centros Comunitarios</span>
+          </div>
+        </div>
+
+        <div class="cursos-platform" role="listitem" data-platform="cisco">
+          <div class="cursos-platform__icon"><i class="fa-solid fa-network-wired" aria-hidden="true"></i></div>
+          <div class="cursos-platform__body">
+            <span class="cursos-platform__name">Cisco Academy</span>
+            <span class="cursos-platform__meta">Certificación internacional</span>
+          </div>
+        </div>
+
+        <div class="cursos-platform" role="listitem" data-platform="infotep">
+          <div class="cursos-platform__icon"><i class="fa-solid fa-graduation-cap" aria-hidden="true"></i></div>
+          <div class="cursos-platform__body">
+            <span class="cursos-platform__name">INFOTEP</span>
+            <span class="cursos-platform__meta">Certificado oficial del Estado</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA principal: único botón real de la sección -->
+      <a href="cursos.html" class="cursos-cta-main">
+        <span class="cursos-cta-main__label">EXPLORAR CATÁLOGO COMPLETO</span>
+        <span class="cursos-cta-main__arrow">
+          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+        </span>
+      </a>
+
+      <div class="cursos-banner__meta">
+        <span><i class="fa-solid fa-shield-halved"></i> Facilitador CTC</span>
+        <span><i class="fa-solid fa-certificate"></i> Instructor Cisco</span>
+        <span><i class="fa-solid fa-user-graduate"></i> En formación INFOTEP</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+    
+    <!-- TOOLKIT · CTA -->
+    <section class="section section--cyber toolkit-cta-section" aria-label="Toolkit técnico">
+      <div class="cyber-section__bg" aria-hidden="true"><div class="cyber-lines"></div></div>
+
+      <div class="container">
+        <div class="tk-cta" data-reveal>
+
+          <!-- Columna izquierda: texto -->
+          <div class="tk-cta__content">
+            <span class="section__eyebrow">[ TOOLKIT TÉCNICO ]</span>
+            <h2 class="tk-cta__title">
+              16 HERRAMIENTAS<br>
+              <span class="text-gradient">EN UNA SOLA PÁGINA</span>
+            </h2>
+            <p class="tk-cta__text">
+              Subnetting, RJ45, modelo OSI, canales WiFi, tabla de puertos, hash SHA, contraseñas, JSON, UUID y más. Organizadas por categoría.
+            </p>
+
+            <div class="tk-cta__cats">
+              <span class="tk-cta__cat" data-cat="redes"><i class="fa-solid fa-network-wired"></i> REDES · 8</span>
+              <span class="tk-cta__cat" data-cat="seg"><i class="fa-solid fa-shield-halved"></i> SEGURIDAD · 2</span>
+              <span class="tk-cta__cat" data-cat="dev"><i class="fa-solid fa-code"></i> PROGRAMACIÓN · 4</span>
+              <span class="tk-cta__cat" data-cat="info"><i class="fa-solid fa-chart-line"></i> INFO · 2</span>
+            </div>
+
+            <a href="toolkit.html" class="cyber-btn cyber-btn--primary cyber-btn--large tk-cta__btn">
+              <span>IR AL TOOLKIT</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+
+          <!-- Columna derecha: preview grid -->
+          <div class="tk-cta__preview" aria-hidden="true">
+            <div class="tk-cta__tile" style="--accent:#00f0ff;"><i class="fa-solid fa-network-wired"></i></div>
+            <div class="tk-cta__tile" style="--accent:#b829dd;"><i class="fa-solid fa-layer-group"></i></div>
+            <div class="tk-cta__tile" style="--accent:#00ff88;"><i class="fa-solid fa-fingerprint"></i></div>
+            <div class="tk-cta__tile" style="--accent:#ffee00;"><i class="fa-solid fa-wifi"></i></div>
+            <div class="tk-cta__tile" style="--accent:#ff006e;"><i class="fa-solid fa-key"></i></div>
+            <div class="tk-cta__tile" style="--accent:#ff6b00;"><i class="fa-solid fa-ethernet"></i></div>
+            <div class="tk-cta__tile" style="--accent:#00f0ff;"><i class="fa-solid fa-plug-circle-bolt"></i></div>
+            <div class="tk-cta__tile" style="--accent:#b829dd;"><i class="fa-solid fa-code"></i></div>
+            <div class="tk-cta__tile" style="--accent:#00ff88;"><i class="fa-solid fa-gauge-high"></i></div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- TRAYECTORIA -->
+    <section class="section" id="trayectoria" aria-labelledby="trayectoria-title">
+      <div class="container">
+        <header class="section__header" data-reveal>
+          <span class="section__eyebrow">[ REGISTRO DE OPERACIONES ]</span>
+          <h2 id="trayectoria-title" class="section__title">TRAYECTORIA PROFESIONAL</h2>
+        </header>
+
+        <div class="timeline" data-reveal>
+          <article class="tl-item">
+            <div class="tl-item__marker">
+              <span class="tl-item__dot tl-item__dot--active"></span>
+            </div>
+            <div class="tl-item__body">
+              <div class="tl-item__head">
+                <span class="tl-item__date">2019 — PRESENTE</span>
+                <span class="tl-item__badge">ACTIVO</span>
+              </div>
+              <h3 class="tl-item__title">Facilitador Tecnológico</h3>
+              <span class="tl-item__org">CTC · Centros Tecnológicos Comunitarios</span>
+              <p class="tl-item__desc">Facilitación tecnológica y capacitación en habilidades digitales para comunidades. Impulso del desarrollo tecnológico local mediante formación práctica.</p>
+              <div class="tl-item__meta">
+                <span class="tl-item__metric"><strong>+10,000</strong> personas capacitadas</span>
+                <span class="tl-item__metric"><strong>7+</strong> años activo</span>
+              </div>
+              <div class="tl-item__tags">
+                <span class="tag">HABILITACIÓN DIGITAL</span>
+                <span class="tag">FORMACIÓN DE FORMADORES</span>
+                <span class="tag">CTC</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="tl-item">
+            <div class="tl-item__marker">
+              <span class="tl-item__dot tl-item__dot--active"></span>
+            </div>
+            <div class="tl-item__body">
+              <div class="tl-item__head">
+                <span class="tl-item__date">2019 — PRESENTE</span>
+                <span class="tl-item__badge">ACTIVO</span>
+              </div>
+              <h3 class="tl-item__title">Instructor Certificado</h3>
+              <span class="tl-item__org">Cisco Networking Academy</span>
+              <p class="tl-item__desc">Instructor oficial Cisco. Formación de profesionales en CCNA, CyberOps Associate e IT Essentials con metodología Cisco probada.</p>
+              <div class="tl-item__tags">
+                <span class="tag">CCNA</span>
+                <span class="tag">CYBEROPS</span>
+                <span class="tag">IT ESSENTIALS</span>
+                <span class="tag">NETWORKING</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="tl-item">
+            <div class="tl-item__marker">
+              <span class="tl-item__dot"></span>
+            </div>
+            <div class="tl-item__body">
+              <div class="tl-item__head">
+                <span class="tl-item__date">2019 — 2023</span>
+              </div>
+              <h3 class="tl-item__title">Instructor</h3>
+              <span class="tl-item__org">Oracle Academy</span>
+              <p class="tl-item__desc">Docencia en tecnologías Oracle, bases de datos y fundamentos de programación para estudiantes técnicos y universitarios.</p>
+              <div class="tl-item__tags">
+                <span class="tag">ORACLE DB</span>
+                <span class="tag">SQL</span>
+                <span class="tag">PROGRAMACIÓN</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="tl-item">
+            <div class="tl-item__marker">
+              <span class="tl-item__dot"></span>
+            </div>
+            <div class="tl-item__body">
+              <div class="tl-item__head">
+                <span class="tl-item__date">2017 — 2019</span>
+              </div>
+              <h3 class="tl-item__title">Digitador Técnico</h3>
+              <span class="tl-item__org">Escuela Vocacional FF.AA. y P.N.</span>
+              <p class="tl-item__desc">Soporte técnico informático, gestión de sistemas de información y mantenimiento de infraestructura tecnológica institucional.</p>
+              <div class="tl-item__tags">
+                <span class="tag">SOPORTE TÉCNICO</span>
+                <span class="tag">SISTEMAS DE INFORMACIÓN</span>
+                <span class="tag">MANTENIMIENTO</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- CERTIFICACIONES -->
+    <section class="section section--cyber" id="certificaciones" aria-labelledby="certificaciones-title">
+      <div class="cyber-section__bg" aria-hidden="true"><div class="cyber-lines"></div></div>
+
+      <div class="container">
+        <header class="section__header" data-reveal>
+          <span class="section__eyebrow">[ CREDENCIALES VERIFICADAS ]</span>
+          <h2 id="certificaciones-title" class="section__title">CERTIFICACIONES Y CURSOS</h2>
+          <p class="section__lead">Formación continua respaldada por instituciones y organismos internacionales.</p>
+        </header>
+
+        <div class="cert-groups" data-reveal>
+
+          <div class="cert-group">
+            <div class="cert-group__head">
+              <span class="cert-group__badge cert-group__badge--cisco">CISCO</span>
+              <span class="cert-group__count">0 credenciales</span>
+            </div>
+            <div class="cert-group__list">
+              <span class="cert-pill">CCNA: Introducción a Redes (1/3)</span>
+              <span class="cert-pill">CCNA: Conmutación, Enrutamiento e Inalámbricos (2/3)</span>
+              <span class="cert-pill">CCNA: Redes Empresariales, Seguridad y Automatización (3/3)</span>
+              <span class="cert-pill">CCNP Enterprise: Redes Básicas (1/2)</span>
+              <span class="cert-pill">CCNP Enterprise: Enrutamiento Avanzado (2/2)</span>
+              <span class="cert-pill">CyberOps Associate</span>
+              <span class="cert-pill">Networking Security</span>
+            </div>
+          </div>
+
+          <div class="cert-group">
+            <div class="cert-group__head">
+              <span class="cert-group__badge cert-group__badge--uni">NACIONAL</span>
+              <span class="cert-group__count">0 credenciales</span>
+            </div>
+            <div class="cert-group__list">
+              <span class="cert-pill">Ingeniería en Redes y Telecomunicaciones — UNICARIBE</span>
+              <span class="cert-pill">Diplomado de Auditoría en Ciberseguridad y Ciberriesgos — ITLA</span>
+              <span class="cert-pill">Diplomado en Gestión de la Calidad Basada en Normas ISO — INFOTEP</span>
+              <span class="cert-pill">Diplomado de Desarrollo de Mandos Medios — INFOTEP</span>
+              <span class="cert-pill">Manejo de Buenas Prácticas Frente a Incidentes Tecnológicos — INFOTEP</span>
+              <span class="cert-pill">Tutor Para la Formación en Ambiente Virtuales — INFOTEP</span>
+              <span class="cert-pill">Auditoria de Calidad y Auditor Interno — INFOTEP</span>
+              <span class="cert-pill">Habilitación Digital — INFOTEP</span>
+            </div>
+          </div>
+
+          <div class="cert-group">
+            <div class="cert-group__head">
+              <span class="cert-group__badge cert-group__badge--int">INTERNACIONAL</span>
+              <span class="cert-group__count">0 credenciales</span>
+            </div>
+            <div class="cert-group__list">
+              <span class="cert-pill">Diplomado en Liderazgo y Habilidades Gerenciales con Inteligencia Artificial Aplicada — Universidad Santander</span>
+              <span class="cert-pill">Diplomado en Aprendizaje híbrido: La transformación digital de las prácticas de la enseñanza. — Microsoft / Red Qualitas</span>
+              <span class="cert-pill">Políticas y regulación en telecomunicaciones: adaptación a nuevas tendencias globales — ITU / INICTEL-UNI</span>
+              <span class="cert-pill">Gestión del espectro: tecnologías inalámbricas en telecomunicaciones — ITU / INICTEL-UNI</span>
+              <span class="cert-pill">Informática Forense y Respuesta ante Incidentes — ITU / INICTEL-UNI</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="cert-actions" data-reveal>
+          <a href="https://www.credly.com/users/jcdurancasado" target="_blank" rel="me noopener" class="cyber-btn cyber-btn--primary cyber-btn--large">
+            <span>VER BADGES EN CREDLY</span>
+            <i class="fa-solid fa-certificate"></i>
+          </a>
+          <a href="https://eu.credential.net/profile/jcdurancasado" target="_blank" rel="me noopener" class="cyber-btn cyber-btn--secondary cyber-btn--large">
+            <span>VER CREDENCIALES VERIFICADAS</span>
+            <i class="fa-solid fa-award"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ENLACES -->
+    <section class="section" id="enlaces" aria-labelledby="enlaces-title">
+      <div class="container">
+        <header class="section__header" data-reveal>
+          <span class="section__eyebrow">[ GESTOR DE ENLACES ]</span>
+          <h2 id="enlaces-title" class="section__title">CONECTA CONMIGO</h2>
+          <p class="section__lead">Todos mis canales profesionales, redes y recursos en un solo lugar.</p>
+        </header>
+
+        <div class="links-grid" data-reveal>
+          <a href="https://jcdurancasado.vercel.app/desactivado" target="_blank" rel="me noopener" class="link-card" data-net="whatsapp">
+            <i class="fa-brands fa-whatsapp"></i>
+            <span class="link-card__name">WhatsApp</span>
+            <span class="link-card__desc">Respuesta directa</span>
+          </a>
+
+          <a href="https://t.me/jcdurancasado" target="_blank" rel="me noopener" class="link-card" data-net="telegram">
+            <i class="fa-brands fa-telegram"></i>
+            <span class="link-card__name">Telegram</span>
+            <span class="link-card__desc">Mensajería directa</span>
+          </a>
+
+          <a href="https://instagram.com/jcdurancasado" target="_blank" rel="me noopener" class="link-card" data-net="instagram">
+            <i class="fa-brands fa-instagram"></i>
+            <span class="link-card__name">Instagram</span>
+            <span class="link-card__desc">Contenido diario</span>
+          </a>
+
+          <a href="https://facebook.com/jcdurancasado" target="_blank" rel="me noopener" class="link-card" data-net="facebook">
+            <i class="fa-brands fa-facebook"></i>
+            <span class="link-card__name">Facebook</span>
+            <span class="link-card__desc">Comunidad</span>
+          </a>
+
+          <a href="https://linkedin.com/in/jcdurancasado" target="_blank" rel="me noopener" class="link-card" data-net="linkedin">
+            <i class="fa-brands fa-linkedin"></i>
+            <span class="link-card__name">LinkedIn</span>
+            <span class="link-card__desc">Perfil profesional</span>
+          </a>
+
+          <a href="https://youtube.com/@jcdurancasado" target="_blank" rel="me noopener" class="link-card" data-net="youtube">
+            <i class="fa-brands fa-youtube"></i>
+            <span class="link-card__name">YouTube</span>
+            <span class="link-card__desc">Tutoriales técnicos</span>
+          </a>
+
+          <a href="https://github.com/jcdurancasado" target="_blank" rel="me noopener" class="link-card" data-net="github">
+            <i class="fa-brands fa-github"></i>
+            <span class="link-card__name">GitHub</span>
+            <span class="link-card__desc">Repositorios</span>
+          </a>
+
+          <a href="https://twitter.com/jcdurancasado" target="_blank" rel="me noopener" class="link-card" data-net="twitter">
+            <i class="fa-brands fa-x-twitter"></i>
+            <span class="link-card__name">X / Twitter</span>
+            <span class="link-card__desc">Novedades tech</span>
+          </a>
+
+          <a href="https://tiktok.com/@jcdurancasado" target="_blank" rel="me noopener" class="link-card" data-net="tiktok">
+            <i class="fa-brands fa-tiktok"></i>
+            <span class="link-card__name">TikTok</span>
+            <span class="link-card__desc">Tips rápidos</span>
+          </a>
+
+          <a href="https://threads.net/@jcdurancasado" target="_blank" rel="me noopener" class="link-card" data-net="threads">
+            <i class="fa-brands fa-threads"></i>
+            <span class="link-card__name">Threads</span>
+            <span class="link-card__desc">Reflexiones</span>
+          </a>
+
+          <a href="https://www.twitch.tv/jcdurancasado" target="_blank" rel="me noopener" class="link-card" data-net="twitch">
+            <i class="fa-brands fa-twitch"></i>
+            <span class="link-card__name">Twitch</span>
+            <span class="link-card__desc">Streams en vivo</span>
+          </a>
+ 
+          <a href="https://discord.com/users/jcdurancasado" target="_blank" rel="me noopener" class="link-card" data-net="discord">
+            <i class="fa-brands fa-discord"></i>
+            <span class="link-card__name">Discord</span>
+            <span class="link-card__desc">Comunidad tech</span>
+          </a>
+
+          <a href="https://www.credly.com/users/jcdurancasado" target="_blank" rel="me noopener" class="link-card" data-net="credly">
+            <i class="fa-solid fa-certificate"></i>
+            <span class="link-card__name">Credly</span>
+            <span class="link-card__desc">Badges Cisco</span>
+          </a>
+
+          <a href="https://eu.credential.net/profile/jcdurancasado" target="_blank" rel="me noopener" class="link-card" data-net="credential">
+            <i class="fa-solid fa-award"></i>
+            <span class="link-card__name">Credenciales</span>
+            <span class="link-card__desc">Perfil verificado</span>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- TESTIMONIOS -->
+    <section class="section section--cyber" id="testimonios" aria-labelledby="testimonios-title">
+      <div class="cyber-section__bg" aria-hidden="true"><div class="cyber-hexagons"></div></div>
+
+      <div class="container">
+        <header class="section__header" data-reveal>
+          <span class="section__eyebrow">[ TESTIMONIOS ]</span>
+          <h2 id="testimonios-title" class="section__title">LO QUE DICEN</h2>
+        </header>
+
+        <div class="testimonials" data-reveal>
+          <figure class="testimonial">
+            <i class="fa-solid fa-quote-left testimonial__quote"></i>
+            <blockquote class="testimonial__text">
+              Excelente instructor. Explica conceptos complejos de redes de manera clara y práctica. Gracias a su metodología pude aprobar mi CCNA al primer intento.
+            </blockquote>
+            <figcaption class="testimonial__author">
+              <div class="testimonial__avatar"><i class="fa-solid fa-user"></i></div>
+              <div class="testimonial__info">
+                <strong>Estudiante CCNA</strong>
+                <span>Cisco Networking Academy</span>
+              </div>
+            </figcaption>
+          </figure>
+
+          <figure class="testimonial">
+            <i class="fa-solid fa-quote-left testimonial__quote"></i>
+            <blockquote class="testimonial__text">
+              Profesional confiable y detallado. Su diagnóstico de nuestra infraestructura de red fue preciso y las soluciones implementadas mejoraron notablemente el rendimiento.
+            </blockquote>
+            <figcaption class="testimonial__author">
+              <div class="testimonial__avatar"><i class="fa-solid fa-building"></i></div>
+              <div class="testimonial__info">
+                <strong>Cliente Corporativo</strong>
+                <span>Soporte Técnico Empresarial</span>
+              </div>
+            </figcaption>
+          </figure>
+
+          <figure class="testimonial">
+            <i class="fa-solid fa-quote-left testimonial__quote"></i>
+            <blockquote class="testimonial__text">
+              Transmite pasión por la tecnología. Sus clases de ciberseguridad motivaron a toda mi generación a especializarse en el área. Un referente real.
+            </blockquote>
+            <figcaption class="testimonial__author">
+              <div class="testimonial__avatar"><i class="fa-solid fa-user-graduate"></i></div>
+              <div class="testimonial__info">
+                <strong>Estudiante CyberOps</strong>
+                <span>CTC · República Dominicana</span>
+              </div>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+<!-- CONTADOR DE VISITAS -->
+<section class="visitor-counter" aria-labelledby="visitor-title">
+  <div class="container">
+    <header class="visitor-counter__head" data-reveal>
+      <span class="section__eyebrow">[ TRÁFICO DEL SITIO ]</span>
+      <h2 id="visitor-title" class="visitor-counter__title">
+        MÉTRICAS REALES DE VISITANTES
+      </h2>
+      <div class="visitor-counter__live-row">
+        <span class="visitor-counter__live">
+          <span class="visitor-counter__pulse" aria-hidden="true"></span>
+          EN VIVO
+        </span>
+      </div>
+    </header>
+
+    <div class="visitor-counter__grid" data-reveal>
+      <div class="visitor-counter__item">
+        <div class="visitor-counter__icon"><i class="fa-solid fa-infinity"></i></div>
+        <div class="visitor-counter__value" id="visitsTotal">—</div>
+        <div class="visitor-counter__label">Visitas totales</div>
+      </div>
+
+      <div class="visitor-counter__item">
+        <div class="visitor-counter__icon"><i class="fa-solid fa-calendar-day"></i></div>
+        <div class="visitor-counter__value" id="visitsMonth">—</div>
+        <div class="visitor-counter__label">Este mes</div>
+      </div>
+
+      <div class="visitor-counter__item">
+        <div class="visitor-counter__icon"><i class="fa-solid fa-calendar-week"></i></div>
+        <div class="visitor-counter__value" id="visitsLastMonth">—</div>
+        <div class="visitor-counter__label">Mes anterior</div>
+      </div>
+
+      <div class="visitor-counter__item">
+        <div class="visitor-counter__icon"><i class="fa-solid fa-globe"></i></div>
+        <div class="visitor-counter__value" id="visitsCountries">—</div>
+        <div class="visitor-counter__label">Países</div>
+      </div>
+    </div>
+
+    <div class="visitor-counter__actions" data-reveal>
+      <a href="estadisticas.html" class="cyber-btn cyber-btn--primary cyber-btn--large">
+        <span>VER MÁS DETALLES</span>
+        <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+    <!-- FAQ -->
+    <section class="section" id="faq" aria-labelledby="faq-title">
+      <div class="container">
+        <header class="section__header" data-reveal>
+          <span class="section__eyebrow">[ PREGUNTAS FRECUENTES ]</span>
+          <h2 id="faq-title" class="section__title">¿DUDAS? TE RESPONDO</h2>
+        </header>
+
+        <div class="faq" data-reveal>
+          <details class="faq__item">
+            <summary class="faq__question">
+              <span>¿Qué tipos de proyectos aceptas?</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </summary>
+            <div class="faq__answer">
+              <p>Diseño e implementación de redes Cisco, auditorías de ciberseguridad, capacitación técnica (CCNA, CyberOps) y soporte especializado, tanto en modalidad remota como presencial en República Dominicana.</p>
+            </div>
+          </details>
+
+          <details class="faq__item">
+            <summary class="faq__question">
+              <span>¿Cuál es tu disponibilidad?</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </summary>
+            <div class="faq__answer">
+              <p>Disponibilidad horaria y geográfica. Atiendo proyectos tanto locales como internacionales en modalidad remota, con horarios flexibles adaptados a cada cliente.</p>
+            </div>
+          </details>
+
+          <details class="faq__item">
+            <summary class="faq__question">
+              <span>¿Ofreces capacitación a empresas?</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </summary>
+            <div class="faq__answer">
+              <p>Sí. Imparto formación corporativa personalizada en redes, ciberseguridad y tecnologías Cisco, adaptada al nivel y necesidades del equipo. Metodología oficial Cisco Networking Academy.</p>
+            </div>
+          </details>
+
+          <details class="faq__item">
+            <summary class="faq__question">
+              <span>¿Cuánto tardas en responder?</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </summary>
+            <div class="faq__answer">
+              <p>Generalmente entre 24 y 48 horas. Para consultas urgentes puedes escribirme directamente por WhatsApp o Telegram.</p>
+            </div>
+          </details>
+
+          <details class="faq__item">
+            <summary class="faq__question">
+              <span>¿Qué métodos de pago aceptas?</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </summary>
+            <div class="faq__answer">
+              <p>Acepto métodos <strong>nacionales</strong> (BanReservas, BHD, Popular, MIO, Qik, Asociación Popular), <strong>electrónicos</strong> (PayPal, Airtm, Payoneer) e <strong>internacionales</strong> (LeadBank, Banking Circle). <a href="#payments" style="color: var(--neon-cyan); font-weight: 600;">Ver métodos disponibles →</a></p>
+            </div>
+          </details>
+
+          <details class="faq__item">
+            <summary class="faq__question">
+              <span>¿Cómo puedo solicitar tu CV completo?</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </summary>
+            <div class="faq__answer">
+              <p>Usa el formulario de contacto o envíame un correo directamente. Incluye el motivo de tu solicitud y te compartiré mi CV actualizado junto con las certificaciones verificables.</p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACTO -->
+    <section class="section section--cyber cyber-cta" id="contacto" aria-labelledby="contacto-title">
+      <div class="cyber-section__bg" aria-hidden="true"><div class="cyber-hexagons"></div></div>
+
+      <div class="container">
+        <header class="section__header" data-reveal>
+          <span class="section__eyebrow">[ ESTABLECER CONEXIÓN ]</span>
+          <h2 id="contacto-title" class="section__title">INICIAR COMUNICACIÓN</h2>
+          <p class="section__lead">Envíame un mensaje y te responderé a la brevedad posible.</p>
+        </header>
+
+        <div class="contact" data-reveal>
+          <div class="form-terminal">
+            <div class="terminal__bar">
+              <span class="terminal__btn terminal__btn--red"></span>
+              <span class="terminal__btn terminal__btn--yellow"></span>
+              <span class="terminal__btn terminal__btn--green"></span>
+              <span class="terminal__title">guest@jcdc:~# transmit_message</span>
+            </div>
+
+            <form class="form-terminal__body" action="https://jcdurancasado.vercel.app/api/contacto" method="POST" enctype="multipart/form-data" id="contactForm">
+              <div class="input-group">
+                <input type="text" id="contact-name" name="nombre" class="cyber-input" required placeholder=" " />
+                <label class="cyber-label" for="contact-name">NOMBRE COMPLETO</label>
+              </div>
+
+              <div class="input-group">
+                <input type="tel" id="contact-phone" name="telefono" class="cyber-input" required placeholder=" " />
+                <label class="cyber-label" for="contact-phone">TELÉFONO</label>
+              </div>
+
+              <div class="input-group">
+                <input type="email" id="contact-email" name="correo" class="cyber-input" required placeholder=" " />
+                <label class="cyber-label" for="contact-email">CORREO ELECTRÓNICO</label>
+              </div>
+
+              <div class="input-group">
+                <textarea id="contact-message" name="mensaje" class="cyber-input cyber-textarea" rows="4" placeholder=" "></textarea>
+                <label class="cyber-label" for="contact-message">MENSAJE</label>
+              </div>
+
+              <div class="input-group">
+                <input type="file" id="contact-files" name="archivos" class="cyber-input cyber-file" multiple />
+                <label class="cyber-label" for="contact-files">ADJUNTAR ARCHIVOS (máx. 5 · 5 MB total)</label>
+              </div>
+
+              <button type="submit" id="submitBtn" class="cyber-btn cyber-btn--primary cyber-btn--full cyber-btn--large">
+                <span class="cyber-btn__text">ENVIAR MENSAJE</span>
+                <i class="fa-solid fa-paper-plane"></i>
+              </button>
+
+              <p id="formResponse" class="form-response"></p>
+
+              <p class="form-note">
+                <strong>Nota:</strong> El envío de este formulario no garantiza una respuesta. Me reservo el derecho de atender o no las solicitudes recibidas, según mi disponibilidad y criterio profesional.
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+<!-- MÉTODOS DE PAGO -->
+<section class="payments" id="payments" aria-label="Métodos de pago aceptados">
+  <div class="container">
+
+    <header class="section__header" data-reveal>
+      <span class="section__eyebrow">[ MÉTODOS DE PAGO ]</span>
+      <h2 class="section__title">PAGOS ACEPTADOS</h2>
+      <p class="section__lead">Catálogo de métodos disponibles. Requiere código de acceso.</p>
+    </header>
+
+    <!-- GRUPO: NACIONALES -->
+    <div class="payments__group">
+      <div class="payments__group-head">
+        <span class="payments__group-title">Nacionales · RD</span>
+        <span class="payments__group-count">6 métodos</span>
+      </div>
+      <div class="payments__grid payments__grid--national">
+
+        <a href="https://jcdurancasado.vercel.app/pagos" target="_blank" rel="me noopener" class="pay-card" data-pay="banreservas" aria-label="BanReservas">
+          <div class="pay-card__logo">
+            <img src="img/pagos/banreservas.webp" alt="BanReservas" width="56" height="56" loading="eager" fetchpriority="high" decoding="async">
+          </div>
+          <span class="pay-card__name">BanReservas</span>
+        </a>
+
+        <a href="https://jcdurancasado.vercel.app/pagos" target="_blank" rel="me noopener" class="pay-card" data-pay="bhd" aria-label="Banco BHD">
+          <div class="pay-card__logo">
+            <img src="img/pagos/bhd.webp" alt="BHD" width="56" height="56" loading="eager" fetchpriority="high" decoding="async">
+          </div>
+          <span class="pay-card__name">BHD</span>
+        </a>
+
+        <a href="https://jcdurancasado.vercel.app/pagos" target="_blank" rel="me noopener" class="pay-card" data-pay="popular" aria-label="Banco Popular">
+          <div class="pay-card__logo">
+            <img src="img/pagos/popular.webp" alt="Popular" width="56" height="56" loading="lazy" decoding="async">
+          </div>
+          <span class="pay-card__name">Popular</span>
+        </a>
+
+        <a href="https://jcdurancasado.vercel.app/pagos" target="_blank" rel="me noopener" class="pay-card" data-pay="mio" aria-label="MIO BanReservas">
+          <div class="pay-card__logo">
+            <img src="img/pagos/mio.webp" alt="MIO" width="56" height="56" loading="lazy" decoding="async">
+          </div>
+          <span class="pay-card__name">MIO</span>
+        </a>
+
+        <a href="https://jcdurancasado.vercel.app/pagos" target="_blank" rel="me noopener" class="pay-card" data-pay="qik" aria-label="Qik Banco Digital">
+          <div class="pay-card__logo">
+            <img src="img/pagos/qik.webp" alt="Qik" width="56" height="56" loading="lazy" decoding="async">
+          </div>
+          <span class="pay-card__name">Qik</span>
+        </a>
+
+        <a href="https://jcdurancasado.vercel.app/pagos" target="_blank" rel="me noopener" class="pay-card" data-pay="asopopular" aria-label="Asociación Popular">
+          <div class="pay-card__logo">
+            <img src="img/pagos/asopopular.webp" alt="Asoc. Popular" width="56" height="56" loading="lazy" decoding="async">
+          </div>
+          <span class="pay-card__name">Asoc. Popular</span>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- GRUPO: ELECTRÓNICOS -->
+    <div class="payments__group">
+      <div class="payments__group-head">
+        <span class="payments__group-title">Electrónicos</span>
+        <span class="payments__group-count">3 métodos</span>
+      </div>
+      <div class="payments__grid payments__grid--electronic">
+
+        <a href="https://jcdurancasado.vercel.app/pagos" target="_blank" rel="me noopener" class="pay-card" data-pay="paypal" aria-label="PayPal">
+          <div class="pay-card__logo">
+            <img src="img/pagos/paypal.webp" alt="PayPal" width="56" height="56" loading="lazy" decoding="async">
+          </div>
+          <span class="pay-card__name">PayPal</span>
+        </a>
+
+        <a href="https://jcdurancasado.vercel.app/pagos" target="_blank" rel="me noopener" class="pay-card" data-pay="airtm" aria-label="Airtm">
+          <div class="pay-card__logo">
+            <img src="img/pagos/airtm.webp" alt="Airtm" width="56" height="56" loading="lazy" decoding="async">
+          </div>
+          <span class="pay-card__name">Airtm</span>
+        </a>
+
+        <a href="https://jcdurancasado.vercel.app/pagos" target="_blank" rel="me noopener" class="pay-card" data-pay="payoneer" aria-label="Payoneer">
+          <div class="pay-card__logo">
+            <img src="img/pagos/payoneer.webp" alt="Payoneer" width="56" height="56" loading="lazy" decoding="async">
+          </div>
+          <span class="pay-card__name">Payoneer</span>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- GRUPO: INTERNACIONALES -->
+    <div class="payments__group">
+      <div class="payments__group-head">
+        <span class="payments__group-title">Internacionales</span>
+        <span class="payments__group-count">2 métodos</span>
+      </div>
+      <div class="payments__grid payments__grid--international">
+
+        <a href="https://jcdurancasado.vercel.app/pagos" target="_blank" rel="me noopener" class="pay-card" data-pay="leadbank" aria-label="LeadBank">
+          <div class="pay-card__logo">
+            <img src="img/pagos/leadbank.webp" alt="LeadBank" width="56" height="56" loading="lazy" decoding="async">
+          </div>
+          <span class="pay-card__name">LeadBank</span>
+        </a>
+
+        <a href="https://jcdurancasado.vercel.app/pagos" target="_blank" rel="me noopener" class="pay-card" data-pay="bankingcircle" aria-label="Banking Circle">
+          <div class="pay-card__logo">
+            <img src="img/pagos/bankingcircle.webp" alt="Banking Circle" width="56" height="56" loading="lazy" decoding="async">
+          </div>
+          <span class="pay-card__name">Banking Circle</span>
+        </a>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+  
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer__grid-lines" aria-hidden="true"></div>
+    <div class="container">
+      <div class="footer__main">
+        <div class="footer__brand">
+          <a href="#inicio" class="logo logo--footer" aria-label="Inicio">
+            <div class="logo__symbol">
+            <svg viewBox="0 0 100 100" class="logo__svg logo__svg--nexus">
+              <!-- Escudo exterior que se dibuja -->
+              <path d="M50 4 L88 26 L88 62 Q88 88 50 96 Q12 88 12 62 L12 26 Z"
+                    fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"
+                    stroke-dasharray="240" stroke-dashoffset="240" class="nexus-shield"/>
+
+              <!-- Anillo exterior punteado -->
+              <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="0.8"
+                      opacity="0.3" stroke-dasharray="3 6" class="nexus-ring nexus-ring--1"/>
+
+              <!-- Anillo medio girando al revés -->
+              <circle cx="50" cy="50" r="34" fill="none" stroke="currentColor" stroke-width="1"
+                      opacity="0.5" stroke-dasharray="8 4" class="nexus-ring nexus-ring--2"/>
+
+              <!-- Anillo interior punteado -->
+              <circle cx="50" cy="50" r="26" fill="none" stroke="currentColor" stroke-width="1.2"
+                      opacity="0.6" stroke-dasharray="2 3" class="nexus-ring nexus-ring--3"/>
+
+              <!-- Barrido radar -->
+              <path d="M50 50 L50 8 A42 42 0 0 1 85 28 Z" fill="currentColor" opacity="0.09"
+                    class="nexus-sweep"/>
+
+              <!-- Hexágono núcleo -->
+              <path d="M50 38 L60 44 L60 56 L50 62 L40 56 L40 44 Z"
+                    fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"
+                    class="nexus-core"/>
+
+              <!-- Punto central -->
+              <circle cx="50" cy="50" r="4" fill="currentColor" class="nexus-center"/>
+
+              <!-- 3 Ondas expansivas en cascada -->
+              <circle cx="50" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="1.5"
+                      class="nexus-pulse nexus-pulse--1"/>
+              <circle cx="50" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="1.5"
+                      class="nexus-pulse nexus-pulse--2"/>
+              <circle cx="50" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="1.5"
+                      class="nexus-pulse nexus-pulse--3"/>
+
+              <!-- Líneas de datos fluyendo -->
+              <line x1="50" y1="50" x2="50" y2="14" stroke="currentColor" stroke-width="0.9"
+                    class="nexus-data nexus-data--1"/>
+              <line x1="50" y1="50" x2="81" y2="32" stroke="currentColor" stroke-width="0.9"
+                    class="nexus-data nexus-data--2"/>
+              <line x1="50" y1="50" x2="81" y2="68" stroke="currentColor" stroke-width="0.9"
+                    class="nexus-data nexus-data--3"/>
+              <line x1="50" y1="50" x2="50" y2="86" stroke="currentColor" stroke-width="0.9"
+                    class="nexus-data nexus-data--4"/>
+              <line x1="50" y1="50" x2="19" y2="68" stroke="currentColor" stroke-width="0.9"
+                    class="nexus-data nexus-data--5"/>
+              <line x1="50" y1="50" x2="19" y2="32" stroke="currentColor" stroke-width="0.9"
+                    class="nexus-data nexus-data--6"/>
+
+              <!-- 6 Nodos periféricos -->
+              <circle cx="50" cy="14" r="2.5" fill="currentColor" class="nexus-node nexus-node--1"/>
+              <circle cx="81" cy="32" r="2.5" fill="currentColor" class="nexus-node nexus-node--2"/>
+              <circle cx="81" cy="68" r="2.5" fill="currentColor" class="nexus-node nexus-node--3"/>
+              <circle cx="50" cy="86" r="2.5" fill="currentColor" class="nexus-node nexus-node--4"/>
+              <circle cx="19" cy="68" r="2.5" fill="currentColor" class="nexus-node nexus-node--5"/>
+              <circle cx="19" cy="32" r="2.5" fill="currentColor" class="nexus-node nexus-node--6"/>
+
+              <!-- Marcas HUD en las 6 puntas del escudo -->
+              <line x1="50" y1="4"  x2="50" y2="9"  stroke="currentColor" stroke-width="1.8"/>
+              <line x1="88" y1="26" x2="83" y2="29" stroke="currentColor" stroke-width="1.8"/>
+              <line x1="88" y1="62" x2="83" y2="59" stroke="currentColor" stroke-width="1.8"/>
+              <line x1="50" y1="96" x2="50" y2="91" stroke="currentColor" stroke-width="1.8"/>
+              <line x1="12" y1="62" x2="17" y2="59" stroke="currentColor" stroke-width="1.8"/>
+              <line x1="12" y1="26" x2="17" y2="29" stroke="currentColor" stroke-width="1.8"/>
+            </svg>
+            </div>
+          </a>
+          <div class="footer__status">
+            <span class="badge__text"><i class="fa-solid fa-signal"></i> DISPONIBLE PARA PROYECTOS</span>
+          </div>
+        </div>
+
+        <div class="footer__nav">
+          <div class="footer__col">
+            <h4>[ NAVEGACIÓN ]</h4>
+            <ul>
+              <li><a href="#inicio">Inicio</a></li>
+              <li><a href="#perfil">Perfil</a></li>
+              <li><a href="#servicios">Servicios</a></li>
+              <li><a href="#enlaces">Enlaces</a></li>
+            </ul>
+          </div>
+          <div class="footer__col">
+            <h4>[ RECURSOS ]</h4>
+            <ul>
+              <li><a href="#trayectoria">Trayectoria</a></li>
+              <li><a href="#certificaciones">Credenciales</a></li>
+              <li><a href="https://github.com/jcdurancasado" target="_blank" rel="me noopener">GitHub</a></li>
+              <li><a href="#faq">FAQ</a></li>
+            </ul>
+          </div>
+          <div class="footer__col">
+            <h4>[ CONTACTO ]</h4>
+            <ul>
+              <li><a href="mailto:jcdurancasado@gmail.com">Email</a></li>
+              <li><a href="https://wa.me/18090000000" target="_blank" rel="me noopener">WhatsApp</a></li>
+              <li><a href="https://linkedin.com/in/jcdurancasado" target="_blank" rel="me noopener">LinkedIn</a></li>
+              <li><a href="https://t.me/jcdurancasado" target="_blank" rel="me noopener">Telegram</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer__bottom">
+        <p>&copy; <span data-year>2024</span> JCDURANCASADO · TODOS LOS DERECHOS RESERVADOS.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- STACK DE BOTONES FLOTANTES (arriba → abajo: subir, agendar, campana, pagos, sonido, tema, instalar) -->
+  <div class="floating-stack">
+
+    <button class="scroll-top" id="scrollTop" aria-label="Subir al inicio">
+      <span class="scroll-shock" aria-hidden="true"></span>
+      <span class="scroll-shock-2" aria-hidden="true"></span>
+      <i class="fa-solid fa-arrow-up"></i>
+    </button>
+
+    <a href="https://calendly.com/jcdurancasado" target="_blank" rel="me noopener" class="call-float" id="callFloat" aria-label="Agendar llamada">
+      <i class="fa-solid fa-calendar-check"></i>
+      <span class="call-check" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </span>
+      <span class="call-float__tooltip">Agendar llamada</span>
+    </a>
+
+  <button class="notif-btn" id="notifBtn" aria-label="Activar notificaciones" hidden>
+    <span class="notif-waves notif-waves--left" aria-hidden="true">
+      <span class="notif-wave"></span>
+      <span class="notif-wave"></span>
+      <span class="notif-wave"></span>
+    </span>
+    <span class="notif-waves notif-waves--right" aria-hidden="true">
+      <span class="notif-wave"></span>
+      <span class="notif-wave"></span>
+      <span class="notif-wave"></span>
+    </span>
+    <i class="fa-solid fa-bell"></i>
+    <span class="notif-btn__tooltip">Activar notificaciones</span>
+  </button>
+
+    <a href="#payments" class="pay-float" aria-label="Ver métodos de pago">
+      <span class="pay-scan" aria-hidden="true"></span>
+      <i class="fa-solid fa-credit-card"></i>
+      <span class="float-tooltip">Ver pagos</span>
+    </a>
+
+    <button class="sound-toggle" id="soundToggle" aria-label="Sonidos" aria-pressed="false">
+      <i class="fa-solid fa-volume-xmark"></i>
+      <span class="float-tooltip" id="soundTooltip">Activar sonidos</span>
+    </button>
+
+    <button class="theme-toggle-float" id="themeToggle" aria-label="Cambiar tema">
+      <i class="fa-solid fa-circle-half-stroke"></i>
+      <span class="float-tooltip">Cambiar tema</span>
+    </button>
+
+    <button class="install-btn" id="installBtn" aria-label="Instalar aplicación" hidden>
+      <i class="fa-solid fa-download"></i>
+      <span class="install-btn__tooltip">Instalar app</span>
+    </button>
+
+  </div>
+
+  <script src="js/stats-config.js"></script>
+  <script src="js/visitor-counter.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

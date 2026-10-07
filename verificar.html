@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('jcdc_theme');
+        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.setAttribute('data-theme', saved || (prefersDark ? 'dark' : 'light'));
+      } catch (e) {}
+    })();
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>JCDC · Verificar Documento</title>
+  <link rel="icon" type="image/png" href="img/foto.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Rajdhani:wght@400;500;600&family=Share+Tech+Mono&display=swap" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+  <style>
+    .verify-section { min-height: 100vh; padding: calc(var(--header-height) + var(--space-2xl)) var(--space-md) var(--space-3xl); background: var(--bg-secondary); position: relative; overflow: hidden; }
+    .verify-section::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 30% 20%, rgba(0,240,255,0.06) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(184,41,221,0.05) 0%, transparent 50%); pointer-events: none; }
+    .verify-hero { text-align: center; margin-bottom: var(--space-2xl); position: relative; z-index: 1; }
+    .verify-hero__title { font-family: var(--font-display); font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 800; letter-spacing: -0.02em; margin: var(--space-md) 0; }
+    .verify-hero__subtitle { color: var(--text-secondary); font-size: 1rem; max-width: 560px; margin: 0 auto; line-height: 1.7; }
+    .verify-card { max-width: 720px; margin: 0 auto; padding: var(--space-xl); background: var(--bg-panel); border: 1.5px solid var(--border-subtle); border-radius: var(--radius-lg); box-shadow: 0 10px 40px rgba(0,0,0,0.25); position: relative; z-index: 1; }
+    .verify-label { display: block; font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem; }
+    .verify-search { display: flex; gap: 0.5rem; margin-bottom: var(--space-md); }
+    .verify-search input { flex: 1; padding: 0.9rem 1.1rem; background: var(--bg-primary); border: 1.5px solid var(--border-subtle); border-radius: var(--radius-sm); color: var(--text-primary); font-family: var(--font-mono); font-size: 0.95rem; letter-spacing: 0.08em; outline: none; }
+    .verify-search input:focus { border-color: var(--neon-cyan); box-shadow: 0 0 0 3px rgba(0,240,255,0.12); }
+    .verify-search button { padding: 0.9rem 1.6rem; background: linear-gradient(135deg, rgba(0,240,255,0.1), rgba(184,41,221,0.1)); border: 1.5px solid var(--neon-cyan); border-radius: var(--radius-sm); color: var(--neon-cyan); font-family: var(--font-display); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; }
+    .verify-search button:hover { background: var(--neon-cyan); color: var(--bg-primary); }
+    .verify-hint { font-size: 0.8rem; color: var(--text-muted); margin-bottom: var(--space-lg); font-family: var(--font-mono); line-height: 1.5; }
+    .verify-hint strong { color: var(--text-secondary); }
+    .verify-result { display: none; margin-top: var(--space-lg); padding: var(--space-lg); border-radius: var(--radius-md); border: 1.5px solid; }
+    .verify-result.show { display: block; }
+    .verify-result--ok { background: rgba(0,255,136,0.04); border-color: var(--neon-green); }
+    .verify-result--error { background: rgba(255,51,51,0.05); border-color: var(--neon-red); }
+    .verify-result__head { display: flex; align-items: center; gap: 0.75rem; margin-bottom: var(--space-md); padding-bottom: var(--space-md); border-bottom: 1px solid var(--border-subtle); }
+    .verify-result__head i { font-size: 1.6rem; }
+    .verify-result--ok .verify-result__head i { color: var(--neon-green); }
+    .verify-result--error .verify-result__head i { color: var(--neon-red); }
+    .verify-result__head strong { font-family: var(--font-display); font-size: 0.95rem; letter-spacing: 0.05em; }
+    .verify-result--ok .verify-result__head strong { color: var(--neon-green); }
+    .verify-result--error .verify-result__head strong { color: var(--neon-red); }
+    .verify-row { display: flex; justify-content: space-between; gap: var(--space-md); padding: 0.5rem 0; border-bottom: 1px dashed var(--border-subtle); font-size: 0.88rem; }
+    .verify-row:last-child { border-bottom: none; }
+    .verify-row span { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.05em; text-transform: uppercase; }
+    .verify-row strong { color: var(--text-primary); text-align: right; word-break: break-word; }
+    .verify-row strong.tag { font-family: var(--font-display); font-size: 0.78rem; letter-spacing: 0.05em; padding: 0.2rem 0.6rem; border-radius: 100px; border: 1px solid; }
+    .verify-row strong.tag--factura { color: var(--neon-cyan); border-color: var(--neon-cyan); background: rgba(0,240,255,0.06); }
+    .verify-row strong.tag--cotizacion { color: var(--neon-purple); border-color: var(--neon-purple); background: rgba(184,41,221,0.06); }
+    .verify-row strong.tag--pagada { color: var(--neon-green); border-color: var(--neon-green); background: rgba(0,255,136,0.06); }
+    .verify-row strong.tag--no-pagada { color: var(--neon-red); border-color: var(--neon-red); background: rgba(255,51,51,0.06); }
+
+    /* ===== PANEL LISTA ADMIN ===== */
+    .admin-lista-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.82); backdrop-filter: blur(8px); z-index: 99998; display: none; align-items: flex-start; justify-content: center; padding: 20px; overflow-y: auto; }
+    .admin-lista-overlay.show { display: flex; }
+    .admin-lista { width: 100%; max-width: 1100px; background: var(--bg-panel); border: 1.5px solid var(--border-medium); border-radius: var(--radius-lg); padding: 24px; margin: auto; position: relative; }
+    .admin-lista__head { display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px; margin-bottom: 20px; border-bottom: 1.5px solid var(--border-subtle); gap: 12px; flex-wrap: wrap; }
+    .admin-lista__title { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; color: var(--neon-cyan); letter-spacing: 0.05em; display: flex; align-items: center; gap: 10px; margin: 0; }
+    .admin-lista__close { width: 36px; height: 36px; border-radius: 50%; background: transparent; border: 1.5px solid var(--border-medium); color: var(--text-secondary); font-size: 1.2rem; cursor: pointer; transition: var(--transition); }
+    .admin-lista__close:hover { border-color: var(--neon-red); color: var(--neon-red); }
+
+    .admin-lista__filtros { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+    .admin-lista__buscar { flex: 1; min-width: 220px; padding: 10px 14px; background: var(--bg-primary); border: 1.5px solid var(--border-subtle); border-radius: var(--radius-sm); color: var(--text-primary); font-family: var(--font-mono); font-size: 0.85rem; outline: none; }
+    .admin-lista__buscar:focus { border-color: var(--neon-cyan); box-shadow: 0 0 0 3px rgba(0,240,255,0.12); }
+    .admin-lista__chip { padding: 10px 14px; background: var(--bg-primary); border: 1.5px solid var(--border-subtle); border-radius: 100px; color: var(--text-secondary); font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.05em; cursor: pointer; transition: var(--transition); white-space: nowrap; }
+    .admin-lista__chip:hover { border-color: var(--neon-cyan); color: var(--neon-cyan); }
+    .admin-lista__chip.active { background: rgba(0,240,255,0.1); border-color: var(--neon-cyan); color: var(--neon-cyan); box-shadow: 0 0 12px rgba(0,240,255,0.25); }
+
+    .admin-lista__contenido { max-height: 60vh; overflow-y: auto; padding-right: 4px; }
+    .admin-lista__contenido::-webkit-scrollbar { width: 6px; }
+    .admin-lista__contenido::-webkit-scrollbar-thumb { background: rgba(0,240,255,0.3); border-radius: 100px; }
+
+    .admin-lista__fila { display: grid; grid-template-columns: 70px 1fr 1fr 110px 100px 100px; gap: 12px; align-items: center; padding: 12px 14px; background: var(--bg-primary); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); margin-bottom: 8px; transition: var(--transition); cursor: pointer; }
+    .admin-lista__fila:hover { border-color: var(--neon-cyan); background: rgba(0,240,255,0.03); transform: translateX(2px); }
+    .admin-lista__tipo { font-family: var(--font-display); font-size: 0.65rem; font-weight: 700; letter-spacing: 0.05em; padding: 4px 8px; border-radius: 100px; text-align: center; border: 1px solid; }
+    .admin-lista__tipo--cot { color: var(--neon-purple); border-color: var(--neon-purple); background: rgba(184,41,221,0.08); }
+    .admin-lista__tipo--fac { color: var(--neon-cyan); border-color: var(--neon-cyan); background: rgba(0,240,255,0.08); }
+    .admin-lista__num { font-family: var(--font-mono); font-size: 0.82rem; color: var(--text-primary); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .admin-lista__cliente { font-size: 0.85rem; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .admin-lista__monto { font-family: var(--font-mono); font-size: 0.85rem; color: var(--neon-green); font-weight: 600; text-align: right; }
+    .admin-lista__fecha { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); text-align: right; }
+    .admin-lista__estado { font-family: var(--font-mono); font-size: 0.65rem; text-align: center; padding: 4px 8px; border-radius: 100px; border: 1px solid; }
+    .admin-lista__estado--pagada { color: var(--neon-green); border-color: var(--neon-green); background: rgba(0,255,136,0.06); }
+    .admin-lista__estado--nopagada { color: var(--neon-red); border-color: var(--neon-red); background: rgba(255,51,51,0.06); }
+    .admin-lista__estado--na { color: var(--text-muted); border-color: var(--border-subtle); background: transparent; }
+
+    .admin-lista__empty { text-align: center; padding: 60px 20px; color: var(--text-muted); font-family: var(--font-mono); }
+    .admin-lista__empty i { font-size: 2.5rem; color: var(--neon-cyan); opacity: 0.3; display: block; margin-bottom: 12px; }
+
+    .admin-lista__info { text-align: center; font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); margin-top: 14px; letter-spacing: 0.05em; }
+
+    .admin-lista__loader { text-align: center; padding: 40px 20px; }
+    .admin-lista__loader i { font-size: 2rem; color: var(--neon-cyan); }
+
+    .admin-lista__acciones { display: flex; gap: 4px; justify-content: flex-end; }
+    .admin-lista__accion { width: 28px; height: 28px; border-radius: 4px; background: transparent; border: 1px solid var(--border-subtle); color: var(--text-secondary); cursor: pointer; font-size: 0.7rem; transition: var(--transition); }
+    .admin-lista__accion:hover { border-color: var(--neon-cyan); color: var(--neon-cyan); background: rgba(0,240,255,0.06); }
+    .admin-lista__accion--del:hover { border-color: var(--neon-red); color: var(--neon-red); background: rgba(255,51,51,0.06); }
+
+    @media (max-width: 768px) {
+      .admin-lista { padding: 16px 12px; }
+      .admin-lista__fila { grid-template-columns: 60px 1fr 100px; gap: 8px; padding: 10px; }
+      .admin-lista__cliente, .admin-lista__fecha, .admin-lista__estado { display: none; }
+      .admin-lista__monto { font-size: 0.75rem; }
+      .admin-lista__contenido { max-height: 55vh; }
+      .admin-lista__chip { padding: 8px 12px; font-size: 0.65rem; }
+    }
+    .verify-comment-wrap { position: relative; padding-right: 34px; }
+    .verify-comment-del { position: absolute; top: 0; right: 0; width: 26px; height: 26px; display: none; align-items: center; justify-content: center; background: rgba(255,51,51,0.08); border: 1px solid rgba(255,51,51,0.3); border-radius: 4px; color: var(--neon-red); cursor: pointer; font-size: 0.7rem; }
+    .verify-comment-del:hover { background: var(--neon-red); color: var(--bg-primary); }
+    body.admin-unlocked .verify-comment-del { display: flex; }
+    .verify-hist-del { background: transparent; border: 1px solid rgba(255,51,51,0.3); color: var(--neon-red); border-radius: 4px; font-family: var(--font-mono); font-size: 0.62rem; padding: 0.15rem 0.45rem; cursor: pointer; margin-left: 0.5rem; }
+    .verify-hist-del:hover { background: var(--neon-red); color: var(--bg-primary); }
+    .verify-empty { text-align: center; padding: var(--space-xl) var(--space-md); color: var(--text-muted); }
+    .verify-empty i { font-size: 2.5rem; color: var(--neon-cyan); opacity: 0.4; display: block; margin-bottom: var(--space-md); }
+    .verify-empty p { font-family: var(--font-mono); font-size: 0.85rem; margin-bottom: 0.4rem; }
+    .verify-note { margin-top: var(--space-lg); padding: var(--space-md); background: rgba(0,240,255,0.03); border-left: 3px solid var(--neon-cyan); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6; }
+    .verify-note i { color: var(--neon-cyan); margin-right: 0.4rem; }
+    .admin-toggle { max-width: 720px; margin: 0 auto var(--space-md); padding: var(--space-md) var(--space-lg); background: var(--bg-panel); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); display: flex; justify-content: space-between; align-items: center; gap: var(--space-md); flex-wrap: wrap; }
+    .admin-toggle__label { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; display: flex; align-items: center; gap: 0.5rem; }
+    .admin-toggle__label i { color: var(--neon-red); }
+    .admin-toggle button { padding: 0.65rem 1.2rem; background: transparent; border: 1.5px solid var(--border-medium); border-radius: var(--radius-sm); color: var(--text-secondary); font-family: var(--font-display); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; }
+    .admin-toggle button:hover { border-color: var(--neon-red); color: var(--neon-red); }
+    .admin-toggle button.is-active { background: rgba(0,255,136,0.08); border-color: var(--neon-green); color: var(--neon-green); }
+    .admin-panel { display: none; max-width: 720px; margin: 0 auto var(--space-lg); padding: var(--space-lg); background: rgba(0,255,136,0.03); border: 1.5px solid rgba(0,255,136,0.3); border-radius: var(--radius-md); }
+    .admin-panel.show { display: block; }
+    .admin-panel__title { font-family: var(--font-display); font-size: 0.85rem; color: var(--neon-green); letter-spacing: 0.08em; margin-bottom: var(--space-md); display: flex; align-items: center; gap: 0.5rem; }
+    .admin-panel__info { font-size: 0.82rem; color: var(--text-secondary); margin-bottom: var(--space-md); line-height: 1.5; }
+    .admin-contexto { padding: 0.75rem 1rem; background: rgba(0,240,255,0.05); border-left: 3px solid var(--neon-cyan); border-radius: 0 4px 4px 0; font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-secondary); margin-bottom: var(--space-md); }
+    .admin-contexto strong { color: var(--neon-cyan); }
+    .admin-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: var(--space-md); }
+    .admin-btn { padding: 0.75rem 1rem; background: var(--bg-panel); border: 1.5px solid var(--border-subtle); border-radius: var(--radius-sm); font-family: var(--font-display); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; color: var(--text-secondary); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
+    .admin-btn:hover:not(:disabled) { border-color: var(--neon-cyan); color: var(--neon-cyan); }
+    .admin-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .admin-btn--green { background: rgba(0,255,136,0.08); border-color: var(--neon-green); color: var(--neon-green); }
+    .admin-btn--green:hover:not(:disabled) { background: var(--neon-green); color: var(--bg-primary); }
+    .admin-btn--red { background: rgba(255,51,51,0.08); border-color: var(--neon-red); color: var(--neon-red); }
+    .admin-btn--red:hover:not(:disabled) { background: var(--neon-red); color: var(--bg-primary); }
+    .admin-btn--cyan { background: rgba(0,240,255,0.08); border-color: var(--neon-cyan); color: var(--neon-cyan); }
+    .admin-btn--cyan:hover:not(:disabled) { background: var(--neon-cyan); color: var(--bg-primary); }
+    .admin-comentario { margin-top: var(--space-md); }
+    .admin-comentario textarea { width: 100%; min-height: 80px; padding: 0.75rem 1rem; background: var(--bg-primary); border: 1.5px solid var(--border-subtle); border-radius: var(--radius-sm); color: var(--text-primary); font-family: var(--font-body); font-size: 0.9rem; outline: none; resize: vertical; margin-bottom: 0.5rem; box-sizing: border-box; }
+    .admin-comentario textarea:focus { border-color: var(--neon-green); box-shadow: 0 0 0 3px rgba(0,255,136,0.1); }
+    .verify-pwd-overlay { position: fixed; inset: 0; z-index: 99999; background: rgba(0,0,0,0.78); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 16px; }
+    .verify-pwd { width: 100%; max-width: 400px; padding: 32px 24px; background: var(--bg-panel); border: 1.5px solid var(--neon-red); border-radius: 12px; text-align: center; }
+    .verify-pwd h3 { font-family: var(--font-display); font-size: 1rem; color: var(--neon-red); margin-bottom: 8px; letter-spacing: 0.1em; }
+    .verify-pwd p { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px; }
+    .verify-pwd input { width: 100%; padding: 0.85rem 1rem; background: var(--bg-primary); border: 1.5px solid var(--border-subtle); border-radius: 6px; color: var(--text-primary); font-family: var(--font-mono); font-size: 0.95rem; letter-spacing: 0.1em; outline: none; margin-bottom: 12px; box-sizing: border-box; }
+    .verify-pwd input:focus { border-color: var(--neon-red); box-shadow: 0 0 0 3px rgba(255,51,51,0.15); }
+    .verify-pwd .err { font-size: 0.75rem; color: var(--neon-red); min-height: 1.2em; margin-bottom: 12px; font-family: var(--font-mono); }
+    .verify-pwd__actions { display: flex; gap: 8px; }
+    .verify-pwd__actions button { flex: 1; padding: 0.85rem 1rem; border-radius: 6px; font-family: var(--font-display); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border: 1.5px solid; }
+    .verify-pwd__actions .ok { background: var(--neon-red); color: var(--bg-primary); border-color: var(--neon-red); }
+    .verify-pwd__actions .cancel { background: transparent; color: var(--text-secondary); border-color: var(--border-medium); }
+    @media (max-width: 480px) {
+      .verify-search { flex-direction: column; }
+      .verify-search button { width: 100%; justify-content: center; }
+      .verify-card { padding: var(--space-md); }
+      .verify-row { flex-direction: column; gap: 0.2rem; }
+      .verify-row strong { text-align: left; }
+      .admin-actions { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="scroll-progress" aria-hidden="true"><div class="scroll-progress__bar" id="scrollProgressBar"></div></div>
+  <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+  <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+  <div class="scanlines" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+  <div class="cyber-grid" aria-hidden="true"></div>
+  <canvas id="particles" class="particles" aria-hidden="true"></canvas>
+  <div class="toast-container" aria-live="polite"></div>
+
+  <header class="header" data-header>
+    <div class="header__scanline"></div>
+    <div class="container header__container">
+      <a href="index.html" class="logo" aria-label="Inicio">
+        <div class="logo__symbol">
+          <svg viewBox="0 0 100 100" class="logo__svg logo__svg--nexus">
+            <path d="M50 4 L88 26 L88 62 Q88 88 50 96 Q12 88 12 62 L12 26 Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-dasharray="240" stroke-dashoffset="240" class="nexus-shield"/>
+            <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.3" stroke-dasharray="3 6" class="nexus-ring nexus-ring--1"/>
+            <circle cx="50" cy="50" r="34" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5" stroke-dasharray="8 4" class="nexus-ring nexus-ring--2"/>
+            <circle cx="50" cy="50" r="26" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.6" stroke-dasharray="2 3" class="nexus-ring nexus-ring--3"/>
+            <path d="M50 50 L50 8 A42 42 0 0 1 85 28 Z" fill="currentColor" opacity="0.09" class="nexus-sweep"/>
+            <path d="M50 38 L60 44 L60 56 L50 62 L40 56 L40 44 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" class="nexus-core"/>
+            <circle cx="50" cy="50" r="4" fill="currentColor" class="nexus-center"/>
+          </svg>
+        </div>
+      </a>
+      <nav id="nav-menu" class="nav" data-nav aria-label="Navegación principal">
+        <ul class="nav__list">
+          <li><a href="index.html#inicio" class="nav__link">INICIO</a></li>
+          <li><a href="index.html#perfil" class="nav__link">PERFIL</a></li>
+          <li><a href="index.html#servicios" class="nav__link">SERVICIOS</a></li>
+          <li><a href="index.html#trayectoria" class="nav__link">TRAYECTORIA</a></li>
+          <li><a href="index.html#enlaces" class="nav__link">ENLACES</a></li>
+          <li><a href="toolkit.html" class="nav__link">TOOLKIT</a></li>
+          <li><a href="netpro.html" class="nav__link">NETPRO</a></li>
+          <li><a href="cursos.html" class="nav__link"><i class="fa-solid fa-graduation-cap"></i>&nbsp;CURSOS</a></li>
+          <li><a href="cotizador.html" class="nav__link nav__link--quote"><i class="fa-solid fa-calculator"></i>&nbsp;COTIZAR</a></li>
+          <li><a href="index.html#contacto" class="nav__link nav__link--cta">CONTACTO</a></li>
+        </ul>
+      </nav>
+      <button class="nav-toggle" aria-label="Menú" aria-expanded="false" aria-controls="nav-menu" data-nav-toggle>
+        <span class="nav-toggle__bar"></span><span class="nav-toggle__bar"></span><span class="nav-toggle__bar"></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="verify-section">
+      <div class="container">
+        <div class="verify-hero">
+          <span class="section__eyebrow">[ VERIFICACIÓN DE DOCUMENTOS ]</span>
+          <h1 class="verify-hero__title">VERIFICA TU <span class="text-gradient">FACTURA O COTIZACIÓN</span></h1>
+          <p class="verify-hero__subtitle">Ingresa el código de verificación impreso en tu documento para confirmar su autenticidad.</p>
+        </div>
+
+        <div class="admin-toggle">
+          <span class="admin-toggle__label"><i class="fa-solid fa-user-shield"></i> Panel de administración</span>
+          <button type="button" id="adminToggleBtn">
+            <i class="fa-solid fa-lock"></i>
+            <span id="adminToggleLabel">Desbloquear</span>
+          </button>
+        </div>
+
+        <div class="admin-panel" id="adminPanel">
+          <div class="admin-panel__title"><i class="fa-solid fa-toolbox"></i> ACCIONES DE ADMINISTRADOR</div>
+          <div class="admin-contexto" id="adminContexto">Busca un documento arriba para ver las acciones disponibles.</div>
+          <div class="admin-actions">
+            <button type="button" class="admin-btn" id="adminVerRegistro" style="grid-column:1/-1; background: rgba(0,240,255,0.08); border-color: var(--neon-cyan); color: var(--neon-cyan);"><i class="fa-solid fa-list"></i> VER REGISTRO COMPLETO DE DOCUMENTOS</button>
+            <button type="button" class="admin-btn admin-btn--green" id="adminEmitirFactura" style="grid-column:1/-1;"><i class="fa-solid fa-file-invoice-dollar"></i> Emitir FACTURA (Pagada)</button>
+            <button type="button" class="admin-btn admin-btn--red" id="adminEmitirFacturaNoPagada" style="grid-column:1/-1;"><i class="fa-solid fa-file-invoice"></i> Emitir FACTURA (No Pagada)</button>
+            <button type="button" class="admin-btn admin-btn--green" id="adminMarcarPagada"><i class="fa-solid fa-circle-check"></i> Marcar PAGADA</button>
+            <button type="button" class="admin-btn admin-btn--red" id="adminMarcarNoPagada"><i class="fa-solid fa-circle-xmark"></i> Marcar NO PAGADA</button>
+            <button type="button" class="admin-btn" id="adminMarcarServicio"><i class="fa-solid fa-screwdriver-wrench"></i> Servicio realizado</button>
+            <button type="button" class="admin-btn admin-btn--cyan" id="adminDescargarPDF"><i class="fa-solid fa-file-pdf"></i> Descargar PDF</button>
+          </div>
+          <div class="admin-comentario">
+            <label class="verify-label">Comentario visible al cliente</label>
+            <textarea id="adminComentarioInput" placeholder="Ej: El trabajo de esta cotización fue realizado. Al día de hoy no ha sido pagado..."></textarea>
+            <button type="button" class="admin-btn admin-btn--green" id="adminAgregarComentario" style="width:100%;"><i class="fa-solid fa-plus"></i> Publicar comentario</button>
+          </div>
+        </div>
+
+        <div class="verify-card">
+          <label class="verify-label" for="verifyInput">Código de verificación</label>
+          <div class="verify-search">
+            <input type="text" id="verifyInput" placeholder="Ej: VC-F5D5-3FF9" autocomplete="off" spellcheck="false" />
+            <button type="button" id="verifyBtn"><i class="fa-solid fa-magnifying-glass"></i> Verificar</button>
+          </div>
+          <p class="verify-hint">Formatos: <strong>VC-XXXX-XXXX</strong> · <strong>COT-XXXXXXXX-XXX</strong> · <strong>FAC-XXXXXXXX-XXX</strong> · <strong>JCDC-XXXX</strong></p>
+          <div class="verify-result" id="verifyResult"></div>
+          <div class="verify-note">
+            <i class="fa-solid fa-shield-halved"></i>
+            Cada documento generado por Julio C. Durán Casado incluye un código único verificable. Si el código no aparece en nuestros registros, el documento podría ser falso.
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== PANEL OVERLAY: REGISTRO COMPLETO ===== -->
+  <div class="admin-lista-overlay" id="adminListaOverlay">
+    <div class="admin-lista">
+      <div class="admin-lista__head">
+        <h3 class="admin-lista__title"><i class="fa-solid fa-list"></i> REGISTRO COMPLETO DE DOCUMENTOS</h3>
+        <button type="button" class="admin-lista__close" id="adminListaCerrar" aria-label="Cerrar">✕</button>
+      </div>
+
+      <div class="admin-lista__filtros">
+        <input type="text" id="adminListaBuscar" class="admin-lista__buscar" placeholder="Buscar por número, cliente o código VC..." />
+        <button type="button" class="admin-lista__chip active" data-filtro="todos">TODOS</button>
+        <button type="button" class="admin-lista__chip" data-filtro="cotizacion">COTIZACIONES</button>
+        <button type="button" class="admin-lista__chip" data-filtro="factura">FACTURAS</button>
+        <button type="button" class="admin-lista__chip" data-filtro="pagada">PAGADAS</button>
+        <button type="button" class="admin-lista__chip" data-filtro="no-pagada">NO PAGADAS</button>
+      </div>
+
+      <div class="admin-lista__contenido" id="adminListaContenido">
+        <div class="admin-lista__loader"><i class="fa-solid fa-spinner fa-spin"></i></div>
+      </div>
+
+      <div class="admin-lista__info" id="adminListaInfo"></div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK (v8 compat — sin módulos ES6) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+  <!-- Config JCDC -->
+  <script src="js/servicios-config.js"></script>
+  <script src="js/firebase-config.js"></script>
+
+  <!-- Scripts del proyecto -->
+  <script src="js/main.js"></script>
+  <script src="js/verificar.js"></script>
+</body>
+</html>
+</body>
+</html>

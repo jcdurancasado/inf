@@ -68,6 +68,41 @@ const QuoteWizard = {
   ============================================ */
   init() {
     const wizard = document.getElementById('quoteWizard');
+    
+    // SIEMPRE arrancar bloqueado hasta que Firebase confirme
+    this.facturaUnlocked = false;
+    
+    // Detectar si ya hay sesión admin activa
+    if (window.auth) {
+      const self = this;
+      window.auth.onAuthStateChanged(function (user) {
+        if (user) {
+          self.facturaUnlocked = true;
+          self._activarModoAdmin();
+        } else {
+          self.facturaUnlocked = false;
+          const btn = document.getElementById('adminLogoutFloat');
+          if (btn) btn.remove();
+          self._actualizarBadgeFactura(false);
+        }
+      });
+    }
+    
+    // Detectar si ya hay sesión admin activa al cargar
+    if (window.auth) {
+      const self = this;
+      window.auth.onAuthStateChanged(function (user) {
+        if (user) {
+          self.facturaUnlocked = true;
+          self._activarModoAdmin();
+        } else {
+          self.facturaUnlocked = false;
+          const btn = document.getElementById('adminLogoutFloat');
+          if (btn) btn.remove();
+          self._actualizarBadgeFactura(false);
+        }
+      });
+    }
     if (!wizard) return;
 
     this.els = {
@@ -361,9 +396,19 @@ const QuoteWizard = {
   },
 
   async pedirPasswordFactura() {
-    if (this.facturaUnlocked) return true;
+    // Verificar SIEMPRE contra Firebase, no confiar en facturaUnlocked
+    if (window.auth && window.auth.currentUser) {
+      this.facturaUnlocked = true;
+      this._activarModoAdmin();
+      return true;
+    }
 
-    // ✅ Inyectar estilos ANTES de crear el modal
+    // Si ya hay sesión activa de Firebase Auth, desbloquear directo
+    if (window.auth && window.auth.currentUser) {
+      this.facturaUnlocked = true;
+      return true;
+    }
+
     this._inyectarEstilosModal();
 
     const self = this;
@@ -374,17 +419,21 @@ const QuoteWizard = {
         <div class="pwd-modal" role="dialog" aria-modal="true">
           <div class="pwd-modal__icon"><i class="fa-solid fa-lock"></i></div>
           <h3 class="pwd-modal__title">ACCESO RESTRINGIDO</h3>
-          <p class="pwd-modal__desc">La generación de <strong>FACTURAS</strong> requiere contraseña.<br>
+          <p class="pwd-modal__desc">La generación de <strong>FACTURAS</strong> requiere iniciar sesión.<br>
           Las cotizaciones siguen disponibles sin restricción.</p>
           <div class="pwd-modal__field">
+            <i class="fa-solid fa-envelope"></i>
+            <input type="email" id="pwdFacturaEmail" autocomplete="email" placeholder="Email" value="jcdurancasado@gmail.com" />
+          </div>
+          <div class="pwd-modal__field">
             <i class="fa-solid fa-key"></i>
-            <input type="password" id="pwdFacturaInput" autocomplete="off" placeholder="Contraseña" />
+            <input type="password" id="pwdFacturaInput" autocomplete="current-password" placeholder="Contraseña" />
           </div>
           <p class="pwd-modal__error" id="pwdFacturaError"></p>
           <div class="pwd-modal__actions">
             <button type="button" class="pwd-btn pwd-btn--ghost" id="pwdFacturaCancel">Cancelar</button>
             <button type="button" class="pwd-btn pwd-btn--primary" id="pwdFacturaOk">
-              <i class="fa-solid fa-unlock"></i> Desbloquear
+              <i class="fa-solid fa-unlock"></i> Entrar
             </button>
           </div>
           <button type="button" class="pwd-modal__close" id="pwdFacturaClose" aria-label="Cerrar">×</button>
@@ -393,40 +442,53 @@ const QuoteWizard = {
       document.body.appendChild(overlay);
       document.body.classList.add('jcdc-modal-open');
 
+      const emailInp = overlay.querySelector('#pwdFacturaEmail');
       const input = overlay.querySelector('#pwdFacturaInput');
       const error = overlay.querySelector('#pwdFacturaError');
       const ok = overlay.querySelector('#pwdFacturaOk');
       const cancel = overlay.querySelector('#pwdFacturaCancel');
       const close = overlay.querySelector('#pwdFacturaClose');
 
-      setTimeout(() => input.focus(), 80);
+      setTimeout(function () { input.focus(); }, 80);
 
       function cerrar(resultado) {
         document.body.classList.remove('jcdc-modal-open');
         overlay.classList.add('pwd-overlay--closing');
-        setTimeout(() => overlay.remove(), 220);
+        setTimeout(function () { overlay.remove(); }, 220);
         resolve(resultado);
       }
 
       async function intentar() {
-        const val = input.value.trim();
-        if (!val) {
-          error.textContent = 'Introduce la contraseña';
+        const email = emailInp.value.trim();
+        const pass = input.value;
+        if (!email || !pass) {
+          error.textContent = 'Completa email y contraseña';
+          return;
+        }
+        if (!window.auth) {
+          error.textContent = 'Error: Firebase Auth no disponible';
           return;
         }
         ok.disabled = true;
-        const valida = await self.verificarPassword(val);
-        ok.disabled = false;
-
-        if (valida) {
+        try {
+          await window.auth.signInWithEmailAndPassword(email, pass);
           self.facturaUnlocked = true;
-          if (typeof Toast !== 'undefined') Toast.show('Factura desbloqueada', 'success', 1800);
+          if (typeof Toast !== 'undefined') Toast.show('Acceso concedido', 'success', 1800);
+          self._activarModoAdmin();
           cerrar(true);
-        } else {
-          error.textContent = 'Contraseña incorrecta';
+        } catch (e) {
+          ok.disabled = false;
+          const code = e.code || '';
+          let msg = 'Error al iniciar sesión';
+          if (code === 'auth/wrong-password' || code === 'auth/invalid-credential' || code === 'auth/invalid-login-credentials') msg = '❌ Contraseña incorrecta';
+          else if (code === 'auth/user-not-found') msg = '❌ Usuario no encontrado';
+          else if (code === 'auth/invalid-email') msg = '❌ Email inválido';
+          else if (code === 'auth/too-many-requests') msg = '⏳ Demasiados intentos. Espera un momento.';
+          else if (code === 'auth/network-request-failed') msg = '⚠️ Error de conexión';
+          error.textContent = msg;
           input.value = '';
           input.classList.add('pwd-shake');
-          setTimeout(() => input.classList.remove('pwd-shake'), 400);
+          setTimeout(function () { input.classList.remove('pwd-shake'); }, 400);
         }
       }
 
@@ -435,13 +497,161 @@ const QuoteWizard = {
         if (e.key === 'Enter') intentar();
         if (e.key === 'Escape') cerrar(false);
       });
-      cancel.addEventListener('click', () => cerrar(false));
-      close.addEventListener('click', () => cerrar(false));
-      overlay.addEventListener('click', (e) => {
+      emailInp.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') input.focus();
+      });
+      cancel.addEventListener('click', function () { cerrar(false); });
+      close.addEventListener('click', function () { cerrar(false); });
+      overlay.addEventListener('click', function (e) {
         if (e.target === overlay) cerrar(false);
       });
     });
   },
+  /* ============================================
+     CONFIRMACIÓN PERSONALIZADA
+  ============================================ */
+  _confirmar(mensaje, opciones) {
+    opciones = opciones || {};
+    const titulo = opciones.titulo || '¿Confirmar acción?';
+    const tipo = opciones.tipo || 'info'; // 'info' | 'warning' | 'danger'
+    const okLabel = opciones.okLabel || 'Aceptar';
+    const cancelLabel = opciones.cancelLabel || 'Cancelar';
+    const icono = opciones.icono || (tipo === 'danger' ? 'fa-triangle-exclamation' : tipo === 'warning' ? 'fa-circle-exclamation' : 'fa-circle-question');
+
+    return new Promise(function (resolve) {
+      const overlay = document.createElement('div');
+      overlay.className = 'jcdc-confirm-overlay';
+      overlay.innerHTML =
+        '<div class="jcdc-confirm jcdc-confirm--' + tipo + '" role="dialog" aria-modal="true">' +
+        '  <div class="jcdc-confirm__icon"><i class="fa-solid ' + icono + '"></i></div>' +
+        '  <h3 class="jcdc-confirm__title">' + titulo + '</h3>' +
+        '  <p class="jcdc-confirm__msg">' + mensaje + '</p>' +
+        '  <div class="jcdc-confirm__actions">' +
+        '    <button type="button" class="jcdc-confirm__btn jcdc-confirm__btn--cancel" data-res="0">' + cancelLabel + '</button>' +
+        '    <button type="button" class="jcdc-confirm__btn jcdc-confirm__btn--ok" data-res="1">' + okLabel + '</button>' +
+        '  </div>' +
+        '</div>';
+      document.body.appendChild(overlay);
+
+      function cerrar(res) {
+        overlay.classList.add('closing');
+        setTimeout(function () { overlay.remove(); }, 200);
+        resolve(res);
+      }
+
+      overlay.querySelector('[data-res="0"]').addEventListener('click', function () { cerrar(false); });
+      overlay.querySelector('[data-res="1"]').addEventListener('click', function () { cerrar(true); });
+      overlay.addEventListener('click', function (e) { if (e.target === overlay) cerrar(false); });
+      document.addEventListener('keydown', function esc(e) {
+        if (e.key === 'Escape') { document.removeEventListener('keydown', esc); cerrar(false); }
+        if (e.key === 'Enter') { document.removeEventListener('keydown', esc); cerrar(true); }
+      });
+      setTimeout(function () {
+        const okBtn = overlay.querySelector('[data-res="1"]');
+        if (okBtn) okBtn.focus();
+      }, 80);
+    });
+  },
+
+  /* ============================================
+     ADMIN SESSION · Timeout + Logout
+  ============================================ */
+  _activarModoAdmin() {
+    const self = this;
+
+    // Remover el botón viejo si existe (para evitar duplicados)
+    const viejo = document.getElementById('adminLogoutFloat');
+    if (viejo) viejo.remove();
+
+    // Si no existe el bloque COTIZACIÓN/FACTURA todavía, esperar
+    var docType = document.querySelector('.rep-doc-type');
+    if (!docType || !docType.parentNode) return;
+
+    // Botón flotante de logout
+    const btn = document.createElement('button');
+    btn.id = 'adminLogoutFloat';
+    btn.className = 'admin-logout-float visible';
+    btn.type = 'button';
+    btn.innerHTML = '<i class="fa-solid fa-right-from-bracket"></i> CERRAR SESIÓN ADMIN';
+    btn.addEventListener('click', function () {
+      self._confirmar(
+        'Se cerrará tu sesión de administrador. Tendrás que volver a iniciar sesión para generar facturas.',
+        { titulo: 'Cerrar sesión', tipo: 'warning', okLabel: 'Sí, cerrar', cancelLabel: 'Atrás', icono: 'fa-right-from-bracket' }
+      ).then(function (ok) {
+        if (ok) self._cerrarSesionAdmin();
+      });
+    });
+    docType.parentNode.insertBefore(btn, docType.nextSibling);
+
+    // Actualizar badge de FACTURA (si existe)
+    this._actualizarBadgeFactura(true);
+
+    // Timeout de 30 minutos sin actividad
+    this._reiniciarTimeoutAdmin();
+    ['mousemove', 'keydown', 'click', 'scroll'].forEach(function (evt) {
+      document.addEventListener(evt, function () { self._reiniciarTimeoutAdmin(); });
+    });
+  },
+
+  _reiniciarTimeoutAdmin() {
+    const self = this;
+    if (this._adminTimeout) clearTimeout(this._adminTimeout);
+    this._adminTimeout = setTimeout(function () {
+      if (self.facturaUnlocked) {
+        if (typeof Toast !== 'undefined') Toast.show('Sesión cerrada por inactividad', 'info', 2500);
+        self._cerrarSesionAdmin();
+      }
+    }, 30 * 60 * 1000); // 30 minutos
+  },
+
+  _cerrarSesionAdmin() {
+    const self = this;
+    if (this._adminTimeout) clearTimeout(this._adminTimeout);
+    if (window.auth) {
+      window.auth.signOut().catch(function (e) { console.warn(e); });
+    }
+    this.facturaUnlocked = false;
+
+    // Remover botón flotante
+    const btn = document.getElementById('adminLogoutFloat');
+    if (btn) btn.remove();
+
+    // Actualizar badge de FACTURA
+    this._actualizarBadgeFactura(false);
+
+    if (typeof Toast !== 'undefined') Toast.show('Sesión admin cerrada', 'info', 1800);
+  },
+
+  _actualizarBadgeFactura(esAdmin) {
+    const badge = document.querySelector('.rep-doc-btn[data-tipodoc="factura"] .rep-lock-badge');
+    if (!badge) return;
+    if (esAdmin) {
+      badge.className = 'rep-lock-badge rep-lock-badge--admin';
+      badge.innerHTML = '<i class="fa-solid fa-user-shield"></i> ADMIN · CLIC PARA SALIR';
+      badge.style.cursor = 'pointer';
+      if (!badge._hasClickHandler) {
+        badge._hasClickHandler = true;
+        badge.addEventListener('click', function (e) {
+          e.stopPropagation();
+          e.preventDefault();
+          QuoteWizard._confirmar(
+            'Se cerrará tu sesión de administrador. Tendrás que volver a iniciar sesión para generar facturas.',
+            { titulo: 'Cerrar sesión', tipo: 'warning', okLabel: 'Sí, cerrar', cancelLabel: 'Atrás', icono: 'fa-right-from-bracket' }
+          ).then(function (ok) {
+            if (ok) QuoteWizard._cerrarSesionAdmin();
+          });
+        });
+      }
+    } else {
+      badge.className = 'rep-lock-badge';
+      badge.innerHTML = '<i class="fa-solid fa-lock"></i> PRIVADO';
+      badge.style.cursor = '';
+      badge._hasClickHandler = false;
+      const clone = badge.cloneNode(true);
+      badge.parentNode.replaceChild(clone, badge);
+    }
+  },
+
   /* ============================================
      HELPERS
   ============================================ */
@@ -716,9 +926,15 @@ const QuoteWizard = {
       btn.addEventListener('click', async function () {
         const tipo = btn.dataset.tipodoc;
 
-        if (tipo === 'factura' && !self.facturaUnlocked) {
-          const ok = await self.pedirPasswordFactura();
-          if (!ok) return;
+        if (tipo === 'factura') {
+          // Verificar SIEMPRE con Firebase
+          if (!window.auth || !window.auth.currentUser) {
+            const ok = await self.pedirPasswordFactura();
+            if (!ok) return;
+          } else {
+            self.facturaUnlocked = true;
+            self._activarModoAdmin();
+          }
         }
 
         document.querySelectorAll('.rep-doc-btn').forEach(function (b) { b.classList.remove('active'); });
@@ -805,6 +1021,11 @@ const QuoteWizard = {
 
     const descEl = document.getElementById('repDesc');
     if (descEl) descEl.addEventListener('input', function (e) { self.reparacion.descripcion = e.target.value; });
+
+    // Si hay sesión admin activa, mostrar botón de logout
+    if (self.facturaUnlocked && window.auth && window.auth.currentUser) {
+      self._activarModoAdmin();
+    }
   },
 
   loadMarcasByEquipo(equipo) {

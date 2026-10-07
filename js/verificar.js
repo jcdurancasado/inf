@@ -262,7 +262,7 @@
       overlay.innerHTML =
         '<div class="verify-pwd">' +
         '  <h3><i class="fa-solid fa-lock"></i> ACCESO ADMIN</h3>' +
-        '  <p>Inicia sesión con tu cuenta de Firebase.</p>' +
+        '  <p>Ingresa tus credenciales de administrador.</p>' +
         '  <input type="email" id="vPwdEmail" autocomplete="email" placeholder="Email" value="jcdurancasado@gmail.com" style="margin-bottom:8px;" />' +
         '  <input type="password" id="vPwdInput" autocomplete="current-password" placeholder="Contraseña" />' +
         '  <p class="err" id="vPwdError"></p>' +

@@ -13,6 +13,7 @@ const QuoteWizard = {
   reparacion: null,
   RATE_DOP: 60,
   facturaUnlocked: false,
+  cotizacionUnlocked: false,
 
   services: {
     red: {
@@ -69,8 +70,11 @@ const QuoteWizard = {
   init() {
     const wizard = document.getElementById('quoteWizard');
     
-    // SIEMPRE arrancar bloqueado hasta que Firebase confirme
+    // SIEMPRE arrancar bloqueado hasta que el usuario se autentique
     this.facturaUnlocked = false;
+    this.cotizacionUnlocked = false;
+    this._tipoAcceso = null;
+    this._expiraEn = null;
     
     // Detectar si ya hay sesión admin activa
     if (window.auth) {
@@ -88,21 +92,6 @@ const QuoteWizard = {
       });
     }
     
-    // Detectar si ya hay sesión admin activa al cargar
-    if (window.auth) {
-      const self = this;
-      window.auth.onAuthStateChanged(function (user) {
-        if (user) {
-          self.facturaUnlocked = true;
-          self._activarModoAdmin();
-        } else {
-          self.facturaUnlocked = false;
-          const btn = document.getElementById('adminLogoutFloat');
-          if (btn) btn.remove();
-          self._actualizarBadgeFactura(false);
-        }
-      });
-    }
     if (!wizard) return;
 
     this.els = {
@@ -119,14 +108,21 @@ const QuoteWizard = {
     };
 
     const self = this;
-
     document.querySelectorAll('[data-service]').forEach(function (opt) {
-      opt.addEventListener('click', function () {
+      opt.addEventListener('click', async function () {
+        const servicioId = opt.dataset.service;
+
+        // Bloqueo: si no está desbloqueado, pedir código ANTES de seleccionar
+        if (!self.cotizacionUnlocked && !self.facturaUnlocked) {
+          const ok = await self.pedirCodigoOTP();
+          if (!ok) return;
+        }
+
         document.querySelectorAll('[data-service]').forEach(function (o) { o.classList.remove('checked'); });
         opt.classList.add('checked');
         const input = opt.querySelector('input');
         if (input) input.checked = true;
-        self.service = opt.dataset.service;
+        self.service = servicioId;
         self.loadDefaults();
         self.updateNextBtn();
       });
@@ -419,7 +415,7 @@ const QuoteWizard = {
         <div class="pwd-modal" role="dialog" aria-modal="true">
           <div class="pwd-modal__icon"><i class="fa-solid fa-lock"></i></div>
           <h3 class="pwd-modal__title">ACCESO RESTRINGIDO</h3>
-          <p class="pwd-modal__desc">La generación de <strong>FACTURAS</strong> requiere iniciar sesión.<br>
+          <p class="pwd-modal__desc">La generación de <strong>FACTURAS</strong> requiere acceso de administrador.<br>
           Las cotizaciones siguen disponibles sin restricción.</p>
           <div class="pwd-modal__field">
             <i class="fa-solid fa-envelope"></i>
@@ -508,6 +504,242 @@ const QuoteWizard = {
     });
   },
   /* ============================================
+     OTP · Código temporal para COTIZACIÓN
+  ============================================ */
+  async pedirCodigoOTP() {
+    if (this.cotizacionUnlocked) return true;
+
+    // ✅ Limpiar cualquier modal huérfano antes de crear uno nuevo
+    document.querySelectorAll('.pwd-overlay').forEach(function (el) {
+      if (el.parentNode) el.parentNode.removeChild(el);
+    });
+    document.body.classList.remove('jcdc-modal-open');
+
+    this._inyectarEstilosModal();
+
+    const self = this;
+    return new Promise(function (resolve) {
+      const overlay = document.createElement('div');
+      overlay.className = 'pwd-overlay pwd-overlay--otp';
+      overlay.innerHTML = `
+        <div class="pwd-modal pwd-modal--otp" role="dialog" aria-modal="true">
+          <div class="pwd-modal__icon">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <h3 class="pwd-modal__title">ACCESO TEMPORAL</h3>
+          <p class="pwd-modal__desc">Ingresa el <strong>código temporal</strong> que el administrador te proporcionará, o tu <strong>clave de administrador</strong>.<br><span style="font-size:0.82rem;">El código es de <strong>un solo uso</strong> y vence en <strong>20 minutos</strong>.</span></p>
+          <div class="pwd-modal__field pwd-modal__field--otp">
+            <i class="fa-solid fa-key"></i>
+            <input type="password" id="otpInput" autocomplete="off" placeholder="Código o clave admin" maxlength="50" />
+            <button type="button" class="pwd-otp-eye" id="otpToggle" aria-label="Mostrar">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+          <p class="pwd-modal__error" id="otpError"></p>
+          <div id="otpTimer" style="display:none; font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; color: #00f0ff; text-align: center; margin-bottom: 12px; letter-spacing: 0.1em;"></div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <button type="button" class="pwd-btn" id="otpSolicitar" style="background: linear-gradient(135deg, rgba(0,240,255,0.15), rgba(0,255,136,0.1)); border-color: #00f0ff; color: #00f0ff; width: 100%;">
+              <i class="fa-solid fa-paper-plane"></i> Solicitar código
+            </button>
+            <div style="display: flex; gap: 10px;">
+              <button type="button" class="pwd-btn pwd-btn--ghost" id="otpCancel" style="flex: 1;">Cancelar</button>
+              <button type="button" class="pwd-btn pwd-btn--primary" id="otpOk" style="flex: 1;">
+                <i class="fa-solid fa-unlock"></i> Aceptar
+              </button>
+            </div>
+          </div>
+          <button type="button" class="pwd-modal__close" id="otpClose" aria-label="Cerrar">×</button>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+      document.body.classList.add('jcdc-modal-open');
+
+      const input = overlay.querySelector('#otpInput');
+      const error = overlay.querySelector('#otpError');
+      const ok = overlay.querySelector('#otpOk');
+      const cancel = overlay.querySelector('#otpCancel');
+      const close = overlay.querySelector('#otpClose');
+      const solicitar = overlay.querySelector('#otpSolicitar');
+      const timerEl = overlay.querySelector('#otpTimer');
+      const otpToggle = overlay.querySelector('#otpToggle');
+
+      let intervalTimer = null;
+      let expiresAt = null;
+      let cerrado = false;
+
+      setTimeout(function () { input.focus(); }, 80);
+
+      function cerrar(res) {
+        if (cerrado) return;
+        cerrado = true;
+        if (intervalTimer) clearInterval(intervalTimer);
+        document.body.classList.remove('jcdc-modal-open');
+        overlay.classList.add('pwd-overlay--closing');
+        setTimeout(function () {
+          if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+        }, 200);
+        resolve(res);
+      }
+
+      function actualizarTimer() {
+        if (!expiresAt) return;
+        const restante = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
+        if (restante <= 0) {
+          timerEl.textContent = '⏱ Código expirado — solicita otro';
+          timerEl.style.color = '#ff3333';
+          if (intervalTimer) clearInterval(intervalTimer);
+          return;
+        }
+        const min = Math.floor(restante / 60);
+        const seg = String(restante % 60).padStart(2, '0');
+        timerEl.style.color = restante < 180 ? '#ffaa00' : '#00f0ff';
+        timerEl.textContent = '⏱ Tiempo restante: ' + min + ':' + seg;
+      }
+
+      async function solicitarCodigo() {
+        if (solicitar.disabled) return;
+        solicitar.disabled = true;
+        solicitar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
+        error.textContent = '';
+        error.style.color = '#ff3333';
+
+        var waMsg = encodeURIComponent('Hola, necesito un código de acceso temporal para generar una cotización en la web JCDC.');
+        window.open('https://wa.me/18294213163?text=' + waMsg, '_blank', 'noopener');
+
+        try {
+          const r = await fetch('https://jcdcapi.vercel.app/api/solicitar-codigo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({})
+          });
+          const d = await r.json();
+
+          if (d.ok) {
+            expiresAt = Date.now() + (d.expiresIn * 1000);
+            timerEl.style.display = 'block';
+            actualizarTimer();
+            intervalTimer = setInterval(actualizarTimer, 1000);
+            error.textContent = '✓ Código enviado. Confírmalo por WhatsApp.';
+            error.style.color = '#00ff88';
+            if (typeof Toast !== 'undefined') Toast.show('Código solicitado', 'success', 1800);
+          } else {
+            error.textContent = d.error || 'Error solicitando código';
+            error.style.color = '#ff3333';
+          }
+        } catch (e) {
+          error.textContent = 'Error de conexión';
+          error.style.color = '#ff3333';
+        } finally {
+          solicitar.disabled = false;
+          solicitar.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Solicitar código';
+        }
+      }
+
+      async function validarCodigo() {
+        if (ok.disabled) return;
+        const valor = input.value.trim();
+        if (!valor) {
+          error.textContent = 'Ingresa un código o clave';
+          error.style.color = '#ff3333';
+          return;
+        }
+
+        const esOTP = /^\d{6}$/.test(valor);
+        ok.disabled = true;
+        error.textContent = 'Verificando...';
+        error.style.color = '#00f0ff';
+
+        try {
+          if (!esOTP) {
+            // Clave admin
+            const r = await fetch('https://jcdcapi.vercel.app/api/validar-admin-key', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ clave: valor })
+            });
+            const d = await r.json();
+            if (d.ok && d.admin) {
+              self.cotizacionUnlocked = true;
+              self.facturaUnlocked = true;
+              self._tipoAcceso = 'admin';
+              if (typeof Toast !== 'undefined') Toast.show('Modo administrador activado', 'success', 1800);
+              cerrar(true);
+              setTimeout(function () {
+                try { self._activarModoAdmin(); } catch (e) {}
+                try { self._mostrarBadgeAdmin(); } catch (e) {}
+              }, 400);
+              return;
+            } else {
+              error.textContent = '❌ Clave incorrecta';
+              error.style.color = '#ff3333';
+              input.value = '';
+              input.classList.add('pwd-shake');
+              setTimeout(function () { input.classList.remove('pwd-shake'); }, 400);
+            }
+          } else {
+            // OTP
+            const r = await fetch('https://jcdcapi.vercel.app/api/validar-codigo', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ codigo: valor })
+            });
+            const d = await r.json();
+            if (d.ok) {
+              self.cotizacionUnlocked = true;
+              self._tipoAcceso = 'client';
+              self._expiraEn = Date.now() + (20 * 60 * 1000);
+              if (typeof Toast !== 'undefined') Toast.show('Acceso concedido por 20 minutos', 'success', 2000);
+              cerrar(true);
+              setTimeout(function () {
+                try { self._iniciarTimerCliente(); } catch (e) {}
+                try { self._mostrarBadgeCliente(); } catch (e) {}
+              }, 400);
+              return;
+            } else {
+              error.textContent = d.error || '❌ Código incorrecto o expirado';
+              error.style.color = '#ff3333';
+              input.value = '';
+              input.classList.add('pwd-shake');
+              setTimeout(function () { input.classList.remove('pwd-shake'); }, 400);
+            }
+          }
+        } catch (e) {
+          error.textContent = 'Error de conexión';
+          error.style.color = '#ff3333';
+        } finally {
+          ok.disabled = false;
+        }
+      }
+
+      if (otpToggle) {
+        otpToggle.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (input.type === 'password') {
+            input.type = 'text';
+            otpToggle.querySelector('i').className = 'fa-solid fa-eye-slash';
+          } else {
+            input.type = 'password';
+            otpToggle.querySelector('i').className = 'fa-solid fa-eye';
+          }
+        });
+      }
+
+      solicitar.addEventListener('click', solicitarCodigo);
+      ok.addEventListener('click', validarCodigo);
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); validarCodigo(); }
+        if (e.key === 'Escape') cerrar(false);
+      });
+      cancel.addEventListener('click', function () { cerrar(false); });
+      close.addEventListener('click', function () { cerrar(false); });
+      overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) cerrar(false);
+      });
+    });
+  },
+
+  /* ============================================
      CONFIRMACIÓN PERSONALIZADA
   ============================================ */
   _confirmar(mensaje, opciones) {
@@ -554,6 +786,94 @@ const QuoteWizard = {
   },
 
   /* ============================================
+     BADGE DE ESTADO (Admin / Cliente)
+  ============================================ */
+  _mostrarBadgeAdmin() {
+    const self = this;
+    const previo = document.getElementById('jcdcStatusBadge');
+    if (previo) previo.remove();
+
+    const badge = document.createElement('div');
+    badge.id = 'jcdcStatusBadge';
+    badge.className = 'jcdc-status-badge jcdc-status-badge--admin';
+    badge.innerHTML =
+      '<i class="fa-solid fa-user-shield jcdc-status-badge__icon"></i>' +
+      '<span class="jcdc-status-badge__text">MODO ADMIN</span>' +
+      '<button type="button" class="jcdc-status-badge__btn" id="jcdcBadgeLogout">BLOQUEAR</button>';
+    document.body.appendChild(badge);
+
+    const btn = badge.querySelector('#jcdcBadgeLogout');
+    btn.addEventListener('click', function () {
+      self._confirmar(
+        'Se cerrará tu sesión de administrador.',
+        { titulo: 'Bloquear', tipo: 'warning', okLabel: 'Sí, bloquear', cancelLabel: 'Atrás', icono: 'fa-lock' }
+      ).then(function (ok) {
+        if (ok) self._cerrarSesionAdmin();
+      });
+    });
+  },
+
+  _mostrarBadgeCliente() {
+    const previo = document.getElementById('jcdcStatusBadge');
+    if (previo) previo.remove();
+
+    const badge = document.createElement('div');
+    badge.id = 'jcdcStatusBadge';
+    badge.className = 'jcdc-status-badge jcdc-status-badge--client';
+    badge.innerHTML =
+      '<i class="fa-solid fa-user jcdc-status-badge__icon"></i>' +
+      '<span class="jcdc-status-badge__text">ACCESO TEMPORAL</span>' +
+      '<span class="jcdc-status-badge__timer" id="jcdcBadgeTimer">20:00</span>';
+    document.body.appendChild(badge);
+
+    this._actualizarTimerBadge();
+  },
+
+  _actualizarTimerBadge() {
+    const self = this;
+    const el = document.getElementById('jcdcBadgeTimer');
+    if (!el || !self._expiraEn) return;
+
+    const restante = Math.max(0, Math.floor((self._expiraEn - Date.now()) / 1000));
+    const min = Math.floor(restante / 60);
+    const seg = String(restante % 60).padStart(2, '0');
+    el.textContent = min + ':' + seg;
+
+    // Color según tiempo
+    if (restante < 60) el.style.color = '#ff3333';
+    else if (restante < 180) el.style.color = '#ffaa00';
+    else el.style.color = '#00f0ff';
+
+    if (restante <= 0) {
+      clearInterval(self._timerBadge);
+      self._timerBadge = null;
+      self._cerrarSesionCliente();
+      return;
+    }
+  },
+
+  _iniciarTimerCliente() {
+    const self = this;
+    if (self._timerBadge) clearInterval(self._timerBadge);
+    self._timerBadge = setInterval(function () { self._actualizarTimerBadge(); }, 1000);
+  },
+
+  _cerrarSesionCliente() {
+    const self = this;
+    if (self._timerBadge) clearInterval(self._timerBadge);
+    self.cotizacionUnlocked = false;
+    self._expiraEn = null;
+    self._tipoAcceso = null;
+    const badge = document.getElementById('jcdcStatusBadge');
+    if (badge && badge.parentNode) badge.parentNode.removeChild(badge);
+
+    // Rebobinar al paso 1
+    this._reiniciarWizard();
+
+    if (typeof Toast !== 'undefined') Toast.show('Acceso temporal finalizado', 'info', 2500);
+  },
+
+  /* ============================================
      ADMIN SESSION · Timeout + Logout
   ============================================ */
   _activarModoAdmin() {
@@ -567,29 +887,28 @@ const QuoteWizard = {
     var docType = document.querySelector('.rep-doc-type');
     if (!docType || !docType.parentNode) return;
 
-    // Botón flotante de logout
-    const btn = document.createElement('button');
-    btn.id = 'adminLogoutFloat';
-    btn.className = 'admin-logout-float visible';
-    btn.type = 'button';
-    btn.innerHTML = '<i class="fa-solid fa-right-from-bracket"></i> CERRAR SESIÓN ADMIN';
-    btn.addEventListener('click', function () {
-      self._confirmar(
-        'Se cerrará tu sesión de administrador. Tendrás que volver a iniciar sesión para generar facturas.',
-        { titulo: 'Cerrar sesión', tipo: 'warning', okLabel: 'Sí, cerrar', cancelLabel: 'Atrás', icono: 'fa-right-from-bracket' }
-      ).then(function (ok) {
-        if (ok) self._cerrarSesionAdmin();
-      });
+    // Ya no creamos botón flotante — el badge es el único control
+    // Remover cualquier botón huérfano de versiones anteriores
+    document.querySelectorAll('.admin-logout-float').forEach(function (el) {
+      if (el.parentNode) el.parentNode.removeChild(el);
     });
-    docType.parentNode.insertBefore(btn, docType.nextSibling);
 
     // Actualizar badge de FACTURA (si existe)
     this._actualizarBadgeFactura(true);
 
     // Timeout de 30 minutos sin actividad
     this._reiniciarTimeoutAdmin();
+    // Evitar acumular listeners
+    if (this._adminListeners) {
+      this._adminListeners.forEach(function (l) {
+        document.removeEventListener(l.evt, l.fn);
+      });
+    }
+    this._adminListeners = [];
     ['mousemove', 'keydown', 'click', 'scroll'].forEach(function (evt) {
-      document.addEventListener(evt, function () { self._reiniciarTimeoutAdmin(); });
+      var fn = function () { self._reiniciarTimeoutAdmin(); };
+      document.addEventListener(evt, fn);
+      self._adminListeners.push({ evt: evt, fn: fn });
     });
   },
 
@@ -603,25 +922,61 @@ const QuoteWizard = {
       }
     }, 30 * 60 * 1000); // 30 minutos
   },
+  _reiniciarWizard() {
+    this.currentStep = 1;
+    this.service = null;
+    this.values = {};
+    this.extras = {};
+    this.reparacion = null;
+
+    document.querySelectorAll('[data-service]').forEach(function (o) {
+      o.classList.remove('checked');
+      const inp = o.querySelector('input');
+      if (inp) inp.checked = false;
+    });
+    document.querySelectorAll('[data-extra]').forEach(function (o) {
+      o.classList.remove('checked');
+      const inp = o.querySelector('input');
+      if (inp) inp.checked = false;
+    });
+
+    if (this.els && this.els.steps && this.els.panels && this.els.progressBar) {
+      this.renderStepIndicator();
+      this.updateNextBtn();
+      this.scrollTop();
+    }
+  },
 
   _cerrarSesionAdmin() {
-    const self = this;
     if (this._adminTimeout) clearTimeout(this._adminTimeout);
+    if (this._timerBadge) { clearInterval(this._timerBadge); this._timerBadge = null; }
     if (window.auth) {
       window.auth.signOut().catch(function (e) { console.warn(e); });
     }
+
+    // Resetear TODOS los flags
     this.facturaUnlocked = false;
+    this.cotizacionUnlocked = false;
+    this._tipoAcceso = null;
+    this._expiraEn = null;
 
-    // Remover botón flotante
-    const btn = document.getElementById('adminLogoutFloat');
-    if (btn) btn.remove();
+    // Remover cualquier botón flotante huérfano
+    document.querySelectorAll('.admin-logout-float').forEach(function (el) {
+      if (el.parentNode) el.parentNode.removeChild(el);
+    });
 
-    // Actualizar badge de FACTURA
+    // Remover badge de estado
+    const badge = document.getElementById('jcdcStatusBadge');
+    if (badge && badge.parentNode) badge.parentNode.removeChild(badge);
+
+    // Resetear UI de factura (badge)
     this._actualizarBadgeFactura(false);
 
-    if (typeof Toast !== 'undefined') Toast.show('Sesión admin cerrada', 'info', 1800);
-  },
+    // Rebobinar al paso 1
+    this._reiniciarWizard();
 
+    if (typeof Toast !== 'undefined') Toast.show('Sesión cerrada', 'info', 1800);
+  },
   _actualizarBadgeFactura(esAdmin) {
     const badge = document.querySelector('.rep-doc-btn[data-tipodoc="factura"] .rep-lock-badge');
     if (!badge) return;
@@ -921,19 +1276,38 @@ const QuoteWizard = {
 
     this.els.fields.innerHTML = html;
 
+    // Si ya está autenticado como admin, actualizar badge de FACTURA
+    if (self.facturaUnlocked || self._tipoAcceso === 'admin') {
+      self._actualizarBadgeFactura(true);
+    }
+
     // Eventos tipo doc — FACTURA pide contraseña
     document.querySelectorAll('.rep-doc-btn').forEach(function (btn) {
       btn.addEventListener('click', async function () {
         const tipo = btn.dataset.tipodoc;
 
+        if (tipo === 'cotizacion') {
+          if (!self.cotizacionUnlocked) {
+            const ok = await self.pedirCodigoOTP();
+            if (!ok) return;
+          }
+        }
+
         if (tipo === 'factura') {
-          // Verificar SIEMPRE con Firebase
-          if (!window.auth || !window.auth.currentUser) {
+          // Si es admin (vía clave), ya está habilitado
+          if (self._tipoAcceso === 'admin' || self.facturaUnlocked) {
+            // Ya autorizado, sigue
+          } else if (self._tipoAcceso === 'client') {
+            // Cliente con OTP no puede facturar
+            if (typeof Toast !== 'undefined') Toast.show('Factura solo disponible para administrador', 'info', 2500);
+            return;
+          } else if (window.auth && window.auth.currentUser) {
+            self.facturaUnlocked = true;
+            self._tipoAcceso = 'admin';
+          } else {
             const ok = await self.pedirPasswordFactura();
             if (!ok) return;
-          } else {
-            self.facturaUnlocked = true;
-            self._activarModoAdmin();
+            self._tipoAcceso = 'admin';
           }
         }
 

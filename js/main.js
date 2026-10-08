@@ -436,7 +436,8 @@ const ContactForm = {
     if (!form || !responseEl || !submitBtn) return;
 
     const MAX_FILES = 5;
-    const MAX_TOTAL = 5 * 1024 * 1024;
+    // 4 MB (deja margen al límite real de 4.5 MB de Vercel)
+    const MAX_TOTAL = 4 * 1024 * 1024;
 
     function fmtSize(bytes) {
       if (bytes < 1024) return bytes + ' B';
@@ -450,7 +451,7 @@ const ContactForm = {
       fileStatus.className = 'cyber-file-status' + (type ? ' cyber-file-status--' + type : '');
     }
 
-    // ===== Feedback en vivo cuando se eligen archivos =====
+    // ===== Feedback al seleccionar archivos =====
     if (fileInput) {
       fileInput.addEventListener('change', function () {
         const files = Array.from(fileInput.files || []);
@@ -466,11 +467,11 @@ const ContactForm = {
           return;
         }
         if (files.length === 1 && files[0].size > MAX_TOTAL) {
-          setFileStatus('❌ "' + files[0].name + '" pesa ' + fmtSize(files[0].size) + ' · máximo 5 MB', 'error');
+          setFileStatus('❌ "' + files[0].name + '" pesa ' + fmtSize(files[0].size) + ' · máximo 4 MB', 'error');
           return;
         }
         if (files.length > 1 && totalSize > MAX_TOTAL) {
-          setFileStatus('❌ Total: ' + fmtSize(totalSize) + ' · máximo 5 MB', 'error');
+          setFileStatus('❌ Total: ' + fmtSize(totalSize) + ' · máximo 4 MB', 'error');
           return;
         }
 
@@ -483,7 +484,7 @@ const ContactForm = {
       });
     }
 
-    // ===== Envío con progreso real (XHR) =====
+    // ===== Envío =====
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       responseEl.textContent = '';
@@ -512,7 +513,7 @@ const ContactForm = {
       }
       const totalSize = Array.from(files).reduce((a, f) => a + f.size, 0);
       if (totalSize > MAX_TOTAL) {
-        responseEl.textContent = '❌ El total de archivos no debe superar 5 MB.';
+        responseEl.textContent = '❌ El total de archivos no debe superar 4 MB.';
         responseEl.classList.add('error');
         return;
       }
@@ -525,18 +526,6 @@ const ContactForm = {
       const xhr = new XMLHttpRequest();
       xhr.open('POST', form.action, true);
 
-      // Progreso de subida (solo visible si hay archivos)
-      xhr.upload.addEventListener('progress', function (ev) {
-        if (files.length === 0) return;
-        if (ev.lengthComputable) {
-          const pct = Math.round((ev.loaded / ev.total) * 100);
-          responseEl.textContent = '⏳ Subiendo archivos... ' + pct + '%  (' + fmtSize(ev.loaded) + ' / ' + fmtSize(ev.total) + ')';
-        } else {
-          responseEl.textContent = '⏳ Subiendo archivos...';
-        }
-        responseEl.className = 'form-response';
-      });
-
       xhr.addEventListener('load', function () {
         let data = {};
         try { data = JSON.parse(xhr.responseText || '{}'); } catch (err) {}
@@ -547,6 +536,10 @@ const ContactForm = {
           form.reset();
           setFileStatus('Ningún archivo seleccionado', '');
           if (typeof Toast !== 'undefined') Toast.show('Mensaje enviado correctamente', 'success');
+        } else if (xhr.status === 413) {
+          responseEl.textContent = '❌ Los archivos son demasiado pesados para el servidor. Reduce el tamaño o envía menos archivos.';
+          responseEl.className = 'form-response error';
+          if (typeof Toast !== 'undefined') Toast.show('Archivos demasiado pesados', 'error');
         } else {
           responseEl.textContent = data.message || '❌ Error al enviar. Intenta de nuevo.';
           responseEl.className = 'form-response error';

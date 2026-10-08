@@ -603,7 +603,7 @@ const QuoteWizard = {
         error.textContent = '';
         error.style.color = '#ff3333';
 
-        var waMsg = encodeURIComponent('Hola, necesito un código de acceso temporal para generar una cotización en la web JCDC.');
+        var waMsg = encodeURIComponent('Hola Julio, buenas tardes. Estoy intentando generar una cotización desde el cotizador de tu sitio web y el sistema me solicita un código de acceso temporal. ¿Podrías facilitármelo, por favor? Muchas gracias.');
         window.open('https://wa.me/18294213163?text=' + waMsg, '_blank', 'noopener');
 
         try {
@@ -831,27 +831,34 @@ const QuoteWizard = {
 
   _actualizarTimerBadge() {
     const self = this;
+    const badge = document.getElementById('jcdcStatusBadge');
     const el = document.getElementById('jcdcBadgeTimer');
-    if (!el || !self._expiraEn) return;
+    if (!el || !self._expiraEn || !badge) return;
 
     const restante = Math.max(0, Math.floor((self._expiraEn - Date.now()) / 1000));
     const min = Math.floor(restante / 60);
     const seg = String(restante % 60).padStart(2, '0');
     el.textContent = min + ':' + seg;
 
-    // Color según tiempo
-    if (restante < 60) el.style.color = '#ff3333';
-    else if (restante < 180) el.style.color = '#ffaa00';
-    else el.style.color = '#00f0ff';
+    // Semáforo: > 10 min = verde · 3-10 min = amarillo · < 3 min = rojo
+    badge.classList.remove('jcdc-status-badge--ok', 'jcdc-status-badge--warn', 'jcdc-status-badge--danger');
+    if (restante <= 180) {
+      badge.classList.add('jcdc-status-badge--danger');
+      el.style.color = '#ff3333';
+    } else if (restante <= 600) {
+      badge.classList.add('jcdc-status-badge--warn');
+      el.style.color = '#ffee00';
+    } else {
+      badge.classList.add('jcdc-status-badge--ok');
+      el.style.color = '#00ff88';
+    }
 
     if (restante <= 0) {
       clearInterval(self._timerBadge);
       self._timerBadge = null;
       self._cerrarSesionCliente();
-      return;
     }
   },
-
   _iniciarTimerCliente() {
     const self = this;
     if (self._timerBadge) clearInterval(self._timerBadge);
@@ -978,35 +985,55 @@ const QuoteWizard = {
     if (typeof Toast !== 'undefined') Toast.show('Sesión cerrada', 'info', 1800);
   },
   _actualizarBadgeFactura(esAdmin) {
-    const badge = document.querySelector('.rep-doc-btn[data-tipodoc="factura"] .rep-lock-badge');
-    if (!badge) return;
+    const btnFactura = document.querySelector('.rep-doc-btn[data-tipodoc="factura"]');
+    if (!btnFactura) return;
+
+    const badge = btnFactura.querySelector('.rep-lock-badge');
+    const small = btnFactura.querySelector('small');
+
     if (esAdmin) {
-      badge.className = 'rep-lock-badge rep-lock-badge--admin';
-      badge.innerHTML = '<i class="fa-solid fa-user-shield"></i> ADMIN · CLIC PARA SALIR';
-      badge.style.cursor = 'pointer';
-      if (!badge._hasClickHandler) {
-        badge._hasClickHandler = true;
-        badge.addEventListener('click', function (e) {
-          e.stopPropagation();
-          e.preventDefault();
-          QuoteWizard._confirmar(
-            'Se cerrará tu sesión de administrador. Tendrás que volver a iniciar sesión para generar facturas.',
-            { titulo: 'Cerrar sesión', tipo: 'warning', okLabel: 'Sí, cerrar', cancelLabel: 'Atrás', icono: 'fa-right-from-bracket' }
-          ).then(function (ok) {
-            if (ok) QuoteWizard._cerrarSesionAdmin();
+      // Botón FACTURA en modo admin
+      btnFactura.classList.add('rep-doc-btn--admin');
+      btnFactura.classList.remove('rep-doc-btn--locked');
+      if (small) small.textContent = 'Acceso autorizado · puedes facturar';
+
+      if (badge) {
+        badge.className = 'rep-lock-badge rep-lock-badge--admin';
+        badge.innerHTML = '<i class="fa-solid fa-user-shield"></i> ADMIN · CLIC PARA SALIR';
+        badge.style.cursor = 'pointer';
+        badge.style.display = '';
+
+        if (!badge._hasClickHandler) {
+          badge._hasClickHandler = true;
+          badge.addEventListener('click', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            QuoteWizard._confirmar(
+              'Se cerrará tu sesión de administrador. Tendrás que volver a iniciar sesión para generar facturas.',
+              { titulo: 'Bloquear sesión', tipo: 'warning', okLabel: 'Sí, bloquear', cancelLabel: 'Atrás', icono: 'fa-lock' }
+            ).then(function (ok) {
+              if (ok) QuoteWizard._cerrarSesionAdmin();
+            });
           });
-        });
+        }
       }
     } else {
-      badge.className = 'rep-lock-badge';
-      badge.innerHTML = '<i class="fa-solid fa-lock"></i> PRIVADO';
-      badge.style.cursor = '';
-      badge._hasClickHandler = false;
-      const clone = badge.cloneNode(true);
-      badge.parentNode.replaceChild(clone, badge);
+      // Botón FACTURA en modo normal (cliente o sin sesión)
+      btnFactura.classList.remove('rep-doc-btn--admin');
+      btnFactura.classList.add('rep-doc-btn--locked');
+      if (small) small.textContent = 'Requiere contraseña · solo personal autorizado';
+
+      if (badge) {
+        badge.className = 'rep-lock-badge';
+        badge.innerHTML = '<i class="fa-solid fa-lock"></i> PRIVADO';
+        badge.style.cursor = '';
+        badge.style.display = '';
+        badge._hasClickHandler = false;
+        const clone = badge.cloneNode(true);
+        badge.parentNode.replaceChild(clone, badge);
+      }
     }
   },
-
   /* ============================================
      HELPERS
   ============================================ */

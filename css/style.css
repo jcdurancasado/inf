@@ -11696,3 +11696,66 @@ html.jcdc-booted .boot-sequence {
   border-color: #00f0ff !important;
   box-shadow: 0 0 0 3px rgba(0,240,255,0.15) !important;
 }
+
+
+/* FACTURA desbloqueada (admin) */
+.rep-doc-btn--admin {
+  border-color: #00ff88 !important;
+  background: rgba(0, 255, 136, 0.05) !important;
+  color: #00ff88 !important;
+  cursor: pointer;
+}
+.rep-doc-btn--admin i {
+  color: #00ff88 !important;
+}
+.rep-doc-btn--admin small {
+  color: #00ff88 !important;
+  opacity: 0.85 !important;
+}
+.rep-doc-btn--admin:hover {
+  border-color: #00ff88 !important;
+  color: #00ff88 !important;
+  background: rgba(0, 255, 136, 0.1) !important;
+  box-shadow: 0 0 25px rgba(0, 255, 136, 0.4) !important;
+}
+.rep-doc-btn--admin:hover i {
+  color: #00ff88 !important;
+}
+/* Sin patrón rayado de candado */
+.rep-doc-btn--admin::after {
+  display: none !important;
+}
+
+
+/* Cursor siempre visible sobre modales */
+.jcdc-confirm-overlay ~ .cursor-dot,
+.jcdc-confirm-overlay ~ .cursor-ring,
+body:has(.jcdc-confirm-overlay) .cursor-dot,
+body:has(.jcdc-confirm-overlay) .cursor-ring,
+body:has(.pwd-overlay) .cursor-dot,
+body:has(.pwd-overlay) .cursor-ring {
+  z-index: 999999 !important;
+}
+
+
+/* Badge semáforo (por tiempo restante) */
+.jcdc-status-badge--ok {
+  background: rgba(0, 255, 136, 0.08) !important;
+  border-color: rgba(0, 255, 136, 0.5) !important;
+  color: #00ff88 !important;
+}
+.jcdc-status-badge--warn {
+  background: rgba(255, 238, 0, 0.08) !important;
+  border-color: rgba(255, 238, 0, 0.5) !important;
+  color: #ffee00 !important;
+}
+.jcdc-status-badge--danger {
+  background: rgba(255, 51, 51, 0.08) !important;
+  border-color: rgba(255, 51, 51, 0.5) !important;
+  color: #ff3333 !important;
+  animation: jcdcBadgeDanger 1.2s ease-in-out infinite;
+}
+@keyframes jcdcBadgeDanger {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 51, 51, 0.5); }
+  50%      { box-shadow: 0 0 0 8px rgba(255, 51, 51, 0); }
+}

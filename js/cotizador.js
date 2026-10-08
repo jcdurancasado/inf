@@ -603,8 +603,23 @@ const QuoteWizard = {
         error.textContent = '';
         error.style.color = '#ff3333';
 
-        var waMsg = encodeURIComponent('Hola Julio, buenas tardes. Estoy intentando generar una cotización desde el cotizador de tu sitio web y el sistema me solicita un código de acceso temporal. ¿Podrías facilitármelo, por favor? Muchas gracias.');
-        window.open('https://wa.me/18294213163?text=' + waMsg, '_blank', 'noopener');
+// Hora en República Dominicana (UTC-4, sin DST)
+var horaRD = parseInt(
+  new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Santo_Domingo',
+    hour: 'numeric',
+    hour12: false
+  }).format(new Date()),
+  10
+);
+
+var saludo = (horaRD >= 5 && horaRD < 12) ? 'buenos días'
+           : (horaRD >= 12 && horaRD < 19) ? 'buenas tardes'
+           : 'buenas noches';
+
+var waMsg = encodeURIComponent(
+  'Hola Julio C. Durán Casado, ' + saludo + '. Estoy intentando generar una cotización desde el cotizador de tu sitio web y el sistema me solicita un código de acceso temporal. ¿Podrías facilitármelo, por favor? Muchas gracias.'
+);        window.open('https://wa.me/18294213163?text=' + waMsg, '_blank', 'noopener');
 
         try {
           const r = await fetch('https://jcdcapi.vercel.app/api/solicitar-codigo', {

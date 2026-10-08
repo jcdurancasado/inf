@@ -12111,3 +12111,67 @@ body:has(.pwd-overlay) .cursor-ring {
 }
 [data-theme="light"] .cyber-file-status--ok { color: #059669; }
 [data-theme="light"] .cyber-file-status--error { color: #dc2626; }
+
+/* ============================================
+   RESPONSIVE · AJUSTES MÓVIL (PAGOS + CONTACTO)
+============================================ */
+
+/* Input de archivos en móvil */
+@media (max-width: 480px) {
+  .cyber-file-label {
+    padding: 0.85rem 0.9rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.03em;
+    gap: 0.55rem;
+  }
+  .cyber-file-label i { font-size: 0.9rem; }
+  .cyber-file-status { font-size: 0.68rem; }
+}
+
+@media (max-width: 360px) {
+  .cyber-file-label {
+    font-size: 0.64rem;
+    padding: 0.75rem 0.8rem;
+  }
+  .cyber-file-label span {
+    /* rompe el texto en 2 líneas si hace falta */
+    white-space: normal;
+    line-height: 1.3;
+  }
+}
+
+/* Aviso de estado de pagos */
+@media (max-width: 640px) {
+  .pagos-status {
+    padding: var(--space-md);
+    font-size: 0.78rem;
+    gap: var(--space-sm);
+  }
+}
+@media (max-width: 400px) {
+  .pagos-status {
+    font-size: 0.72rem;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+}
+
+/* Filas de datos bancarios en móvil */
+@media (max-width: 640px) {
+  .pago-card__row {
+    flex-direction: column;
+    gap: 0.25rem;
+    align-items: flex-start;
+  }
+  .pago-card__row strong {
+    text-align: left;
+    font-size: 0.85rem;
+  }
+}
+
+/* Título hero de pagos */
+@media (max-width: 480px) {
+  .pagos-hero__title { font-size: 1.6rem; }
+  .pagos-hero__subtitle { font-size: 0.92rem; }
+  .pagos-bloque__titulo { font-size: 0.92rem; letter-spacing: 0.06em; }
+}

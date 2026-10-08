@@ -5,7 +5,7 @@
    · Assets → cache-first (rápido + offline)
 ============================================ */
 
-const CACHE_NAME = 'jcdc-v1.0.21';
+const CACHE_NAME = 'jcdc-v1.0.22';
 
 const ASSETS = [
   // Páginas

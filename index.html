@@ -1106,9 +1106,13 @@
                 <label class="cyber-label" for="contact-message">MENSAJE</label>
               </div>
 
-              <div class="input-group">
-                <input type="file" id="contact-files" name="archivos" class="cyber-input cyber-file" multiple />
-                <label class="cyber-label" for="contact-files">ADJUNTAR ARCHIVOS (máx. 5 · 5 MB total)</label>
+              <div class="input-group input-group--file">
+                <input type="file" id="contact-files" name="archivos" class="cyber-file-input" multiple />
+                <label for="contact-files" class="cyber-file-label">
+                  <i class="fa-solid fa-paperclip"></i>
+                  <span>Adjuntar archivos (máx. 5 · 5 MB total)</span>
+                </label>
+                <p class="cyber-file-status" id="contactFilesStatus">Ningún archivo seleccionado</p>
               </div>
 
               <button type="submit" id="submitBtn" class="cyber-btn cyber-btn--primary cyber-btn--full cyber-btn--large">

@@ -431,8 +431,59 @@ const ContactForm = {
     const form = document.getElementById('contactForm');
     const responseEl = document.getElementById('formResponse');
     const submitBtn = document.getElementById('submitBtn');
+    const fileInput = document.getElementById('contact-files');
+    const fileStatus = document.getElementById('contactFilesStatus');
     if (!form || !responseEl || !submitBtn) return;
 
+    const MAX_FILES = 5;
+    const MAX_TOTAL = 5 * 1024 * 1024;
+
+    function fmtSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+    }
+
+    function setFileStatus(text, type) {
+      if (!fileStatus) return;
+      fileStatus.textContent = text;
+      fileStatus.className = 'cyber-file-status' + (type ? ' cyber-file-status--' + type : '');
+    }
+
+    // ===== Feedback en vivo cuando se eligen archivos =====
+    if (fileInput) {
+      fileInput.addEventListener('change', function () {
+        const files = Array.from(fileInput.files || []);
+        if (!files.length) {
+          setFileStatus('Ningún archivo seleccionado', '');
+          return;
+        }
+
+        const totalSize = files.reduce((a, f) => a + f.size, 0);
+
+        if (files.length > MAX_FILES) {
+          setFileStatus('❌ Máximo ' + MAX_FILES + ' archivos. Has seleccionado ' + files.length + '.', 'error');
+          return;
+        }
+        if (files.length === 1 && files[0].size > MAX_TOTAL) {
+          setFileStatus('❌ "' + files[0].name + '" pesa ' + fmtSize(files[0].size) + ' · máximo 5 MB', 'error');
+          return;
+        }
+        if (files.length > 1 && totalSize > MAX_TOTAL) {
+          setFileStatus('❌ Total: ' + fmtSize(totalSize) + ' · máximo 5 MB', 'error');
+          return;
+        }
+
+        setFileStatus(
+          '✓ ' + files.length + ' archivo' + (files.length !== 1 ? 's' : '') +
+          ' listo' + (files.length !== 1 ? 's' : '') +
+          ' · ' + fmtSize(totalSize),
+          'ok'
+        );
+      });
+    }
+
+    // ===== Envío con progreso real (XHR) =====
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       responseEl.textContent = '';
@@ -442,28 +493,25 @@ const ContactForm = {
       const telefono = document.getElementById('contact-phone').value.trim();
       const correo = document.getElementById('contact-email').value.trim();
       const mensaje = document.getElementById('contact-message').value.trim();
-      const files = document.getElementById('contact-files').files;
+      const files = fileInput ? fileInput.files : [];
 
       if (!nombre || !telefono || !correo) {
         responseEl.textContent = '❌ Todos los campos son obligatorios (excepto mensaje y archivos).';
         responseEl.classList.add('error');
         return;
       }
-
       if (mensaje.length < 30 && files.length === 0) {
         responseEl.textContent = '❌ Escribe un mensaje (mín. 30 caracteres) o adjunta un archivo.';
         responseEl.classList.add('error');
         return;
       }
-
-      if (files.length > 5) {
-        responseEl.textContent = '❌ Máximo 5 archivos permitidos.';
+      if (files.length > MAX_FILES) {
+        responseEl.textContent = '❌ Máximo ' + MAX_FILES + ' archivos permitidos.';
         responseEl.classList.add('error');
         return;
       }
-
       const totalSize = Array.from(files).reduce((a, f) => a + f.size, 0);
-      if (totalSize > 5 * 1024 * 1024) {
+      if (totalSize > MAX_TOTAL) {
         responseEl.textContent = '❌ El total de archivos no debe superar 5 MB.';
         responseEl.classList.add('error');
         return;
@@ -474,29 +522,54 @@ const ContactForm = {
       if (btnText) btnText.textContent = 'ENVIANDO...';
 
       const formData = new FormData(form);
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', form.action, true);
 
-      fetch(form.action, { method: 'POST', body: formData })
-        .then(r => r.json())
-        .then(data => {
-          responseEl.textContent = data.message || '✅ Mensaje enviado con éxito';
-          responseEl.classList.add('ok');
+      // Progreso de subida (solo visible si hay archivos)
+      xhr.upload.addEventListener('progress', function (ev) {
+        if (files.length === 0) return;
+        if (ev.lengthComputable) {
+          const pct = Math.round((ev.loaded / ev.total) * 100);
+          responseEl.textContent = '⏳ Subiendo archivos... ' + pct + '%  (' + fmtSize(ev.loaded) + ' / ' + fmtSize(ev.total) + ')';
+        } else {
+          responseEl.textContent = '⏳ Subiendo archivos...';
+        }
+        responseEl.className = 'form-response';
+      });
+
+      xhr.addEventListener('load', function () {
+        let data = {};
+        try { data = JSON.parse(xhr.responseText || '{}'); } catch (err) {}
+
+        if (xhr.status >= 200 && xhr.status < 300) {
+          responseEl.textContent = data.message || '✅ Mensaje enviado correctamente';
+          responseEl.className = 'form-response ok';
           form.reset();
-          Toast.show('Mensaje enviado correctamente', 'success');
-        })
-        .catch(err => {
-          console.error(err);
-          responseEl.textContent = '❌ Error al enviar. Intenta de nuevo.';
-          responseEl.classList.add('error');
-          Toast.show('Error al enviar el mensaje', 'error');
-        })
-        .finally(() => {
-          submitBtn.disabled = false;
-          if (btnText) btnText.textContent = 'ENVIAR MENSAJE';
-          setTimeout(() => {
-            responseEl.textContent = '';
-            responseEl.className = 'form-response';
-          }, 15000);
-        });
+          setFileStatus('Ningún archivo seleccionado', '');
+          if (typeof Toast !== 'undefined') Toast.show('Mensaje enviado correctamente', 'success');
+        } else {
+          responseEl.textContent = data.message || '❌ Error al enviar. Intenta de nuevo.';
+          responseEl.className = 'form-response error';
+          if (typeof Toast !== 'undefined') Toast.show('Error al enviar el mensaje', 'error');
+        }
+
+        submitBtn.disabled = false;
+        if (btnText) btnText.textContent = 'ENVIAR MENSAJE';
+        setTimeout(function () {
+          responseEl.textContent = '';
+          responseEl.className = 'form-response';
+        }, 15000);
+      });
+
+      xhr.addEventListener('error', function () {
+        responseEl.textContent = '❌ Error de conexión. Verifica tu internet e intenta de nuevo.';
+        responseEl.className = 'form-response error';
+        if (typeof Toast !== 'undefined') Toast.show('Error de conexión', 'error');
+        submitBtn.disabled = false;
+        if (btnText) btnText.textContent = 'ENVIAR MENSAJE';
+      });
+
+      xhr.send(formData);
     });
   }
 };

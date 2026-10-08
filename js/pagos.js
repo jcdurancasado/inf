@@ -13,8 +13,6 @@
   const els = {
     content: document.getElementById('pagosContent'),
     status: document.getElementById('pagosStatus'),
-    statusText: document.getElementById('pagosStatusText'),
-    statusTimer: document.getElementById('pagosStatusTimer'),
     acciones: document.getElementById('pagosAcciones'),
     pdfBtn: document.getElementById('pagosPdfBtn'),
     printBtn: document.getElementById('pagosPrintBtn')
@@ -94,20 +92,23 @@
     if (typeof Reveal !== 'undefined' && Reveal.init) Reveal.init();
   }
 
-  function setStatus(texto, tipo) {
+  // Reemplaza TODO el contenido del status (no solo el texto)
+  // para que los botones u otros elementos desaparezcan al cambiar de estado.
+  function setStatus(html, tipo) {
     if (!els.status) return;
     els.status.hidden = false;
     els.status.className = 'pagos-status pagos-status--' + (tipo || 'info');
-    if (els.statusText) els.statusText.textContent = texto;
+    els.status.innerHTML = html;
   }
 
   function actualizarTimer() {
     if (!expiresAt || esAdmin) return;
     const restante = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
-    if (els.statusTimer) {
+    const timerEl = document.getElementById('pagosStatusTimer');
+    if (timerEl) {
       const min = Math.floor(restante / 60);
       const seg = String(restante % 60).padStart(2, '0');
-      els.statusTimer.textContent = '⏳ ' + min + ':' + seg;
+      timerEl.textContent = '⏳ ' + min + ':' + seg;
     }
     if (restante <= 0) {
       clearInterval(timerHandle);
@@ -314,16 +315,56 @@
   // Iniciar sesión ya desbloqueada
   // ============================================
   function iniciarSesion(data) {
+    // Botón de cerrar sesión (común a admin y cliente)
+    const logoutBtn =
+      '<button type="button" class="cyber-btn cyber-btn--secondary" id="pagosLogoutBtn" style="padding:0.6rem 1.2rem;font-size:0.72rem;gap:0.4rem;">' +
+        '<i class="fa-solid fa-right-from-bracket"></i><span>Cerrar sesión</span>' +
+      '</button>';
+
     if (esAdmin) {
-      setStatus('✅ Acceso de administrador concedido', 'admin');
-      if (els.statusTimer) els.statusTimer.textContent = '';
+      setStatus(
+        '<span><i class="fa-solid fa-user-shield"></i> Acceso de administrador concedido</span>' +
+        logoutBtn,
+        'admin'
+      );
+      if (timerHandle) { clearInterval(timerHandle); timerHandle = null; }
     } else {
-      setStatus('ACCESO TEMPORAL', 'cliente');
-      actualizarTimer();
+      setStatus(
+        '<span>ACCESO TEMPORAL</span><span id="pagosStatusTimer">—</span>' +
+        logoutBtn,
+        'cliente'
+      );
       if (timerHandle) clearInterval(timerHandle);
+      actualizarTimer();
       timerHandle = setInterval(actualizarTimer, 1000);
     }
+
+    // Enganchar el botón de cerrar sesión
+    const btn = document.getElementById('pagosLogoutBtn');
+    if (btn) btn.addEventListener('click', cerrarSesion);
+
     renderPagos(data);
+  }
+
+  // ============================================
+  // Cerrar sesión (admin o cliente)
+  // ============================================
+  function cerrarSesion() {
+    // 1. Borrar el estado guardado
+    sessionStorage.removeItem(STORAGE_KEY);
+
+    // 2. Resetear variables
+    esAdmin = false;
+    expiresAt = null;
+    if (timerHandle) { clearInterval(timerHandle); timerHandle = null; }
+
+    // 3. Volver al estado bloqueado (sin reabrir el modal automáticamente)
+    mostrarBloqueado();
+
+    // 4. Aviso al usuario
+    if (typeof Toast !== 'undefined') {
+      Toast.show('Sesión cerrada correctamente', 'info', 2000);
+    }
   }
 
   // ============================================
@@ -337,6 +378,25 @@
   if (els.printBtn) els.printBtn.addEventListener('click', () => window.print());
 
   // ============================================
+  // ESTADO BLOQUEADO con botón para reabrir modal
+  // ============================================
+  function mostrarBloqueado() {
+    if (els.content) els.content.innerHTML = '';
+    if (els.acciones) els.acciones.hidden = true;
+
+    setStatus(
+      '<span><i class="fa-solid fa-lock"></i> Contenido bloqueado — necesitas un código de acceso</span>' +
+      '<button type="button" class="cyber-btn cyber-btn--primary" id="pagosUnlockBtn" style="padding:0.7rem 1.4rem;font-size:0.75rem;">' +
+        '<i class="fa-solid fa-key"></i><span>Colocar contraseña</span>' +
+      '</button>',
+      'locked'
+    );
+
+    const btn = document.getElementById('pagosUnlockBtn');
+    if (btn) btn.addEventListener('click', abrirModal);
+  }
+
+  // ============================================
   // INIT
   // ============================================
   document.addEventListener('DOMContentLoaded', () => {
@@ -346,7 +406,7 @@
       expiresAt = estado.exp ? estado.exp : null;
       iniciarSesion(estado.data);
     } else {
-      setStatus('🔒 Contenido bloqueado — necesitas un código de acceso', 'locked');
+      mostrarBloqueado();
       abrirModal();
     }
   });

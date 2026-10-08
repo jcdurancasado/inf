@@ -110,5 +110,9 @@ window.SOPORTE_CONFIG.documentos = {
   cotizacionValidezDias: 7,     // ← Validez de la cotización (días)
   mostrarWatermark: true,       // Marca de agua "COTIZACIÓN" en cotizaciones
   selloPagoAzul: true,          // Sello "PAGADO" en facturas
-  colorSello: '#1e40af'         // Azul del sello (cámbialo si quieres)
+
+  // Colores del sello (uno por tipo de documento)
+  colorSelloPagado:       '#0a7f2e',   // verde — factura pagada
+  colorSelloNoPagada:     '#c81e1e',   // rojo — factura no pagada
+  colorSelloCotizacion:   '#0369a1'    // azul — cotización
 };

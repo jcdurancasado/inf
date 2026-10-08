@@ -177,7 +177,32 @@
       }
       if (records.length > 1) html += '<hr style="border:none;border-top:1px dashed var(--border-subtle);margin:0.75rem 0;">';
     });
+
+    // Botones de acción para el cliente (solo si hay un único documento)
+    if (records.length === 1) {
+      html += '<div class="verify-actions">';
+      html += '  <button type="button" class="cyber-btn cyber-btn--primary cyber-btn--large" id="verifyDownloadBtn">';
+      html += '    <span>DESCARGAR PDF</span><i class="fa-solid fa-file-pdf"></i>';
+      html += '  </button>';
+      html += '  <button type="button" class="cyber-btn cyber-btn--secondary cyber-btn--large" id="verifyResendBtn">';
+      html += '    <span>ENVIAR A MI CORREO</span><i class="fa-solid fa-envelope"></i>';
+      html += '  </button>';
+      html += '</div>';
+    }
+
     result.innerHTML = html;
+
+    // Enganchar botones
+    if (records.length === 1) {
+      var dlBtn = document.getElementById('verifyDownloadBtn');
+      var rsBtn = document.getElementById('verifyResendBtn');
+      if (dlBtn) dlBtn.addEventListener('click', function () {
+        if (docActual) generarPDF(docActual);
+      });
+      if (rsBtn) rsBtn.addEventListener('click', function () {
+        if (docActual) solicitarEnviarEmail(docActual);
+      });
+    }
   }
 
   // ============================================================
@@ -263,8 +288,8 @@
         '<div class="verify-pwd">' +
         '  <h3><i class="fa-solid fa-lock"></i> ACCESO ADMIN</h3>' +
         '  <p>Ingresa tus credenciales de administrador.</p>' +
-        '  <input type="email" id="vPwdEmail" autocomplete="email" placeholder="Email" value="jcdurancasado@gmail.com" style="margin-bottom:8px;" />' +
-        '  <input type="password" id="vPwdInput" autocomplete="current-password" placeholder="Contraseña" />' +
+        '  <input type="email" id="vPwdEmail" autocomplete="off" placeholder="Email" style="margin-bottom:8px;" />' +
+        '  <input type="password" id="vPwdInput" autocomplete="new-password" placeholder="Contraseña" />' +
         '  <p class="err" id="vPwdError"></p>' +
         '  <div class="verify-pwd__actions">' +
         '    <button type="button" class="cancel" id="vPwdCancel">Cancelar</button>' +
@@ -272,6 +297,7 @@
         '  </div>' +
         '</div>';
       document.body.appendChild(overlay);
+      document.body.classList.add('jcdc-modal-open');
 
       var emailEl = overlay.querySelector('#vPwdEmail');
       var inp = overlay.querySelector('#vPwdInput');
@@ -279,9 +305,13 @@
       var okBtn = overlay.querySelector('#vPwdOk');
       var cancelBtn = overlay.querySelector('#vPwdCancel');
 
-      setTimeout(function () { inp.focus(); }, 80);
+      setTimeout(function () { emailEl.focus(); }, 80);
 
-      function cerrar(r) { overlay.remove(); resolve(r); }
+      function cerrar(r) {
+        document.body.classList.remove('jcdc-modal-open');
+        overlay.remove();
+        resolve(r);
+      }
 
       async function intentar() {
         var email = emailEl.value.trim();
@@ -442,7 +472,7 @@
       tmp.style.position = 'absolute'; tmp.style.left = '-9999px';
       document.body.appendChild(tmp);
       if (typeof QRCode === 'undefined') { document.body.removeChild(tmp); return ''; }
-      new QRCode(tmp, { text: 'https://jcdurancasado.github.io/inf/', width: 92, height: 92, colorDark: '#0a0a0f', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
+      new QRCode(tmp, { text: 'https://jcdurancasado.github.io/inf/verificar.html', width: 92, height: 92, colorDark: '#0a0a0f', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
       var canvas = tmp.querySelector('canvas');
       var dataUrl = canvas ? canvas.toDataURL('image/png') : '';
       document.body.removeChild(tmp);
@@ -450,36 +480,48 @@
     } catch (e) { return ''; }
   }
 
-  function generarSelloPagado(fecha, monto, numDoc, estado) {
+  function generarSello(fecha, numDoc, tipoDoc, estado) {
     var docCfg = (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.documentos) || {};
-    var esPagada = estado !== 'no-pagada';
-    var color = esPagada ? (docCfg.colorSello || '#1e40af') : '#dc2626';
-    var texto = esPagada ? 'PAGADO' : 'NO PAGADA';
     var prov = (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.proveedor) || {};
     var nombre = (prov.nombre || 'JCDURÁN CASADO').toUpperCase();
-    var fontBig = esPagada ? 38 : 24;
+
+    var color, texto, fontBig, letterSpacing;
+
+    if (tipoDoc === 'factura') {
+      var esPagada = estado !== 'no-pagada';
+      color = esPagada ? (docCfg.colorSelloPagado || '#0a7f2e') : (docCfg.colorSelloNoPagada || '#c81e1e');
+      texto = esPagada ? 'PAGADO' : 'NO PAGADA';
+      fontBig = esPagada ? 34 : 21;
+      letterSpacing = esPagada ? 4 : 2.5;
+    } else {
+      color = docCfg.colorSelloCotizacion || '#0369a1';
+      texto = 'COTIZACIÓN';
+      fontBig = 21;
+      letterSpacing = 1;
+    }
+
     return '<svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" class="sello-svg">' +
       '<defs>' +
-      '<path id="arcT-' + numDoc + '" d="M 30,110 A 80,80 0 0 1 190,110" fill="none"/>' +
-      '<path id="arcB-' + numDoc + '" d="M 35,110 A 75,75 0 0 0 185,110" fill="none"/>' +
-      '<filter id="rough-' + numDoc + '"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.3" xChannelSelector="R" yChannelSelector="G"/></filter>' +
+      '<path id="arcT-' + numDoc + '" d="M 23,110 A 87,87 0 0 1 197,110" fill="none"/>' +
+      '<path id="arcB-' + numDoc + '" d="M 15,110 A 95,95 0 0 0 205,110" fill="none"/>' +
+      '<filter id="rough-' + numDoc + '"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="0.5" xChannelSelector="R" yChannelSelector="G"/></filter>' +
       '</defs>' +
       '<g filter="url(#rough-' + numDoc + ')" fill="none" stroke="' + color + '">' +
-      '<circle cx="110" cy="110" r="98" stroke-width="4"/>' +
-      '<circle cx="110" cy="110" r="86" stroke-width="1.5"/>' +
-      '<circle cx="110" cy="110" r="80" stroke-width="1" opacity="0.6"/>' +
-      '<text font-family="Arial Black, sans-serif" font-size="12" font-weight="900" fill="' + color + '" stroke="none" letter-spacing="2.5"><textPath href="#arcT-' + numDoc + '" startOffset="50%" text-anchor="middle">' + nombre + '</textPath></text>' +
-      '<text font-family="Arial, sans-serif" font-size="7.5" fill="' + color + '" stroke="none" letter-spacing="1.8"><textPath href="#arcB-' + numDoc + '" startOffset="50%" text-anchor="middle">REDES · CIBERSEGURIDAD · SOPORTE TÉCNICO</textPath></text>' +
-      '<line x1="30" y1="99" x2="190" y2="99" stroke-width="1.5"/>' +
-      '<text x="110" y="' + (esPagada ? 122 : 120) + '" font-family="Arial Black, sans-serif" font-size="' + fontBig + '" font-weight="900" fill="' + color + '" stroke="none" text-anchor="middle" letter-spacing="3">' + texto + '</text>' +
-      '<line x1="30" y1="132" x2="190" y2="132" stroke-width="1.5"/>' +
-      '<text x="110" y="150" font-family="Arial, sans-serif" font-size="9" fill="' + color + '" stroke="none" text-anchor="middle" letter-spacing="2">FECHA</text>' +
-      '<text x="110" y="163" font-family="Arial Black, sans-serif" font-size="10" fill="' + color + '" stroke="none" text-anchor="middle">' + fecha + '</text>' +
-      '<text x="110" y="180" font-family="Arial, sans-serif" font-size="8" fill="' + color + '" stroke="none" text-anchor="middle" letter-spacing="1">' + numDoc + '</text>' +
+      '<circle cx="110" cy="110" r="104" stroke-width="3.5"/>' +
+      '<circle cx="110" cy="110" r="80" stroke-width="1.2"/>' +
+      '<text font-family="Arial Black, sans-serif" font-size="13" font-weight="900" fill="' + color + '" stroke="none" letter-spacing="2"><textPath href="#arcT-' + numDoc + '" startOffset="50%" text-anchor="middle">' + nombre + '</textPath></text>' +
+      '<text font-family="Arial, sans-serif" font-size="8.5" fill="' + color + '" stroke="none" letter-spacing="1.2"><textPath href="#arcB-' + numDoc + '" startOffset="50%" text-anchor="middle">REDES · CIBERSEGURIDAD · SOPORTE TÉCNICO</textPath></text>' +
+      '<line x1="30" y1="100" x2="190" y2="100" stroke-width="1.2"/>' +
+      '<text x="110" y="122" font-family="Arial Black, sans-serif" font-size="' + fontBig + '" font-weight="900" fill="' + color + '" stroke="none" text-anchor="middle" letter-spacing="' + letterSpacing + '">' + texto + '</text>' +
+      '<line x1="30" y1="136" x2="190" y2="136" stroke-width="1.2"/>' +
+      '<text x="110" y="151" font-family="Arial, sans-serif" font-size="7.5" fill="' + color + '" stroke="none" text-anchor="middle" letter-spacing="2">FECHA</text>' +
+      '<text x="110" y="162" font-family="Arial Black, sans-serif" font-size="9" fill="' + color + '" stroke="none" text-anchor="middle">' + fecha + '</text>' +
+      '<text x="110" y="175" font-family="Arial, sans-serif" font-size="7" fill="' + color + '" stroke="none" text-anchor="middle" letter-spacing="0.8">' + numDoc + '</text>' +
       '</g></svg>';
   }
 
-  function generarPDF(record) {
+  function generarDocHTML(record, autoPrint) {
+    var autoPrintFlag = autoPrint !== false;
     var s = record.snapshot || {};
     var prov = (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.proveedor) || {};
     var docCfg = (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.documentos) || {};
@@ -495,6 +537,13 @@
     var usd = isReparacion ? null : total;
     var date = record.fecha;
     var totalRow = isReparacion ? ('RD$' + dop.toLocaleString('es-DO')) : ('$' + usd.toLocaleString('en-US'));
+
+    var colorDoc;
+    if (isFactura) {
+      colorDoc = esPagada ? (docCfg.colorSelloPagado || '#0a7f2e') : (docCfg.colorSelloNoPagada || '#c81e1e');
+    } else {
+      colorDoc = docCfg.colorSelloCotizacion || '#0369a1';
+    }
 
     var cli = s.cliente || {};
     var clienteBlock = '';
@@ -531,68 +580,71 @@
       ? '<strong>Nota:</strong> Esta factura corresponde al servicio descrito arriba. ' + garantiaTexto + ' Gracias por su preferencia.'
       : '<strong>Nota:</strong> Cotización generada desde el cotizador web <strong>jcdurancasado.github.io/inf</strong> el ' + date + ' a las ' + hora + '. Válida por ' + (s.diasValidez || 7) + ' días.';
 
-    var watermarkHTML = (!isFactura && docCfg.mostrarWatermark !== false) ? '<div class="watermark-doc">COTIZACIÓN</div>' : '';
-    var selloHTML = isFactura ? '<div class="sello-container">' + generarSelloPagado(date, totalRow, numDoc, record.estado) + '</div>' : '';
-    var qrDataUrl = getQrDataUrl();
-    var qrHTML = qrDataUrl ? '<div class="qr-block"><div class="qr-container"><img src="' + qrDataUrl + '" alt="QR" style="width:100%;height:100%;display:block;"></div><div class="qr-label">VERIFICA EN: jcdurancasado.github.io/inf</div></div>' : '';
+    var observacionesTexto = (s.descripcion && s.descripcion.trim())
+      ? s.descripcion
+      : '<span class="obs-empty">Sin observaciones registradas</span>';
 
-    var svgLogo = '<svg viewBox="0 0 100 100" width="38" height="38" style="flex-shrink:0;vertical-align:middle;margin-right:10px;">' +
-      '<path d="M50 4 L88 26 L88 62 Q88 88 50 96 Q12 88 12 62 L12 26 Z" fill="none" stroke="#00bcd4" stroke-width="3.5" stroke-linejoin="round"/>' +
-      '<circle cx="50" cy="50" r="34" fill="none" stroke="#00bcd4" stroke-width="1.5" opacity="0.55" stroke-dasharray="3 4"/>' +
-      '<circle cx="50" cy="50" r="24" fill="none" stroke="#00bcd4" stroke-width="1.5" opacity="0.65" stroke-dasharray="2 3"/>' +
-      '<path d="M50 36 L60 42 L60 54 L50 60 L40 54 L40 42 Z" fill="rgba(0,188,212,0.12)" stroke="#00bcd4" stroke-width="2.5" stroke-linejoin="round"/>' +
-      '<circle cx="50" cy="50" r="4" fill="#00bcd4"/>' +
-      '<line x1="50" y1="4" x2="50" y2="10" stroke="#00bcd4" stroke-width="2.5" stroke-linecap="round"/>' +
-      '<line x1="88" y1="26" x2="83" y2="30" stroke="#00bcd4" stroke-width="2.5" stroke-linecap="round"/>' +
-      '<line x1="88" y1="62" x2="83" y2="58" stroke="#00bcd4" stroke-width="2.5" stroke-linecap="round"/>' +
-      '<line x1="50" y1="96" x2="50" y2="90" stroke="#00bcd4" stroke-width="2.5" stroke-linecap="round"/>' +
-      '<line x1="12" y1="62" x2="17" y2="58" stroke="#00bcd4" stroke-width="2.5" stroke-linecap="round"/>' +
-      '<line x1="12" y1="26" x2="17" y2="30" stroke="#00bcd4" stroke-width="2.5" stroke-linecap="round"/>' +
+    var watermarkHTML = (!isFactura && docCfg.mostrarWatermark !== false) ? '<div class="watermark-doc">COTIZACIÓN</div>' : '';
+    var selloHTML = '<div class="sello-container">' + generarSello(date, numDoc, isFactura ? 'factura' : 'cotizacion', record.estado) + '</div>';
+    var qrDataUrl = getQrDataUrl();
+    var qrHTML = qrDataUrl ? '<div class="qr-block"><div class="qr-inner"><div class="qr-container"><img src="' + qrDataUrl + '" alt="QR" style="width:100%;height:100%;display:block;"></div><div class="qr-label">VERIFICA EN: jcdurancasado.github.io/inf/verificar.html</div></div></div>' : '';
+
+    var svgLogo = '<svg viewBox="0 0 100 100" width="42" height="42" style="flex-shrink:0;vertical-align:middle;margin-right:10px;">' +
+      '<path d="M50 4 L88 26 L88 62 Q88 88 50 96 Q12 88 12 62 L12 26 Z" fill="none" stroke="' + colorDoc + '" stroke-width="3.5" stroke-linejoin="round"/>' +
+      '<circle cx="50" cy="50" r="34" fill="none" stroke="' + colorDoc + '" stroke-width="1.5" opacity="0.55" stroke-dasharray="3 4"/>' +
+      '<circle cx="50" cy="50" r="24" fill="none" stroke="' + colorDoc + '" stroke-width="1.5" opacity="0.65" stroke-dasharray="2 3"/>' +
+      '<path d="M50 36 L60 42 L60 54 L50 60 L40 54 L40 42 Z" fill="' + colorDoc + '20" stroke="' + colorDoc + '" stroke-width="2.5" stroke-linejoin="round"/>' +
+      '<circle cx="50" cy="50" r="4" fill="' + colorDoc + '"/>' +
+      '<line x1="50" y1="4" x2="50" y2="10" stroke="' + colorDoc + '" stroke-width="2.5" stroke-linecap="round"/>' +
+      '<line x1="88" y1="26" x2="83" y2="30" stroke="' + colorDoc + '" stroke-width="2.5" stroke-linecap="round"/>' +
+      '<line x1="88" y1="62" x2="83" y2="58" stroke="' + colorDoc + '" stroke-width="2.5" stroke-linecap="round"/>' +
+      '<line x1="50" y1="96" x2="50" y2="90" stroke="' + colorDoc + '" stroke-width="2.5" stroke-linecap="round"/>' +
+      '<line x1="12" y1="62" x2="17" y2="58" stroke="' + colorDoc + '" stroke-width="2.5" stroke-linecap="round"/>' +
+      '<line x1="12" y1="26" x2="17" y2="30" stroke="' + colorDoc + '" stroke-width="2.5" stroke-linecap="round"/>' +
       '</svg>';
 
-    var css = '@page{size:A4;margin:10mm;}*{box-sizing:border-box;margin:0;padding:0;}html,body{height:auto;}body{font-family:"Segoe UI",Roboto,Arial,sans-serif;color:#111;padding:8px 10px;max-width:700px;margin:0 auto;font-size:10.5px;line-height:1.35;position:relative;}' +
-      '.header{border-bottom:2.5px solid #00bcd4;padding-bottom:8px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:flex-end;}' +
-      '.brand{font-size:16px;font-weight:800;color:#0a0a0f;letter-spacing:0.5px;}.brand small{display:block;font-size:8.5px;font-weight:400;color:#666;letter-spacing:2px;margin-top:2px;}' +
-      '.meta{text-align:right;font-size:9.5px;color:#666;}.meta strong{color:#111;font-size:11px;}' +
-      '.doc-type{text-align:center;font-size:17px;font-weight:800;letter-spacing:4px;color:' + (isFactura ? (esPagada ? '#0a7f2e' : '#c81e1e') : '#0a0a0f') + ';margin-bottom:3px;text-transform:uppercase;}' +
-      '.doc-sub{text-align:center;font-size:9.5px;color:#888;margin-bottom:9px;}' +
-      '.info-block{margin-bottom:8px;}.info-block__title{font-size:8.5px;font-weight:700;letter-spacing:2px;color:#0369a1;margin-bottom:4px;padding-bottom:2px;border-bottom:1px solid #e0e6ed;}' +
-      '.info-block__grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;}' +
-      '.ii{padding:5px 7px;background:#f5f7fa;border-radius:3px;border-left:2.5px solid #00bcd4;}.ii--full{grid-column:1/-1;}' +
-      '.ii span{display:block;font-size:7px;letter-spacing:1px;color:#94a3b8;text-transform:uppercase;margin-bottom:1px;font-weight:600;}' +
-      '.ii strong{font-size:10px;color:#111;word-break:break-word;font-weight:600;}' +
-      '.section-title{font-size:8.5px;letter-spacing:2px;text-transform:uppercase;color:#666;margin:9px 0 4px;border-bottom:1px solid #e5e7eb;padding-bottom:2px;font-weight:700;}' +
-      'table{width:100%;border-collapse:collapse;margin-bottom:8px;font-size:10px;}' +
-      'thead th{background:#0a0a0f;color:#fff;padding:5px 8px;text-align:left;font-size:8px;letter-spacing:1px;text-transform:uppercase;font-weight:700;}' +
-      'thead th:last-child{text-align:right;}tbody td{padding:5px 8px;border-bottom:1px solid #e5e7eb;font-size:10px;}tbody tr:last-child td{border-bottom:none;}' +
-      '.row-sub{font-size:8px;color:#94a3b8;margin-top:1px;}.row-price{text-align:right;font-weight:700;white-space:nowrap;}' +
-      '.totals{background:linear-gradient(135deg,#e0f7fa,#ede9fe);padding:10px;border-radius:6px;margin-bottom:8px;text-align:center;border:1.5px solid #00bcd4;}' +
-      '.totals .label{font-size:8px;letter-spacing:2px;color:#666;margin-bottom:2px;font-weight:700;}' +
-      '.totals .amount{font-size:19px;font-weight:800;color:#0a0a0f;letter-spacing:-0.5px;}.totals .sub{font-size:9px;color:#444;margin-top:2px;}' +
-      '.note{padding:6px 9px;background:#fff9e6;border-left:2.5px solid #fbbf24;border-radius:3px;font-size:8.5px;color:#555;line-height:1.4;margin-bottom:7px;}' +
-      '.obs{padding:6px 9px;background:#f8f9fa;border-left:2.5px solid #00bcd4;border-radius:3px;font-size:8.5px;color:#555;line-height:1.4;margin-bottom:7px;}' +
-      '.verif{text-align:center;padding:5px 10px;background:#f0f9ff;border:1px dashed #0284c7;border-radius:4px;font-family:"Courier New",monospace;font-size:8.5px;color:#075985;letter-spacing:0.5px;margin-bottom:8px;}' +
-      '.verif strong{color:#0c4a6e;}' +
-      '.firma-wrapper{position:relative;margin-top:18px;padding-top:4px;}' +
-      '.firma-block{display:grid;grid-template-columns:1fr 1fr;gap:60px;}' +
-      '.firma-item{text-align:center;}.firma-line{border-bottom:1.2px solid #111;height:38px;width:65%;margin:0 auto 6px;}' +
-      '.firma-label{font-size:8px;color:#666;letter-spacing:1px;text-transform:uppercase;font-weight:700;}' +
-      '.firma-name{font-size:10px;font-weight:700;color:#111;margin-top:1px;}.firma-info{font-size:8px;color:#888;margin-top:1px;}' +
-      '.sello-container{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-14deg);width:130px;height:130px;pointer-events:none;z-index:5;opacity:0.72;}' +
+    var css = '@page{size:Letter;margin:12mm 10mm;}*{box-sizing:border-box;margin:0;padding:0;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important;}html,body{height:auto;}' +      'body{font-family:"Segoe UI",Roboto,Arial,sans-serif;color:#111;padding:8px 10px;max-width:720px;margin:0 auto;font-size:11px;line-height:1.4;position:relative;}' +
+      '.header{border-bottom:3px solid ' + colorDoc + ';padding-bottom:10px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:flex-end;gap:12px;}' +
+      '.brand{font-size:17px;font-weight:800;color:#0a0a0f;letter-spacing:0.5px;}.brand small{display:block;font-size:9px;font-weight:400;color:#666;letter-spacing:2px;margin-top:3px;}' +
+      '.meta{text-align:right;font-size:11px;color:#666;}.meta strong{color:#111;font-size:14px;display:block;letter-spacing:0.5px;}' +
+      '.doc-type{text-align:center;font-size:24px;font-weight:900;letter-spacing:5px;color:' + colorDoc + ';margin-bottom:4px;text-transform:uppercase;}' +
+      '.doc-sub{text-align:center;font-size:11px;color:#666;margin-bottom:14px;}' +
+      '.info-block{margin-bottom:10px;}.info-block__title{font-size:9.5px;font-weight:700;letter-spacing:2px;color:#0369a1;margin-bottom:5px;padding-bottom:2px;border-bottom:1px solid #e0e6ed;}' +
+      '.info-block__grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}' +
+      '.ii{padding:6px 8px;background:#f5f7fa;border-radius:3px;border-left:2.5px solid ' + colorDoc + ';}.ii--full{grid-column:1/-1;}' +
+      '.ii span{display:block;font-size:8px;letter-spacing:1px;color:#94a3b8;text-transform:uppercase;margin-bottom:2px;font-weight:600;}' +
+      '.ii strong{font-size:11.5px;color:#111;word-break:break-word;font-weight:600;}' +
+      '.section-title{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#ffffff;background:#000000;padding:8px 12px;margin:14px 0 0;font-weight:700;border-radius:3px 3px 0 0;page-break-after:avoid;}' +
+      'table{width:100%;border-collapse:collapse;margin-bottom:12px;font-size:11px;page-break-inside:auto;}' +
+      'thead{display:table-header-group;}thead th{background:#2f2f42;color:#fff;padding:6px 10px;text-align:left;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;}' +      'thead th:last-child{text-align:right;}tbody td{padding:7px 10px;border-bottom:1px solid #e5e7eb;font-size:11px;}tbody tr{page-break-inside:avoid;}tbody tr:last-child td{border-bottom:none;}' +
+      '.row-sub{font-size:9.5px;color:#64748b;margin-top:2px;font-weight:500;}.row-price{text-align:right;font-weight:700;white-space:nowrap;}' +      '.totals{background:#f0f9ff;padding:14px 12px;border-radius:6px;margin-bottom:12px;text-align:center;border:1.5px solid ' + colorDoc + ';page-break-inside:avoid;}' +      '.totals .label{font-size:9px;letter-spacing:2.5px;color:#666;margin-bottom:4px;font-weight:700;}' +
+      '.totals .amount{font-size:24px;font-weight:900;color:#0a0a0f;letter-spacing:-0.5px;}.totals .sub{font-size:10px;color:#444;margin-top:3px;}' +
+      '.note{padding:8px 11px;background:#fff9e6;border-left:3px solid #fbbf24;border-radius:0 3px 3px 0;font-size:10px;color:#555;line-height:1.5;margin-bottom:10px;page-break-inside:avoid;}' +
+      '.obs{padding:8px 11px;background:#f0f9ff;border-left:3px solid ' + colorDoc + ';border-radius:0 3px 3px 0;font-size:10px;color:#555;line-height:1.5;margin-bottom:10px;min-height:40px;page-break-inside:avoid;}' +
+      '.obs .obs-empty{color:#94a3b8;font-style:italic;}.obs strong{color:#111;}' +
+      '.verif{text-align:center;padding:7px 12px;background:#f0f9ff;border:1px dashed ' + colorDoc + ';border-radius:4px;font-family:"Courier New",monospace;font-size:10px;color:' + colorDoc + ';letter-spacing:0.5px;margin-bottom:14px;page-break-inside:avoid;}' +
+      '.verif strong{color:#0c4a6e;font-weight:700;}' +
+      '.firma-wrapper{position:relative;margin-top:26px;padding-top:6px;page-break-inside:avoid;break-inside:avoid;}' +
+      '.firma-block{display:grid;grid-template-columns:1fr 1fr;gap:60px;}.firma-item{text-align:center;}' +
+      '.firma-line{border-bottom:1.3px solid #111;height:42px;width:70%;margin:0 auto 8px;}' +
+      '.firma-label{font-size:9px;color:#666;letter-spacing:1.2px;text-transform:uppercase;font-weight:700;}' +
+      '.firma-name{font-size:12px;font-weight:700;color:#111;margin-top:2px;}.firma-info{font-size:10px;color:#777;margin-top:2px;}' +
+      '.sello-container{position:absolute;top:55%;left:50%;transform:translate(-50%,-50%) rotate(-14deg);width:175px;height:175px;pointer-events:none;z-index:5;opacity:0.78;}' +
       '.sello-svg{width:100%;height:100%;display:block;}' +
-      '.qr-block{text-align:center;margin:8px 0 4px;position:relative;z-index:3;}' +
-      '.qr-container{display:inline-block;width:52px;height:52px;background:#fff;padding:3px;border-radius:3px;border:1px solid #ddd;line-height:0;}' +
+      '.qr-block{text-align:left;margin:14px 0 6px;position:relative;z-index:3;page-break-inside:avoid;}' +
+      '.qr-inner{display:inline-block;text-align:center;}' +
+      '.qr-container{display:inline-block;width:58px;height:58px;background:#fff;padding:3px;border-radius:3px;border:1px solid #ddd;line-height:0;}' +
       '.qr-container img{width:100%!important;height:100%!important;display:block;}' +
-      '.qr-label{font-size:7.5px;color:#666;letter-spacing:1px;margin-top:2px;font-weight:600;}' +
-      '.footer{margin-top:8px;padding-top:6px;border-top:1px solid #e5e7eb;font-size:8px;color:#888;text-align:center;line-height:1.4;}' +
+      '.qr-label{font-size:8px;color:#666;letter-spacing:1px;margin-top:3px;font-weight:600;}' +
+      '.footer{margin-top:12px;padding-top:8px;border-top:1px solid #e5e7eb;font-size:9px;color:#888;text-align:center;line-height:1.5;page-break-inside:avoid;}' +
       '.footer strong{color:#111;}' +
-      '.watermark-doc{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-28deg);font-family:"Arial Black",sans-serif;font-size:100px;font-weight:900;color:rgba(0,188,212,0.06);letter-spacing:12px;white-space:nowrap;pointer-events:none;z-index:1;user-select:none;}' +
-      '@media print{body{padding:0;}.totals,.firma-wrapper,.sello-container,.qr-block{break-inside:avoid;page-break-inside:avoid;}.info-block{break-inside:avoid;}}';
+      '.watermark-doc{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-28deg);font-family:"Arial Black",sans-serif;font-size:110px;font-weight:900;color:rgba(0,188,212,0.05);letter-spacing:14px;white-space:nowrap;pointer-events:none;z-index:0;user-select:none;}' +
+      '@media print{body{padding:0;}.info-block{break-inside:avoid;}.totals,.note,.obs,.verif,.firma-wrapper,.sello-container,.qr-block{break-inside:avoid;page-break-inside:avoid;}}';
 
     var body = watermarkHTML +
       '<div class="header"><div class="brand">' + svgLogo +
       '<span style="display:inline-block;vertical-align:middle;">' + (prov.nombre || 'JCDURANCASADO') + '<small>REDES · CIBERSEGURIDAD · SOPORTE TÉCNICO</small></span>' +
-      '</div><div class="meta"><div><strong>' + numDoc + '</strong></div><div>' + date + '</div></div></div>' +
+      '</div><div class="meta"><strong>' + numDoc + '</strong><div>' + date + '</div></div></div>' +
       '<div class="doc-type">' + tituloDoc + '</div>' +
       '<div class="doc-sub">' + (isFactura ? (esPagada ? 'Comprobante de servicio · PAGADA' : 'Comprobante de servicio · PENDIENTE DE PAGO') : 'Propuesta de servicio') + '</div>' +
       '<div class="info-block"><div class="info-block__title">DATOS DEL PROVEEDOR</div><div class="info-block__grid">' +
@@ -603,17 +655,17 @@
       '</div></div>' + clienteBlock + equipoBlock +
       '<div class="info-block"><div class="info-block__title">INFORMACIÓN DEL DOCUMENTO</div><div class="info-block__grid">' +
       '<div class="ii"><span>Fecha de emisión</span><strong>' + (s.fechaEmision || '—') + '</strong></div>' +
-      '<div class="ii"><span>' + (isFactura ? 'Estado' : 'Válida hasta') + '</span><strong>' + (isFactura ? (esPagada ? '✓ PAGADA' : '✗ NO PAGADA') : ((s.fechaVencimiento || '—') + ' (' + (s.diasValidez || 7) + ' días)')) + '</strong></div>' +
+      '<div class="ii"><span>' + (isFactura ? 'Estado' : 'Válida hasta') + '</span><strong style="color:' + (isFactura ? colorDoc : '#111') + ';">' + (isFactura ? (esPagada ? '✓ PAGADA' : '✗ NO PAGADA') : ((s.fechaVencimiento || '—') + ' (' + (s.diasValidez || 7) + ' días)')) + '</strong></div>' +
       '</div></div>' +
       '<div class="section-title">Detalle del servicio</div>' +
       '<table><thead><tr><th>Descripción</th><th>' + (isReparacion ? 'Monto (DOP)' : 'Monto (USD)') + '</th></tr></thead><tbody>' +
-      (rows || '<tr><td colspan="2" style="text-align:center;color:#888;padding:12px;">Sin elementos seleccionados</td></tr>') +
+      (rows || '<tr><td colspan="2" style="text-align:center;color:#888;padding:14px;">Sin elementos seleccionados</td></tr>') +
       '</tbody></table>' +
       '<div class="totals"><div class="label">' + (isFactura ? (esPagada ? 'TOTAL PAGADO' : 'TOTAL A PAGAR') : 'TOTAL ESTIMADO') + '</div>' +
       '<div class="amount">' + totalRow + '</div>' +
       (isReparacion ? '<div class="sub">Pesos dominicanos (DOP)</div>' : '<div class="sub">≈ RD$' + dop.toLocaleString('es-DO') + ' DOP · Tasa 1 USD = ' + rate + ' DOP</div>') +
       '</div>' +
-      (s.descripcion ? '<div class="obs"><strong>Observaciones:</strong> ' + s.descripcion + '</div>' : '') +
+      '<div class="obs"><strong>Observaciones:</strong> ' + observacionesTexto + '</div>' +
       '<div class="note">' + notaTexto + '</div>' +
       (record.codigoVC ? '<div class="verif">🔒 VERIFICACIÓN: <strong>' + record.codigoVC + '</strong> · ' + date + ' · Ref: ' + numDoc + '</div>' : '') +
       '<div class="firma-wrapper">' + selloHTML +
@@ -623,13 +675,343 @@
       '</div></div>' + qrHTML +
       '<div class="footer"><strong>' + (prov.nombre || 'JCDURANCASADO') + '</strong> · Redes · Ciberseguridad · Soporte Técnico<br>' + (prov.email || '') + ' · ' + (prov.telefono || '') + ' · ' + (prov.web || '') + '</div>';
 
-    var html = '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>' + tituloDoc + ' ' + numDoc + '</title><style>' + css + '</style></head><body>' + body + '</body></html>';
+    var autoPrintScript =
+      '<script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"><\\/script>' +
+      '<script>' +
+      '  var AUTO_PRINT = ' + (autoPrintFlag ? 'true' : 'false') + ';' +
+      '  function generarQR() {' +
+      '    var cont = document.getElementById("qrContainer");' +
+      '    if (!cont) return;' +
+      '    try {' +
+      '      if (typeof QRCode !== "undefined") {' +
+      '        cont.innerHTML = "";' +
+      '        new QRCode(cont, {' +
+      '          text: "https://jcdurancasado.github.io/inf/verificar.html",' +
+      '          width: 52, height: 52,' +
+      '          colorDark: "#0a0a0f", colorLight: "#ffffff",' +
+      '          correctLevel: QRCode.CorrectLevel.M' +
+      '        });' +
+      '        return true;' +
+      '      }' +
+      '    } catch (e) {}' +
+      '    return false;' +
+      '  }' +
+      '  window.addEventListener("load", function () {' +
+      '    generarQR();' +
+      '    setTimeout(function () {' +
+      '      var cont = document.getElementById("qrContainer");' +
+      '      if (cont && !cont.querySelector("canvas, img")) generarQR();' +
+      '    }, 300);' +
+      '    if (AUTO_PRINT) {' +
+      '      setTimeout(function () { window.print(); }, 900);' +
+      '    }' +
+      '  });' +
+      '<\\/script>';
 
+    var html = '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>' + tituloDoc + ' ' + numDoc + '</title><style>' + css + '</style></head><body>' + body + autoPrintScript + '</body></html>';
+
+    return html;
+  }
+
+  // Abre el documento en pestaña nueva (vista o print)
+  function abrirDocPestana(record, autoPrint) {
+    var html = generarDocHTML(record, autoPrint);
     var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
     var url = URL.createObjectURL(blob);
     var win = window.open(url, '_blank');
-    if (!win) { alert('Permite las ventanas emergentes.'); URL.revokeObjectURL(url); return; }
+    if (!win) {
+      if (typeof Toast !== 'undefined') Toast.show('Permite las ventanas emergentes', 'error', 2500);
+      URL.revokeObjectURL(url);
+      return;
+    }
     setTimeout(function () { URL.revokeObjectURL(url); }, 90000);
+  }
+
+  // Descarga el documento como PDF real (sin abrir pestaña)
+  function descargarDocPDF(record) {
+    if (typeof window.html2pdf === 'undefined') {
+      if (typeof Toast !== 'undefined') Toast.show('Librería PDF cargando, espera un momento', 'info', 2500);
+      return;
+    }
+
+    if (typeof Toast !== 'undefined') Toast.show('Generando PDF...', 'info', 1500);
+
+    var html = generarDocHTML(record, false);
+    var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+
+    var iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.left = '-9999px';
+    iframe.style.top = '0';
+    iframe.style.width = '820px';
+    iframe.style.height = '1160px';
+    iframe.style.border = '0';
+    document.body.appendChild(iframe);
+    iframe.src = url;
+
+    iframe.onload = function () {
+      setTimeout(function () {
+        try {
+          var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+          var target = iframeDoc.body;
+
+          window.html2pdf().set({
+            margin: 0,
+            filename: (record.tipo === 'factura' ? 'FACTURA' : 'COTIZACION') + '-' + record.numero + '.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, scrollY: 0, backgroundColor: '#ffffff' },
+            jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' },
+            pagebreak: { mode: ['css', 'legacy'] }
+          }).from(target).save().then(function () {
+            document.body.removeChild(iframe);
+            URL.revokeObjectURL(url);
+            if (typeof Toast !== 'undefined') Toast.show('✅ PDF descargado', 'success', 2200);
+          }).catch(function (err) {
+            console.error('[JCDC PDF]', err);
+            document.body.removeChild(iframe);
+            URL.revokeObjectURL(url);
+            if (typeof Toast !== 'undefined') Toast.show('❌ Error generando PDF', 'error', 2500);
+          });
+        } catch (e) {
+          console.error('[JCDC PDF]', e);
+          document.body.removeChild(iframe);
+          URL.revokeObjectURL(url);
+          if (typeof Toast !== 'undefined') Toast.show('❌ Error generando PDF', 'error', 2500);
+        }
+      }, 900);
+    };
+  }
+
+  // ============================================================
+  // ENVIAR POR EMAIL AL CLIENTE
+  // ============================================================
+  function pedirEmailClienteModal(numDoc, clienteNombre) {
+    return new Promise(function (resolve) {
+      var overlay = document.createElement('div');
+      overlay.className = 'verify-pwd-overlay';
+      overlay.innerHTML =
+        '<div class="verify-pwd">' +
+        '  <h3><i class="fa-solid fa-envelope"></i> ENVIAR POR CORREO</h3>' +
+        '  <p>Documento: <strong>' + numDoc + '</strong>' + (clienteNombre ? '<br>Cliente: <strong>' + clienteNombre + '</strong>' : '') + '<br><br>Ingresa el correo al que quieres enviar este documento.</p>' +
+        '  <input type="email" id="sendEmailInput" autocomplete="off" placeholder="correo@cliente.com" />' +
+        '  <p class="err" id="sendEmailError"></p>' +
+        '  <div class="verify-pwd__actions">' +
+        '    <button type="button" class="cancel" id="sendEmailCancel">Cancelar</button>' +
+        '    <button type="button" class="ok" id="sendEmailOk">Enviar</button>' +
+        '  </div>' +
+        '</div>';
+      document.body.appendChild(overlay);
+      document.body.classList.add('jcdc-modal-open');
+
+      var inp = overlay.querySelector('#sendEmailInput');
+      var errEl = overlay.querySelector('#sendEmailError');
+      var okBtn = overlay.querySelector('#sendEmailOk');
+      var cancelBtn = overlay.querySelector('#sendEmailCancel');
+
+      setTimeout(function () { inp.focus(); }, 80);
+
+      function cerrar(v) {
+        document.body.classList.remove('jcdc-modal-open');
+        overlay.remove();
+        resolve(v);
+      }
+
+      function validar() {
+        var email = inp.value.trim();
+        if (!email) { errEl.textContent = 'Ingresa un correo'; return; }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+          errEl.textContent = 'Correo inválido';
+          return;
+        }
+        cerrar(email);
+      }
+
+      okBtn.addEventListener('click', validar);
+      inp.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') validar();
+        if (e.key === 'Escape') cerrar(null);
+      });
+      cancelBtn.addEventListener('click', function () { cerrar(null); });
+      overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) cerrar(null);
+      });
+    });
+  }
+
+  async function solicitarEnviarEmail(doc) {
+    var email = await pedirEmailClienteModal(doc.numero || doc.codigoVC || 'documento', doc.cliente);
+    if (!email) return;
+
+    try {
+      if (typeof Toast !== 'undefined') Toast.show('Enviando correo...', 'info', 1800);
+
+      var r = await fetch('https://jcdcapi.vercel.app/api/enviar-cliente', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email,
+          documento: {
+            tipo: doc.tipo,
+            estado: doc.estado,
+            numero: doc.numero,
+            codigoVC: doc.codigoVC,
+            total: doc.total,
+            moneda: doc.moneda,
+            cliente: doc.cliente,
+            fecha: doc.fecha,
+            snapshot: doc.snapshot || {}
+          }
+        })
+      });
+      var data = await r.json();
+
+      if (data.ok) {
+        if (typeof Toast !== 'undefined') Toast.show(data.message || '✅ Correo enviado a ' + email, 'success', 3000);
+      } else {
+        if (typeof Toast !== 'undefined') Toast.show(data.error || '❌ Error enviando el correo', 'error', 3500);
+      }
+    } catch (e) {
+      console.error('[JCDC Email] Error:', e);
+      if (typeof Toast !== 'undefined') Toast.show('❌ Error de conexión', 'error', 3000);
+    }
+  }
+
+  // ============================================================
+  // ELIMINAR DOCUMENTO · modal contraseña + modal confirmación
+  // ============================================================
+  function pedirPasswordAdminModal(numDoc) {
+    return new Promise(function (resolve) {
+      var overlay = document.createElement('div');
+      overlay.className = 'verify-pwd-overlay';
+      overlay.innerHTML =
+        '<div class="verify-pwd">' +
+        '  <h3><i class="fa-solid fa-lock"></i> CONFIRMAR IDENTIDAD</h3>' +
+        '  <p>Para eliminar el documento <strong>' + numDoc + '</strong>, ingresa tu clave de administrador.</p>' +
+        '  <input type="password" id="delPwdInput" autocomplete="off" placeholder="Clave de administrador" />' +
+        '  <p class="err" id="delPwdError"></p>' +
+        '  <div class="verify-pwd__actions">' +
+        '    <button type="button" class="cancel" id="delPwdCancel">Cancelar</button>' +
+        '    <button type="button" class="ok" id="delPwdOk">Verificar</button>' +
+        '  </div>' +
+        '</div>';
+      document.body.appendChild(overlay);
+      document.body.classList.add('jcdc-modal-open');
+
+      var inp = overlay.querySelector('#delPwdInput');
+      var errEl = overlay.querySelector('#delPwdError');
+      var okBtn = overlay.querySelector('#delPwdOk');
+      var cancelBtn = overlay.querySelector('#delPwdCancel');
+
+      setTimeout(function () { inp.focus(); }, 80);
+
+      function cerrar(v) {
+        document.body.classList.remove('jcdc-modal-open');
+        overlay.remove();
+        resolve(v);
+      }
+
+      async function validar() {
+        var pwd = inp.value.trim();
+        if (!pwd) { errEl.textContent = 'Ingresa la clave'; return; }
+        okBtn.disabled = true;
+        okBtn.textContent = 'Verificando...';
+        errEl.textContent = '';
+        try {
+          var r = await fetch('https://jcdcapi.vercel.app/api/validar-admin-key', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ clave: pwd })
+          });
+          var d = await r.json();
+          if (d.ok && d.admin) {
+            cerrar(pwd);
+          } else {
+            okBtn.disabled = false;
+            okBtn.textContent = 'Verificar';
+            errEl.textContent = '❌ Clave incorrecta';
+            inp.value = '';
+            inp.focus();
+          }
+        } catch (e) {
+          okBtn.disabled = false;
+          okBtn.textContent = 'Verificar';
+          errEl.textContent = 'Error de conexión';
+        }
+      }
+
+      okBtn.addEventListener('click', validar);
+      inp.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') validar();
+        if (e.key === 'Escape') cerrar(null);
+      });
+      cancelBtn.addEventListener('click', function () { cerrar(null); });
+      overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) cerrar(null);
+      });
+    });
+  }
+
+  function confirmarEliminarModal(numDoc) {
+    return new Promise(function (resolve) {
+      var overlay = document.createElement('div');
+      overlay.className = 'jcdc-confirm-overlay';
+      overlay.innerHTML =
+        '<div class="jcdc-confirm jcdc-confirm--danger" role="dialog" aria-modal="true">' +
+        '  <div class="jcdc-confirm__icon"><i class="fa-solid fa-triangle-exclamation"></i></div>' +
+        '  <h3 class="jcdc-confirm__title">¿ELIMINAR DOCUMENTO?</h3>' +
+        '  <p class="jcdc-confirm__msg">Vas a eliminar permanentemente el documento <strong>' + numDoc + '</strong>.<br><br>Esta acción <strong>no se puede deshacer</strong>.</p>' +
+        '  <div class="jcdc-confirm__actions">' +
+        '    <button type="button" class="jcdc-confirm__btn jcdc-confirm__btn--cancel" data-res="0">Cancelar</button>' +
+        '    <button type="button" class="jcdc-confirm__btn jcdc-confirm__btn--ok" data-res="1">Sí, eliminar</button>' +
+        '  </div>' +
+        '</div>';
+      document.body.appendChild(overlay);
+
+      function cerrar(v) {
+        overlay.classList.add('closing');
+        setTimeout(function () { overlay.remove(); }, 200);
+        resolve(v);
+      }
+
+      overlay.querySelector('[data-res="0"]').addEventListener('click', function () { cerrar(false); });
+      overlay.querySelector('[data-res="1"]').addEventListener('click', function () { cerrar(true); });
+      overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) cerrar(false);
+      });
+      document.addEventListener('keydown', function esc(e) {
+        if (e.key === 'Escape') { document.removeEventListener('keydown', esc); cerrar(false); }
+      });
+      setTimeout(function () {
+        var ok = overlay.querySelector('[data-res="1"]');
+        if (ok) ok.focus();
+      }, 80);
+    });
+  }
+
+  async function solicitarEliminar(doc, todosLosDocsRef, onSuccess) {
+    var pwd = await pedirPasswordAdminModal(doc.numero || doc.codigoVC || 'documento');
+    if (!pwd) return;
+
+    var ok = await confirmarEliminarModal(doc.numero || doc.codigoVC || 'documento');
+    if (!ok) return;
+
+    try {
+      await window.db.collection('documentos').doc(doc._id).delete();
+
+      // Quitar de la lista en memoria (sin recargar)
+      var idx = todosLosDocsRef.indexOf(doc);
+      if (idx !== -1) todosLosDocsRef.splice(idx, 1);
+
+      // Re-renderizar la lista sin salir del panel
+      if (typeof onSuccess === 'function') onSuccess();
+
+      console.log('[JCDC Admin] ✓ Documento eliminado:', doc.numero || doc.codigoVC);
+      if (typeof Toast !== 'undefined') Toast.show('✅ Documento eliminado correctamente', 'success', 2500);
+    } catch (e) {
+      console.error('[JCDC Admin] Error eliminando:', e);
+      if (typeof Toast !== 'undefined') Toast.show('❌ Error eliminando: ' + (e.message || 'desconocido'), 'error', 3500);
+    }
   }
 
   // ============================================================
@@ -637,6 +1019,18 @@
   // ============================================================
   function init() {
     if (!input || !btn || !result) return;
+
+    // Auto-verificar si viene ?code=... en la URL (link del correo al cliente)
+    try {
+      var urlParams = new URLSearchParams(window.location.search);
+      var autoCode = urlParams.get('code');
+      if (autoCode) {
+        setTimeout(function () {
+          input.value = autoCode;
+          verificar();
+        }, 350);
+      }
+    } catch (e) {}
 
     var adminToggle = document.getElementById('adminToggleBtn');
     var adminToggleLabel = document.getElementById('adminToggleLabel');
@@ -858,13 +1252,21 @@
         var moneda = d.moneda || 'DOP';
         var totalFmt = (moneda === 'DOP' ? 'RD$' : '$') + Number(d.total || 0).toLocaleString(moneda === 'DOP' ? 'es-DO' : 'en-US');
 
-        html += '<div class="admin-lista__fila" data-id="' + d._id + '" data-code="' + (d.codigoVC || d.numero) + '">';
+        var code = d.codigoVC || d.numero || '';
+        html += '<div class="admin-lista__fila" data-id="' + d._id + '" data-code="' + code + '">';
         html += '  <div class="admin-lista__tipo ' + tipoClase + '">' + tipoTxt + '</div>';
         html += '  <div class="admin-lista__num" title="' + (d.numero || '') + '">' + (d.numero || '—') + '</div>';
         html += '  <div class="admin-lista__cliente" title="' + (d.cliente || '') + '">' + (d.cliente || '—') + '</div>';
         html += '  <div class="admin-lista__monto">' + totalFmt + '</div>';
         html += '  <div class="admin-lista__fecha">' + fecha + '</div>';
         html += '  <div class="admin-lista__estado ' + estadoClase + '">' + estadoTxt + '</div>';
+        html += '  <div class="admin-lista__acciones">';
+        html += '    <button type="button" class="admin-lista__accion" data-action="ver" data-id="' + d._id + '" data-code="' + code + '" title="Ver documento"><i class="fa-solid fa-eye"></i></button>';
+        html += '    <button type="button" class="admin-lista__accion" data-action="download" data-id="' + d._id + '" data-code="' + code + '" title="Descargar PDF"><i class="fa-solid fa-download"></i></button>';
+        html += '    <button type="button" class="admin-lista__accion" data-action="print" data-id="' + d._id + '" data-code="' + code + '" title="Imprimir"><i class="fa-solid fa-print"></i></button>';
+        html += '    <button type="button" class="admin-lista__accion admin-lista__accion--email" data-action="email" data-id="' + d._id + '" data-code="' + code + '" title="Enviar por correo al cliente"><i class="fa-solid fa-envelope"></i></button>';
+        html += '    <button type="button" class="admin-lista__accion admin-lista__accion--del" data-action="del" data-id="' + d._id + '" data-code="' + code + '" title="Eliminar permanentemente"><i class="fa-solid fa-trash"></i></button>';
+        html += '  </div>';
         html += '</div>';
       });
 
@@ -906,18 +1308,24 @@
           var id = accion.getAttribute('data-id');
           var tipo = accion.getAttribute('data-action');
           var code = accion.getAttribute('data-code');
+          var doc = todosLosDocs.find(function (x) { return x._id === id; });
+
           if (tipo === 'ver') {
             cerrarRegistro();
             input.value = code;
             verificar();
+          } else if (tipo === 'download') {
+            if (!doc) { alert('No se encontró el documento.'); return; }
+            descargarDocPDF(doc);
+          } else if (tipo === 'print') {
+            if (!doc) { alert('No se encontró el documento.'); return; }
+            abrirDocPestana(doc, true);
+          } else if (tipo === 'email') {
+            if (!doc) { alert('No se encontró el documento.'); return; }
+            solicitarEnviarEmail(doc);
           } else if (tipo === 'del') {
-            if (!confirm('¿Eliminar este documento permanentemente?\n\nEsta acción no se puede deshacer.')) return;
-            window.db.collection('documentos').doc(id).delete()
-              .then(function () {
-                todosLosDocs = todosLosDocs.filter(function (x) { return x._id !== id; });
-                renderListaAdmin();
-              })
-              .catch(function (err) { alert('Error eliminando: ' + err.message); });
+            if (!doc) { alert('No se encontró el documento.'); return; }
+            solicitarEliminar(doc, todosLosDocs, renderListaAdmin);
           }
           return;
         }

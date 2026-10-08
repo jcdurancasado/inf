@@ -53,9 +53,9 @@ const Theme = {
 
     // El tema ya fue aplicado por el script inline en <head>.
     // Solo aseguramos que esté sincronizado.
+    // Dark por defecto; si el usuario ya eligió uno, se respeta.
     const saved = localStorage.getItem('jcdc_theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const theme = saved || (prefersDark ? 'dark' : 'light');
+    const theme = saved || 'dark';
     if (html.getAttribute('data-theme') !== theme) {
       html.setAttribute('data-theme', theme);
     }
@@ -436,7 +436,6 @@ const ContactForm = {
     if (!form || !responseEl || !submitBtn) return;
 
     const MAX_FILES = 5;
-    // 4 MB (deja margen al límite real de 4.5 MB de Vercel)
     const MAX_TOTAL = 4 * 1024 * 1024;
 
     function fmtSize(bytes) {
@@ -451,7 +450,34 @@ const ContactForm = {
       fileStatus.className = 'cyber-file-status' + (type ? ' cyber-file-status--' + type : '');
     }
 
-    // ===== Feedback al seleccionar archivos =====
+    // ===== Botón: control de estados =====
+    const btnText = submitBtn.querySelector('.cyber-btn__text');
+
+    function resetBtn() {
+      submitBtn.classList.remove('cyber-btn--progress', 'cyber-btn--success', 'cyber-btn--error');
+      submitBtn.style.removeProperty('--progress');
+      if (btnText) btnText.textContent = 'ENVIAR MENSAJE';
+    }
+
+    function setBtnProgress(pct) {
+      submitBtn.classList.remove('cyber-btn--success', 'cyber-btn--error');
+      submitBtn.classList.add('cyber-btn--progress');
+      submitBtn.style.setProperty('--progress', pct + '%');
+      if (btnText) btnText.textContent = 'ENVIANDO ' + pct + '%';
+    }
+
+    function setBtnState(state) {
+      submitBtn.classList.remove('cyber-btn--progress', 'cyber-btn--success', 'cyber-btn--error');
+      submitBtn.style.removeProperty('--progress');
+      if (!btnText) return;
+      if (state === 'sending')      btnText.textContent = 'ENVIANDO...';
+      else if (state === 'processing') btnText.textContent = 'PROCESANDO...';
+      else if (state === 'success') { submitBtn.classList.add('cyber-btn--success'); btnText.textContent = '✓ ENVIADO'; }
+      else if (state === 'error')   { submitBtn.classList.add('cyber-btn--error');   btnText.textContent = '❌ REINTENTAR'; }
+      else resetBtn();
+    }
+
+    // ===== Validación al seleccionar archivos =====
     if (fileInput) {
       fileInput.addEventListener('change', function () {
         const files = Array.from(fileInput.files || []);
@@ -459,7 +485,6 @@ const ContactForm = {
           setFileStatus('Ningún archivo seleccionado', '');
           return;
         }
-
         const totalSize = files.reduce((a, f) => a + f.size, 0);
 
         if (files.length > MAX_FILES) {
@@ -487,6 +512,7 @@ const ContactForm = {
     // ===== Envío =====
     form.addEventListener('submit', function (e) {
       e.preventDefault();
+      resetBtn();
       responseEl.textContent = '';
       responseEl.className = 'form-response';
 
@@ -519,55 +545,73 @@ const ContactForm = {
       }
 
       submitBtn.disabled = true;
-      const btnText = submitBtn.querySelector('.cyber-btn__text');
-      if (btnText) btnText.textContent = 'ENVIANDO...';
+      setBtnState('sending');
 
       const formData = new FormData(form);
       const xhr = new XMLHttpRequest();
       xhr.open('POST', form.action, true);
+
+      // Progreso de subida → dentro del botón
+      if (files.length > 0) {
+        xhr.upload.addEventListener('progress', function (ev) {
+          if (ev.lengthComputable) {
+            const pct = Math.round((ev.loaded / ev.total) * 100);
+            setBtnProgress(pct);
+          } else {
+            setBtnState('sending');
+          }
+        });
+
+        xhr.upload.addEventListener('load', function () {
+          setBtnState('processing');
+        });
+      }
 
       xhr.addEventListener('load', function () {
         let data = {};
         try { data = JSON.parse(xhr.responseText || '{}'); } catch (err) {}
 
         if (xhr.status >= 200 && xhr.status < 300) {
+          setBtnState('success');
           responseEl.textContent = data.message || '✅ Mensaje enviado correctamente';
           responseEl.className = 'form-response ok';
           form.reset();
           setFileStatus('Ningún archivo seleccionado', '');
           if (typeof Toast !== 'undefined') Toast.show('Mensaje enviado correctamente', 'success');
+
+          setTimeout(function () {
+            submitBtn.disabled = false;
+            resetBtn();
+            responseEl.textContent = '';
+            responseEl.className = 'form-response';
+          }, 3000);
         } else if (xhr.status === 413) {
+          setBtnState('error');
           responseEl.textContent = '❌ Los archivos son demasiado pesados para el servidor. Reduce el tamaño o envía menos archivos.';
           responseEl.className = 'form-response error';
           if (typeof Toast !== 'undefined') Toast.show('Archivos demasiado pesados', 'error');
+          submitBtn.disabled = false;
         } else {
+          setBtnState('error');
           responseEl.textContent = data.message || '❌ Error al enviar. Intenta de nuevo.';
           responseEl.className = 'form-response error';
           if (typeof Toast !== 'undefined') Toast.show('Error al enviar el mensaje', 'error');
+          submitBtn.disabled = false;
         }
-
-        submitBtn.disabled = false;
-        if (btnText) btnText.textContent = 'ENVIAR MENSAJE';
-        setTimeout(function () {
-          responseEl.textContent = '';
-          responseEl.className = 'form-response';
-        }, 15000);
       });
 
       xhr.addEventListener('error', function () {
+        setBtnState('error');
         responseEl.textContent = '❌ Error de conexión. Verifica tu internet e intenta de nuevo.';
         responseEl.className = 'form-response error';
         if (typeof Toast !== 'undefined') Toast.show('Error de conexión', 'error');
         submitBtn.disabled = false;
-        if (btnText) btnText.textContent = 'ENVIAR MENSAJE';
       });
 
       xhr.send(formData);
     });
   }
 };
-
-
 // ==========================================
 // CONTADOR DE ESTADÍSTICAS
 // ==========================================

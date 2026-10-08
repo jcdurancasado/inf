@@ -419,7 +419,7 @@ const QuoteWizard = {
           Las cotizaciones siguen disponibles sin restricción.</p>
           <div class="pwd-modal__field">
             <i class="fa-solid fa-envelope"></i>
-            <input type="email" id="pwdFacturaEmail" autocomplete="email" placeholder="Email" value="jcdurancasado@gmail.com" />
+            <input type="email" id="pwdFacturaEmail" autocomplete="email" placeholder="Email" />
           </div>
           <div class="pwd-modal__field">
             <i class="fa-solid fa-key"></i>
@@ -1774,41 +1774,55 @@ var waMsg = encodeURIComponent(
   /* ============================================
      SELLO PAGADO (SVG azul)
   ============================================ */
-  generarSelloPagado(fecha, monto, numDoc, estado) {
+  generarSello(fecha, numDoc, tipoDoc, estado) {
     const cfg = window.SOPORTE_CONFIG.documentos || {};
-    const esPagada = estado !== 'no-pagada';
-    const color = esPagada ? (cfg.colorSello || '#1e40af') : '#dc2626';
-    const texto = esPagada ? 'PAGADO' : 'NO PAGADA';
     const prov = (window.SOPORTE_CONFIG.proveedor) || {};
     const nombre = (prov.nombre || 'JCDURÁN CASADO').toUpperCase();
-    const fontBig = esPagada ? 38 : 24;
+
+    let color, texto, fontBig, letterSpacing;
+
+    if (tipoDoc === 'factura') {
+      const esPagada = estado !== 'no-pagada';
+      color = esPagada ? (cfg.colorSelloPagado || '#0a7f2e') : (cfg.colorSelloNoPagada || '#c81e1e');
+      texto = esPagada ? 'PAGADO' : 'NO PAGADA';
+      fontBig = esPagada ? 34 : 21;
+      letterSpacing = esPagada ? 4 : 2.5;
+    } else {
+      color = cfg.colorSelloCotizacion || '#0369a1';
+      texto = 'COTIZACIÓN';
+      fontBig = 21;
+      letterSpacing = 1;
+    }
 
     return `
 <svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" class="sello-svg">
   <defs>
-    <path id="arcT-${numDoc}" d="M 30,110 A 80,80 0 0 1 190,110" fill="none"/>
-    <path id="arcB-${numDoc}" d="M 35,110 A 75,75 0 0 0 185,110" fill="none"/>
+    <path id="arcT-${numDoc}" d="M 23,110 A 87,87 0 0 1 197,110" fill="none"/>
+    <path id="arcB-${numDoc}" d="M 15,110 A 95,95 0 0 0 205,110" fill="none"/>
     <filter id="rough-${numDoc}">
-      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="3" result="n"/>
-      <feDisplacementMap in="SourceGraphic" in2="n" scale="1.3" xChannelSelector="R" yChannelSelector="G"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="0.5" xChannelSelector="R" yChannelSelector="G"/>
     </filter>
   </defs>
   <g filter="url(#rough-${numDoc})" fill="none" stroke="${color}">
-    <circle cx="110" cy="110" r="98" stroke-width="4"/>
-    <circle cx="110" cy="110" r="86" stroke-width="1.5"/>
-    <circle cx="110" cy="110" r="80" stroke-width="1" opacity="0.6"/>
-    <text font-family="Arial Black, sans-serif" font-size="12" font-weight="900" fill="${color}" stroke="none" letter-spacing="2.5">
+    <circle cx="110" cy="110" r="104" stroke-width="3.5"/>
+    <circle cx="110" cy="110" r="80" stroke-width="1.2"/>
+
+    <text font-family="Arial Black, sans-serif" font-size="13" font-weight="900" fill="${color}" stroke="none" letter-spacing="2">
       <textPath href="#arcT-${numDoc}" startOffset="50%" text-anchor="middle">${nombre}</textPath>
     </text>
-    <text font-family="Arial, sans-serif" font-size="7.5" fill="${color}" stroke="none" letter-spacing="1.8">
+
+    <text font-family="Arial, sans-serif" font-size="8.5" fill="${color}" stroke="none" letter-spacing="1.2">
       <textPath href="#arcB-${numDoc}" startOffset="50%" text-anchor="middle">REDES · CIBERSEGURIDAD · SOPORTE TÉCNICO</textPath>
     </text>
-    <line x1="30" y1="99" x2="190" y2="99" stroke-width="1.5"/>
-    <text x="110" y="${esPagada ? 122 : 120}" font-family="Arial Black, sans-serif" font-size="${fontBig}" font-weight="900" fill="${color}" stroke="none" text-anchor="middle" letter-spacing="3">${texto}</text>
-    <line x1="30" y1="132" x2="190" y2="132" stroke-width="1.5"/>
-    <text x="110" y="150" font-family="Arial, sans-serif" font-size="9" fill="${color}" stroke="none" text-anchor="middle" letter-spacing="2">FECHA</text>
-    <text x="110" y="163" font-family="Arial Black, sans-serif" font-size="10" fill="${color}" stroke="none" text-anchor="middle">${fecha}</text>
-    <text x="110" y="180" font-family="Arial, sans-serif" font-size="8" fill="${color}" stroke="none" text-anchor="middle" letter-spacing="1">${numDoc}</text>
+
+    <line x1="30" y1="100" x2="190" y2="100" stroke-width="1.2"/>
+    <text x="110" y="122" font-family="Arial Black, sans-serif" font-size="${fontBig}" font-weight="900" fill="${color}" stroke="none" text-anchor="middle" letter-spacing="${letterSpacing}">${texto}</text>
+    <line x1="30" y1="136" x2="190" y2="136" stroke-width="1.2"/>
+
+    <text x="110" y="151" font-family="Arial, sans-serif" font-size="7.5" fill="${color}" stroke="none" text-anchor="middle" letter-spacing="2">FECHA</text>
+    <text x="110" y="162" font-family="Arial Black, sans-serif" font-size="9" fill="${color}" stroke="none" text-anchor="middle">${fecha}</text>
+    <text x="110" y="175" font-family="Arial, sans-serif" font-size="7" fill="${color}" stroke="none" text-anchor="middle" letter-spacing="0.8">${numDoc}</text>
   </g>
 </svg>`;
   },
@@ -2005,6 +2019,14 @@ var waMsg = encodeURIComponent(
     const tituloDoc = isFactura ? 'FACTURA' : 'COTIZACIÓN';
     const rate = this.RATE_DOP;
 
+    // Color según tipo de documento
+    let colorDoc;
+    if (isFactura) {
+      colorDoc = esPagada ? (docCfg.colorSelloPagado || '#0a7f2e') : (docCfg.colorSelloNoPagada || '#c81e1e');
+    } else {
+      colorDoc = docCfg.colorSelloCotizacion || '#0369a1';
+    }
+
     const codigoVC = isReparacion && rep
       ? this.generarCodigoVerificacion(rep.numero, rep.fechaEmision, total.toString())
       : '';
@@ -2068,13 +2090,17 @@ var waMsg = encodeURIComponent(
       ? '<strong>Nota:</strong> Esta factura corresponde al servicio descrito arriba. ' + garantiaTexto + ' Gracias por su preferencia.'
       : '<strong>Nota:</strong> Cotización generada desde el cotizador web <strong>jcdurancasado.github.io/inf</strong> el ' + date + ' a las ' + hora + '. Válida por ' + (rep ? rep.diasValidez : 7) + ' días.';
 
+    const observacionesTexto = (rep && rep.descripcion && rep.descripcion.trim())
+      ? rep.descripcion
+      : '<span class="obs-empty">Sin observaciones registradas</span>';
+
     const watermarkHTML = (!isFactura && docCfg.mostrarWatermark !== false)
       ? '<div class="watermark-doc">COTIZACIÓN</div>'
       : '';
 
-    const selloHTML = (isFactura)
-      ? '<div class="sello-container">' + this.generarSelloPagado(date, totalRow, numDoc, estado) + '</div>'
-      : '';
+    const selloHTML = '<div class="sello-container">' +
+      this.generarSello(date, numDoc, isFactura ? 'factura' : 'cotizacion', estado) +
+      '</div>';
 
     const html = `<!DOCTYPE html>
 <html lang="es">
@@ -2082,141 +2108,176 @@ var waMsg = encodeURIComponent(
   <meta charset="UTF-8">
   <title>${tituloDoc} ${numDoc}</title>
   <style>
-    @page { size: A4; margin: 10mm; }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    @page { size: Letter; margin: 12mm 10mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important; }
     html, body { height: auto; }
     body {
       font-family: 'Segoe UI', Roboto, Arial, sans-serif;
       color: #111;
       padding: 8px 10px;
-      max-width: 700px;
+      max-width: 720px;
       margin: 0 auto;
-      font-size: 10.5px;
-      line-height: 1.35;
+      font-size: 11px;
+      line-height: 1.4;
       position: relative;
     }
 
-    .header { border-bottom: 2.5px solid #00bcd4; padding-bottom: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: flex-end; }
-    .brand { font-size: 16px; font-weight: 800; color: #0a0a0f; letter-spacing: 0.5px; }
-    .brand small { display: block; font-size: 8.5px; font-weight: 400; color: #666; letter-spacing: 2px; margin-top: 2px; }
-    .meta { text-align: right; font-size: 9.5px; color: #666; }
-    .meta strong { color: #111; font-size: 11px; }
+    /* ===== HEADER ===== */
+    .header { border-bottom: 3px solid ${colorDoc}; padding-bottom: 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
+    .brand { font-size: 17px; font-weight: 800; color: #0a0a0f; letter-spacing: 0.5px; }
+    .brand small { display: block; font-size: 9px; font-weight: 400; color: #666; letter-spacing: 2px; margin-top: 3px; }
+    .meta { text-align: right; font-size: 11px; color: #666; }
+    .meta strong { color: #111; font-size: 14px; display: block; letter-spacing: 0.5px; }
 
-    .doc-type { text-align: center; font-size: 17px; font-weight: 800; letter-spacing: 4px; color: ${isFactura ? (esPagada ? '#0a7f2e' : '#c81e1e') : '#0a0a0f'}; margin-bottom: 3px; text-transform: uppercase; }
-    .doc-sub { text-align: center; font-size: 9.5px; color: #888; margin-bottom: 9px; }
+    /* ===== TÍTULO ===== */
+    .doc-type {
+      text-align: center;
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: 5px;
+      color: ${colorDoc};
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+    .doc-sub { text-align: center; font-size: 11px; color: #666; margin-bottom: 14px; }
 
-    .info-block { margin-bottom: 8px; }
+    /* ===== INFO BLOCKS ===== */
+    .info-block { margin-bottom: 10px; }
     .info-block__title {
-      font-size: 8.5px;
+      font-size: 9.5px;
       font-weight: 700;
       letter-spacing: 2px;
       color: #0369a1;
-      margin-bottom: 4px;
+      margin-bottom: 5px;
       padding-bottom: 2px;
       border-bottom: 1px solid #e0e6ed;
     }
     .info-block__grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 5px;
+      gap: 6px;
     }
     .ii {
-      padding: 5px 7px;
+      padding: 6px 8px;
       background: #f5f7fa;
       border-radius: 3px;
-      border-left: 2.5px solid #00bcd4;
+      border-left: 2.5px solid ${colorDoc};
     }
     .ii--full { grid-column: 1 / -1; }
     .ii span {
       display: block;
-      font-size: 7px;
+      font-size: 8px;
       letter-spacing: 1px;
       color: #94a3b8;
       text-transform: uppercase;
-      margin-bottom: 1px;
+      margin-bottom: 2px;
       font-weight: 600;
     }
-    .ii strong { font-size: 10px; color: #111; word-break: break-word; font-weight: 600; }
+    .ii strong { font-size: 11.5px; color: #111; word-break: break-word; font-weight: 600; }
 
+    /* ===== DETALLE DEL SERVICIO (franja negra) ===== */
     .section-title {
-      font-size: 8.5px;
-      letter-spacing: 2px;
+      font-size: 11px;
+      letter-spacing: 3px;
       text-transform: uppercase;
-      color: #666;
-      margin: 9px 0 4px;
-      border-bottom: 1px solid #e5e7eb;
-      padding-bottom: 2px;
+      color: #ffffff;
+      background: #000000;
+      padding: 8px 12px;
+      margin: 14px 0 0;
       font-weight: 700;
+      border-radius: 3px 3px 0 0;
+      page-break-after: avoid;
     }
 
-    table { width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 10px; }
+    /* ===== TABLA ===== */
+    table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 11px; page-break-inside: auto; }
+    thead { display: table-header-group; }
     thead th {
-      background: #0a0a0f;
+      background: #2f2f42;
       color: #fff;
-      padding: 5px 8px;
+      padding: 6px 10px;
       text-align: left;
-      font-size: 8px;
-      letter-spacing: 1px;
+      font-size: 9px;
+      letter-spacing: 1.5px;
       text-transform: uppercase;
       font-weight: 700;
     }
     thead th:last-child { text-align: right; }
-    tbody td { padding: 5px 8px; border-bottom: 1px solid #e5e7eb; font-size: 10px; }
+    tbody td { padding: 7px 10px; border-bottom: 1px solid #e5e7eb; font-size: 11px; }
+    tbody tr { page-break-inside: avoid; }
     tbody tr:last-child td { border-bottom: none; }
-    .row-sub { font-size: 8px; color: #94a3b8; margin-top: 1px; }
+    .row-sub { font-size: 9.5px; color: #64748b; margin-top: 2px; font-weight: 500; }
     .row-price { text-align: right; font-weight: 700; white-space: nowrap; }
 
+    /* ===== TOTALES ===== */
     .totals {
-      background: linear-gradient(135deg, #e0f7fa, #ede9fe);
-      padding: 10px;
+      background: #f0f9ff;
+      padding: 14px 12px;
       border-radius: 6px;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
       text-align: center;
-      border: 1.5px solid #00bcd4;
+      border: 1.5px solid ${colorDoc};
+      page-break-inside: avoid;
     }
-    .totals .label { font-size: 8px; letter-spacing: 2px; color: #666; margin-bottom: 2px; font-weight: 700; }
-    .totals .amount { font-size: 19px; font-weight: 800; color: #0a0a0f; letter-spacing: -0.5px; }
-    .totals .sub { font-size: 9px; color: #444; margin-top: 2px; }
+    .totals .label { font-size: 9px; letter-spacing: 2.5px; color: #666; margin-bottom: 4px; font-weight: 700; }
+    .totals .amount { font-size: 24px; font-weight: 900; color: #0a0a0f; letter-spacing: -0.5px; }
+    .totals .sub { font-size: 10px; color: #444; margin-top: 3px; }
 
+    /* ===== NOTA ===== */
     .note {
-      padding: 6px 9px;
+      padding: 8px 11px;
       background: #fff9e6;
-      border-left: 2.5px solid #fbbf24;
-      border-radius: 3px;
-      font-size: 8.5px;
+      border-left: 3px solid #fbbf24;
+      border-radius: 0 3px 3px 0;
+      font-size: 10px;
       color: #555;
-      line-height: 1.4;
-      margin-bottom: 7px;
-    }
-    .obs {
-      padding: 6px 9px;
-      background: #f8f9fa;
-      border-left: 2.5px solid #00bcd4;
-      border-radius: 3px;
-      font-size: 8.5px;
-      color: #555;
-      line-height: 1.4;
-      margin-bottom: 7px;
+      line-height: 1.5;
+      margin-bottom: 10px;
+      page-break-inside: avoid;
     }
 
+    /* ===== OBSERVACIONES ===== */
+    .obs {
+      padding: 8px 11px;
+      background: #f0f9ff;
+      border-left: 3px solid ${colorDoc};
+      border-radius: 0 3px 3px 0;
+      font-size: 10px;
+      color: #555;
+      line-height: 1.5;
+      margin-bottom: 10px;
+      min-height: 40px;
+      page-break-inside: avoid;
+    }
+    .obs .obs-empty { color: #94a3b8; font-style: italic; }
+    .obs strong { color: #111; }
+
+    /* ===== VERIFICACIÓN ===== */
     .verif {
       text-align: center;
-      padding: 5px 10px;
+      padding: 7px 12px;
       background: #f0f9ff;
-      border: 1px dashed #0284c7;
+      border: 1px dashed ${colorDoc};
       border-radius: 4px;
       font-family: 'Courier New', monospace;
-      font-size: 8.5px;
-      color: #075985;
+      font-size: 10px;
+      color: ${colorDoc};
       letter-spacing: 0.5px;
-      margin-bottom: 8px;
+      margin-bottom: 14px;
+      page-break-inside: avoid;
     }
-    .verif strong { color: #0c4a6e; }
+    .verif strong { color: #0c4a6e; font-weight: 700; }
 
+    /* ===== FIRMAS ===== */
     .firma-wrapper {
       position: relative;
-      margin-top: 18px;
-      padding-top: 4px;
+      margin-top: 26px;
+      padding-top: 6px;
+      page-break-inside: avoid;
+      break-inside: avoid;
     }
     .firma-block {
       display: grid;
@@ -2224,34 +2285,38 @@ var waMsg = encodeURIComponent(
       gap: 60px;
     }
     .firma-item { text-align: center; }
-    .firma-line { border-bottom: 1.2px solid #111; height: 38px; width: 65%; margin: 0 auto 6px; }
-    .firma-label { font-size: 8px; color: #666; letter-spacing: 1px; text-transform: uppercase; font-weight: 700; }
-    .firma-name { font-size: 10px; font-weight: 700; color: #111; margin-top: 1px; }
-    .firma-info { font-size: 8px; color: #888; margin-top: 1px; }
+    .firma-line { border-bottom: 1.3px solid #111; height: 42px; width: 70%; margin: 0 auto 8px; }
+    .firma-label { font-size: 9px; color: #666; letter-spacing: 1.2px; text-transform: uppercase; font-weight: 700; }
+    .firma-name { font-size: 12px; font-weight: 700; color: #111; margin-top: 2px; }
+    .firma-info { font-size: 10px; color: #777; margin-top: 2px; }
 
+    /* ===== SELLO ===== */
     .sello-container {
       position: absolute;
-      top: 50%;
+      top: 55%;
       left: 50%;
       transform: translate(-50%, -50%) rotate(-14deg);
-      width: 130px;
-      height: 130px;
+      width: 175px;
+      height: 175px;
       pointer-events: none;
       z-index: 5;
-      opacity: 0.72;
+      opacity: 0.78;
     }
     .sello-svg { width: 100%; height: 100%; display: block; }
 
+    /* ===== QR ===== */
     .qr-block {
-      text-align: center;
-      margin: 8px 0 4px;
+      text-align: left;
+      margin: 14px 0 6px;
       position: relative;
       z-index: 3;
+      page-break-inside: avoid;
     }
+    .qr-inner { display: inline-block; text-align: center; }
     .qr-container {
       display: inline-block;
-      width: 52px;
-      height: 52px;
+      width: 58px;
+      height: 58px;
       background: #fff;
       padding: 3px;
       border-radius: 3px;
@@ -2259,38 +2324,41 @@ var waMsg = encodeURIComponent(
       line-height: 0;
     }
     .qr-container canvas, .qr-container img { width: 100% !important; height: 100% !important; display: block; }
-    .qr-label { font-size: 7.5px; color: #666; letter-spacing: 1px; margin-top: 2px; font-weight: 600; }
+    .qr-label { font-size: 8px; color: #666; letter-spacing: 1px; margin-top: 3px; font-weight: 600; }
 
+    /* ===== FOOTER ===== */
     .footer {
-      margin-top: 8px;
-      padding-top: 6px;
+      margin-top: 12px;
+      padding-top: 8px;
       border-top: 1px solid #e5e7eb;
-      font-size: 8px;
+      font-size: 9px;
       color: #888;
       text-align: center;
-      line-height: 1.4;
+      line-height: 1.5;
+      page-break-inside: avoid;
     }
     .footer strong { color: #111; }
 
+    /* ===== WATERMARK ===== */
     .watermark-doc {
       position: fixed;
       top: 50%; left: 50%;
       transform: translate(-50%, -50%) rotate(-28deg);
       font-family: 'Arial Black', sans-serif;
-      font-size: 100px;
+      font-size: 110px;
       font-weight: 900;
-      color: rgba(0, 188, 212, 0.06);
-      letter-spacing: 12px;
+      color: rgba(0, 188, 212, 0.05);
+      letter-spacing: 14px;
       white-space: nowrap;
       pointer-events: none;
-      z-index: 1;
+      z-index: 0;
       user-select: none;
     }
 
     @media print {
       body { padding: 0; }
-      .totals, .firma-wrapper, .sello-container, .qr-block { break-inside: avoid; page-break-inside: avoid; }
       .info-block { break-inside: avoid; }
+      .totals, .note, .obs, .verif, .firma-wrapper, .sello-container, .qr-block { break-inside: avoid; page-break-inside: avoid; }
     }
   </style>
 </head>
@@ -2299,30 +2367,26 @@ var waMsg = encodeURIComponent(
 
   <div class="header">
     <div class="brand">
-      <svg viewBox="0 0 100 100" width="38" height="38" style="flex-shrink:0;vertical-align:middle;margin-right:10px;">
-        <path d="M50 4 L88 26 L88 62 Q88 88 50 96 Q12 88 12 62 L12 26 Z"
-              fill="none" stroke="#00bcd4" stroke-width="3.5" stroke-linejoin="round"/>
-        <circle cx="50" cy="50" r="34" fill="none" stroke="#00bcd4" stroke-width="1.5"
-                opacity="0.55" stroke-dasharray="3 4"/>
-        <circle cx="50" cy="50" r="24" fill="none" stroke="#00bcd4" stroke-width="1.5"
-                opacity="0.65" stroke-dasharray="2 3"/>
-        <path d="M50 36 L60 42 L60 54 L50 60 L40 54 L40 42 Z"
-              fill="rgba(0,188,212,0.12)" stroke="#00bcd4" stroke-width="2.5" stroke-linejoin="round"/>
-        <circle cx="50" cy="50" r="4" fill="#00bcd4"/>
-        <line x1="50" y1="4"  x2="50" y2="10" stroke="#00bcd4" stroke-width="2.5" stroke-linecap="round"/>
-        <line x1="88" y1="26" x2="83" y2="30" stroke="#00bcd4" stroke-width="2.5" stroke-linecap="round"/>
-        <line x1="88" y1="62" x2="83" y2="58" stroke="#00bcd4" stroke-width="2.5" stroke-linecap="round"/>
-        <line x1="50" y1="96" x2="50" y2="90" stroke="#00bcd4" stroke-width="2.5" stroke-linecap="round"/>
-        <line x1="12" y1="62" x2="17" y2="58" stroke="#00bcd4" stroke-width="2.5" stroke-linecap="round"/>
-        <line x1="12" y1="26" x2="17" y2="30" stroke="#00bcd4" stroke-width="2.5" stroke-linecap="round"/>
+      <svg viewBox="0 0 100 100" width="42" height="42" style="flex-shrink:0;vertical-align:middle;margin-right:10px;">
+        <path d="M50 4 L88 26 L88 62 Q88 88 50 96 Q12 88 12 62 L12 26 Z" fill="none" stroke="${colorDoc}" stroke-width="3.5" stroke-linejoin="round"/>
+        <circle cx="50" cy="50" r="34" fill="none" stroke="${colorDoc}" stroke-width="1.5" opacity="0.55" stroke-dasharray="3 4"/>
+        <circle cx="50" cy="50" r="24" fill="none" stroke="${colorDoc}" stroke-width="1.5" opacity="0.65" stroke-dasharray="2 3"/>
+        <path d="M50 36 L60 42 L60 54 L50 60 L40 54 L40 42 Z" fill="${colorDoc}20" stroke="${colorDoc}" stroke-width="2.5" stroke-linejoin="round"/>
+        <circle cx="50" cy="50" r="4" fill="${colorDoc}"/>
+        <line x1="50" y1="4"  x2="50" y2="10" stroke="${colorDoc}" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="88" y1="26" x2="83" y2="30" stroke="${colorDoc}" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="88" y1="62" x2="83" y2="58" stroke="${colorDoc}" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="50" y1="96" x2="50" y2="90" stroke="${colorDoc}" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="12" y1="62" x2="17" y2="58" stroke="${colorDoc}" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="12" y1="26" x2="17" y2="30" stroke="${colorDoc}" stroke-width="2.5" stroke-linecap="round"/>
       </svg>
       <span style="display:inline-block;vertical-align:middle;">
         ${prov.nombre || 'JCDURANCASADO'}
-        <small style="display:block;font-size:8px;font-weight:400;color:#666;letter-spacing:1.2px;margin-top:1px;">REDES · CIBERSEGURIDAD · SOPORTE TÉCNICO</small>
+        <small style="display:block;font-size:8.5px;font-weight:400;color:#666;letter-spacing:1.4px;margin-top:2px;">REDES · CIBERSEGURIDAD · SOPORTE TÉCNICO</small>
       </span>
     </div>
     <div class="meta">
-      <div><strong>${numDoc}</strong></div>
+      <strong>${numDoc}</strong>
       <div>${date}</div>
     </div>
   </div>
@@ -2348,7 +2412,7 @@ var waMsg = encodeURIComponent(
       <div class="info-block__title">INFORMACIÓN DEL DOCUMENTO</div>
       <div class="info-block__grid">
         <div class="ii"><span>Fecha de emisión</span><strong>${rep.fechaEmision}</strong></div>
-        <div class="ii"><span>${isFactura ? 'Estado' : 'Válida hasta'}</span><strong>${isFactura ? (esPagada ? '✓ PAGADA' : '✗ NO PAGADA') : rep.fechaVencimiento + ' (' + rep.diasValidez + ' días)'}</strong></div>
+        <div class="ii"><span>${isFactura ? 'Estado' : 'Válida hasta'}</span><strong style="color:${isFactura ? colorDoc : '#111'};">${isFactura ? (esPagada ? '✓ PAGADA' : '✗ NO PAGADA') : rep.fechaVencimiento + ' (' + rep.diasValidez + ' días)'}</strong></div>
       </div>
     </div>
   ` : ''}
@@ -2361,7 +2425,7 @@ var waMsg = encodeURIComponent(
         <th>${isReparacion ? 'Monto (DOP)' : 'Monto (USD)'}</th>
       </tr>
     </thead>
-    <tbody>${rows || '<tr><td colspan="2" style="text-align:center;color:#888;padding:12px;">Sin elementos seleccionados</td></tr>'}</tbody>
+    <tbody>${rows || '<tr><td colspan="2" style="text-align:center;color:#888;padding:14px;">Sin elementos seleccionados</td></tr>'}</tbody>
   </table>
 
   <div class="totals">
@@ -2371,7 +2435,7 @@ var waMsg = encodeURIComponent(
     ${isReparacion ? '<div class="sub">Pesos dominicanos (DOP)</div>' : ''}
   </div>
 
-  ${rep && rep.descripcion ? '<div class="obs"><strong>Observaciones:</strong> ' + rep.descripcion + '</div>' : ''}
+  <div class="obs"><strong>Observaciones:</strong> ${observacionesTexto}</div>
 
   <div class="note">${notaTexto}</div>
 
@@ -2398,8 +2462,10 @@ var waMsg = encodeURIComponent(
   </div>
 
   <div class="qr-block">
-    <div class="qr-container" id="qrContainer"></div>
-    <div class="qr-label">VERIFICA EN: jcdurancasado.github.io/inf</div>
+    <div class="qr-inner">
+      <div class="qr-container" id="qrContainer"></div>
+      <div class="qr-label">VERIFICA EN: jcdurancasado.github.io/inf/verificar.html</div>
+    </div>
   </div>
 
   <div class="footer">
@@ -2416,9 +2482,9 @@ var waMsg = encodeURIComponent(
         if (typeof QRCode !== 'undefined') {
           cont.innerHTML = '';
           new QRCode(cont, {
-            text: 'https://jcdurancasado.github.io/inf/',
-            width: 46,
-            height: 46,
+            text: 'https://jcdurancasado.github.io/inf/verificar.html',
+            width: 52,
+            height: 52,
             colorDark: '#0a0a0f',
             colorLight: '#ffffff',
             correctLevel: QRCode.CorrectLevel.M

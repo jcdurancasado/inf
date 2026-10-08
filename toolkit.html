@@ -5,10 +5,9 @@
   <script>
     (function() {
       try {
-        // 1. Tema
+        // 1. Tema — siempre dark por defecto, solo respeta si el usuario lo cambió manualmente
         var saved = localStorage.getItem('jcdc_theme');
-        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        var theme = saved || (prefersDark ? 'dark' : 'light');
+        var theme = saved || 'dark';
         document.documentElement.setAttribute('data-theme', theme);
 
         // 2. Boot ya visto en esta sesión → marcar html

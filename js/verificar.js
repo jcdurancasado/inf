@@ -699,7 +699,7 @@
       '      if (cont && !cont.querySelector("canvas, img")) generarQR();' +
       '    }, 300);' +
       '    if (AUTO_PRINT) {' +
-      '      setTimeout(function () { try { window.focus(); window.print(); } catch (e) {} }, 2200);' +
+      '      setTimeout(function () { try { window.focus(); window.print(); } catch (e) {} }, 2800);' +
       '    }' +
       '  });' +
       '<\\/script>';
@@ -709,29 +709,33 @@
       downloadScript = '<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\\/script>' +
         '<script>' +
         '  function descargarAuto() {' +
-        '    if (typeof window.html2pdf === "undefined") { setTimeout(descargarAuto, 250); return; }' +
+        '    if (typeof window.html2pdf === "undefined") { setTimeout(descargarAuto, 300); return; }' +
         '    try {' +
-        '      var el = document.querySelector(".firma-wrapper") && document.body ? document.body : null;' +
-        '      if (!el) return;' +
         '      window.html2pdf().set({' +
-        '        margin: 0,' +
+        '        margin: [8, 8, 8, 8],' +
         '        filename: "' + (tituloDoc === "FACTURA" ? "FACTURA" : "COTIZACION") + '-' + numDoc + '.pdf",' +
         '        image: { type: "jpeg", quality: 0.98 },' +
-        '        html2canvas: { scale: 2, useCORS: true, scrollY: 0, backgroundColor: "#ffffff", windowWidth: 820 },' +
+        '        html2canvas: { scale: 2, useCORS: true, scrollY: 0, backgroundColor: "#ffffff", windowWidth: 900 },' +
         '        jsPDF: { unit: "mm", format: "letter", orientation: "portrait" },' +
-        '        pagebreak: { mode: ["css", "legacy"] }' +
+        '        pagebreak: { mode: ["css", "legacy"], avoid: [".header", ".info-block", ".totals", ".obs", ".note", ".verif", ".firma-wrapper", ".qr-block", ".footer"] }' +
         '      }).from(document.body).save().then(function () {' +
-        '        setTimeout(function () { try { window.close(); } catch (e) {} }, 800);' +
+        '        setTimeout(function () { try { window.close(); } catch (e) {} }, 1200);' +
+        '      }).catch(function (err) {' +
+        '        console.error("[JCDC Download]", err);' +
+        '        try { window.print(); } catch (e) {}' +
         '      });' +
-        '    } catch (e) { console.error("[JCDC Download]", e); }' +
+        '    } catch (e) {' +
+        '      console.error("[JCDC Download]", e);' +
+        '      try { window.print(); } catch (err) {}' +
+        '    }' +
         '  }' +
         '  window.addEventListener("load", function () {' +
         '    generarQR();' +
         '    setTimeout(function () {' +
         '      var cont = document.getElementById("qrContainer");' +
         '      if (cont && !cont.querySelector("canvas, img")) generarQR();' +
-        '    }, 300);' +
-        '    setTimeout(descargarAuto, 1800);' +
+        '    }, 400);' +
+        '    setTimeout(descargarAuto, 2500);' +
         '  });' +
         '<\\/script>';
     }
@@ -741,18 +745,19 @@
     return html;
   }
 
-  // Abre el documento en pestaña nueva (view / print / download)
+  // Abre el documento en pestaña nueva (view / print / download) usando blob URL
   function abrirDocPestana(record, mode) {
     mode = mode || 'view';
     var html = generarDocHTML(record, mode);
-    var win = window.open('', '_blank');
+    var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var win = window.open(url, '_blank');
     if (!win) {
       if (typeof Toast !== 'undefined') Toast.show('Permite las ventanas emergentes', 'error', 2500);
+      URL.revokeObjectURL(url);
       return;
     }
-    win.document.open();
-    win.document.write(html);
-    win.document.close();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 120000);
   }
 
   // Descarga el documento (abre pestaña con auto-download)

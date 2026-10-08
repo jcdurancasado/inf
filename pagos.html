@@ -15,21 +15,25 @@
     })();
   </script>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
   <meta name="robots" content="noindex, nofollow" />
   <meta name="theme-color" content="#00f0ff" />
-  <title>Estadísticas del sitio — JCDC</title>
+  <title>JCDC - Pagos</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Rajdhani:wght@400;500;600&family=Share+Tech+Mono&display=swap" media="print" onload="this.media='all'" />
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Rajdhani:wght@400;500;600&family=Share+Tech+Mono&display=swap" />
+  </noscript>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-  <!-- Leaflet (mapa interactivo) -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
   <link rel="icon" type="image/png" href="img/foto.png" />
+  <link rel="apple-touch-icon" href="img/icons/icon-192.png" />
+  <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="css/style.css" />
+
+  <script data-goatcounter="https://jcdurancasado.goatcounter.com/count"
+          async src="//gc.zgo.at/count.js"></script>
 </head>
 
 <body>
@@ -44,7 +48,17 @@
   <div class="vignette" aria-hidden="true"></div>
   <div class="cyber-grid" aria-hidden="true"></div>
   <canvas id="particles" class="particles" aria-hidden="true"></canvas>
+
   <div class="toast-container" aria-live="polite"></div>
+
+  <div class="boot-sequence" id="boot-sequence">
+    <div class="boot-content">
+      <div class="boot-logo"><span class="boot-text">JCDURANCASADO · NETCORE</span></div>
+      <div class="boot-lines" id="boot-lines"></div>
+      <div class="boot-progress"><div class="boot-bar" id="boot-bar"></div></div>
+      <div class="boot-status" id="boot-status">Inicializando NETCORE...</div>
+    </div>
+  </div>
 
   <!-- HEADER -->
   <header class="header" data-header>
@@ -107,22 +121,49 @@
     </div>
   </header>
 
-  <main class="stats-page">
-    <div class="container">
-
-      <header class="stats-page__header">
-        <span class="section__eyebrow">[ ESTADÍSTICAS DEL SITIO ]</span>
-        <h1 class="stats-page__title">Tráfico en tiempo real</h1>
-        <p class="stats-page__lead">Datos agregados y anónimos. Sin cookies, sin rastreo personal.</p>
-      </header>
-
-      <div id="statsContent">
-        <div class="stats-loading">
-          <i class="fa-solid fa-circle-notch fa-spin"></i> Cargando estadísticas…
-        </div>
+  <main>
+    <section class="section section--cyber pagos-section" aria-labelledby="pagos-title">
+      <div class="cyber-section__bg" aria-hidden="true">
+        <div class="cyber-lines"></div>
+        <div class="cyber-hexagons"></div>
       </div>
 
-    </div>
+      <div class="container">
+
+        <div class="pagos-hero" data-reveal>
+          <span class="section__eyebrow">[ MÉTODOS DE PAGO ]</span>
+          <h1 id="pagos-title" class="pagos-hero__title">
+            PAGOS<br>
+            <span class="text-gradient">DISPONIBLES</span>
+          </h1>
+          <p class="pagos-hero__subtitle">
+            Accede con tu código de autorización o clave de administrador para ver los datos de pago.
+          </p>
+        </div>
+
+        <!-- Estado de sesión -->
+        <div id="pagosStatus" class="pagos-status" hidden>
+          <span id="pagosStatusText">—</span>
+          <span id="pagosStatusTimer"></span>
+        </div>
+
+        <!-- Contenido dinámico -->
+        <div id="pagosContent" class="pagos-content"></div>
+
+        <!-- Botones finales -->
+        <div id="pagosAcciones" class="pagos-acciones" hidden>
+          <button type="button" class="cyber-btn cyber-btn--primary cyber-btn--large" id="pagosPdfBtn">
+            <span>DESCARGAR PDF</span>
+            <i class="fa-solid fa-file-pdf"></i>
+          </button>
+          <button type="button" class="cyber-btn cyber-btn--secondary cyber-btn--large" id="pagosPrintBtn">
+            <span>IMPRIMIR</span>
+            <i class="fa-solid fa-print"></i>
+          </button>
+        </div>
+
+      </div>
+    </section>
   </main>
 
   <!-- FOOTER -->
@@ -185,7 +226,7 @@
             <h4>[ CONTACTO ]</h4>
             <ul>
               <li><a href="mailto:jcdurancasado@gmail.com">Email</a></li>
-              <li><a href="https://wa.me/18090000000" target="_blank" rel="me noopener">WhatsApp</a></li>
+              <li><a href="https://wa.me/18294213163" target="_blank" rel="me noopener">WhatsApp</a></li>
               <li><a href="https://t.me/jcdurancasado" target="_blank" rel="me noopener">Telegram</a></li>
             </ul>
           </div>
@@ -200,19 +241,13 @@
 
   <div class="floating-stack">
     <button class="scroll-top" id="scrollTop" aria-label="Subir al inicio"><span class="scroll-shock" aria-hidden="true"></span><span class="scroll-shock-2" aria-hidden="true"></span><i class="fa-solid fa-arrow-up"></i></button>
-    <a href="https://calendly.com/jcdurancasado" target="_blank" rel="noopener" class="call-float" id="callFloat" aria-label="Agendar llamada"><i class="fa-solid fa-calendar-check"></i><span class="call-check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="call-float__tooltip">Agendar llamada</span></a>
     <button class="notif-btn" id="notifBtn" aria-label="Activar notificaciones" hidden><span class="notif-waves notif-waves--left" aria-hidden="true"><span class="notif-wave"></span><span class="notif-wave"></span><span class="notif-wave"></span></span><span class="notif-waves notif-waves--right" aria-hidden="true"><span class="notif-wave"></span><span class="notif-wave"></span><span class="notif-wave"></span></span><i class="fa-solid fa-bell"></i><span class="notif-btn__tooltip">Activar notificaciones</span></button>
-    <a href="index.html#payments" class="pay-float" aria-label="Ver métodos de pago"><span class="pay-scan" aria-hidden="true"></span><i class="fa-solid fa-credit-card"></i><span class="float-tooltip">Ver pagos</span></a>
     <button class="sound-toggle" id="soundToggle" aria-label="Sonidos" aria-pressed="false"><i class="fa-solid fa-volume-xmark"></i><span class="float-tooltip" id="soundTooltip">Activar sonidos</span></button>
     <button class="theme-toggle-float" id="themeToggle" aria-label="Cambiar tema"><i class="fa-solid fa-circle-half-stroke"></i><span class="float-tooltip">Cambiar tema</span></button>
     <button class="install-btn" id="installBtn" aria-label="Instalar aplicación" hidden><i class="fa-solid fa-download"></i><span class="install-btn__tooltip">Instalar app</span></button>
   </div>
 
-  <!-- Leaflet -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-  <script src="js/stats-config.js"></script>
-  <script src="js/estadisticas.js"></script>
   <script src="js/main.js"></script>
+  <script src="js/pagos.js"></script>
 </body>
 </html>

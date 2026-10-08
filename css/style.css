@@ -11759,3 +11759,241 @@ body:has(.pwd-overlay) .cursor-ring {
   0%, 100% { box-shadow: 0 0 0 0 rgba(255, 51, 51, 0.5); }
   50%      { box-shadow: 0 0 0 8px rgba(255, 51, 51, 0); }
 }
+
+/* ============================================
+   PÁGINA DE PAGOS · Estilos
+============================================ */
+.pagos-section {
+  padding-top: calc(var(--header-height) + var(--space-2xl)) !important;
+  padding-bottom: var(--space-3xl);
+}
+
+.pagos-hero {
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+}
+.pagos-hero__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 4.5vw, 3rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: var(--space-md) 0;
+}
+.pagos-hero__subtitle {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  max-width: 620px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+.pagos-status {
+  max-width: 700px;
+  margin: 0 auto var(--space-xl);
+  padding: var(--space-md) var(--space-lg);
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border-medium);
+  background: var(--bg-panel);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+.pagos-status--admin {
+  border-color: var(--neon-green);
+  color: var(--neon-green);
+  background: rgba(0,255,136,0.06);
+}
+.pagos-status--cliente {
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  background: rgba(0,240,255,0.06);
+}
+.pagos-status--locked {
+  border-color: var(--neon-red);
+  color: var(--neon-red);
+  background: rgba(255,51,51,0.06);
+}
+.pagos-status--info {
+  border-color: var(--border-medium);
+  color: var(--text-secondary);
+}
+
+.pagos-bloque {
+  margin-bottom: var(--space-2xl);
+}
+.pagos-bloque__titulo {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--neon-cyan);
+  letter-spacing: 0.1em;
+  text-align: center;
+  padding-bottom: var(--space-sm);
+  margin-bottom: var(--space-lg);
+  border-bottom: 1.5px solid var(--border-medium);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.pagos-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-lg);
+}
+
+.pago-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  background: var(--bg-panel);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.pago-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--accent, var(--neon-cyan));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+.pago-card:hover {
+  border-color: var(--accent, var(--neon-cyan));
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.3),
+              0 0 25px color-mix(in srgb, var(--accent, var(--neon-cyan)) 30%, transparent);
+}
+.pago-card:hover::before { transform: scaleX(1); }
+
+.pago-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.pago-card__nombre {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--accent, var(--neon-cyan));
+  letter-spacing: 0.02em;
+}
+
+.pago-card__datos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+.pago-card__row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: 0.35rem 0;
+  border-bottom: 1px dashed var(--border-subtle);
+  font-size: 0.82rem;
+}
+.pago-card__row:last-child { border-bottom: none; }
+.pago-card__row span {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.pago-card__row strong {
+  color: var(--text-primary);
+  text-align: right;
+  word-break: break-word;
+  font-weight: 600;
+}
+
+.pago-card__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.2rem;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent, var(--neon-cyan));
+  border: 1.5px solid var(--accent, var(--neon-cyan));
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+  text-decoration: none;
+}
+.pago-card__btn:hover {
+  background: var(--accent, var(--neon-cyan));
+  color: var(--bg-primary);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--accent, var(--neon-cyan)) 45%, transparent);
+}
+.pago-card__btn i { transition: transform 0.3s ease; }
+.pago-card__btn:hover i { transform: translate(2px, -2px); }
+
+/* Colores por marca */
+.pago-card[data-pay="banreservas"]   { --accent: #4A8BD1; }
+.pago-card[data-pay="bhd"]           { --accent: #00A651; }
+.pago-card[data-pay="popular"]       { --accent: #0082CA; }
+.pago-card[data-pay="mio"]           { --accent: #FF6B00; }
+.pago-card[data-pay="qik"]           { --accent: #61B3E5; }
+.pago-card[data-pay="asopopular"]    { --accent: #205BA8; }
+.pago-card[data-pay="paypal"]        { --accent: #0070BA; }
+.pago-card[data-pay="airtm"]         { --accent: #00C389; }
+.pago-card[data-pay="payoneer"]      { --accent: #FF4800; }
+.pago-card[data-pay="leadbank"]      { --accent: #1A73E8; }
+.pago-card[data-pay="bankingcircle"] { --accent: #257189; }
+
+.pagos-acciones {
+  display: flex;
+  gap: var(--space-md);
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: var(--space-2xl);
+}
+
+/* Modo claro */
+[data-theme="light"] .pago-card { background: #ffffff; }
+[data-theme="light"] .pago-card__row strong { color: #0f172a; }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .pagos-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .pagos-grid { grid-template-columns: 1fr; }
+  .pago-card { padding: var(--space-md); }
+  .pagos-acciones { flex-direction: column; }
+  .pagos-acciones .cyber-btn { width: 100%; justify-content: center; }
+}
+
+/* Print */
+@media print {
+  .header, .footer, .floating-stack, .scroll-progress, .cursor-dot, .cursor-ring,
+  .scanlines, .vignette, .cyber-grid, .particles, .toast-container, .pagos-acciones,
+  .pagos-hero__subtitle, .pagos-status { display: none !important; }
+  body, .pagos-section, .pago-card { background: #fff !important; color: #000 !important; }
+  .pagos-section { padding-top: 0 !important; }
+  .pago-card { border: 1px solid #ccc !important; page-break-inside: avoid; }
+  .pago-card__nombre, .pago-card__row span, .pago-card__row strong { color: #000 !important; }
+  .pago-card__btn { display: none !important; }
+}

@@ -2101,6 +2101,9 @@ var waMsg = encodeURIComponent(
     const selloHTML = '<div class="sello-container">' +
       this.generarSello(date, numDoc, isFactura ? 'factura' : 'cotizacion', estado) +
       '</div>';
+    const firmaHTML = (window.JCDC_FIRMA && window.JCDC_FIRMA.length > 50)
+      ? '<img src="' + window.JCDC_FIRMA + '" alt="Firma" class="firma-img">'
+      : '';
 
     const html = `<!DOCTYPE html>
 <html lang="es">
@@ -2285,7 +2288,8 @@ var waMsg = encodeURIComponent(
       gap: 60px;
     }
     .firma-item { text-align: center; }
-    .firma-line { border-bottom: 1.3px solid #111; height: 42px; width: 70%; margin: 0 auto 8px; }
+    .firma-line { border-bottom: 1.3px solid #111; height: 42px; width: 70%; margin: 0 auto 8px; position: relative; }
+    .firma-img { position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); max-width: 270px; max-height: 75px; object-fit: contain; pointer-events: none; mix-blend-mode: multiply; }
     .firma-label { font-size: 9px; color: #666; letter-spacing: 1.2px; text-transform: uppercase; font-weight: 700; }
     .firma-name { font-size: 12px; font-weight: 700; color: #111; margin-top: 2px; }
     .firma-info { font-size: 10px; color: #777; margin-top: 2px; }
@@ -2445,7 +2449,7 @@ var waMsg = encodeURIComponent(
     ${selloHTML}
     <div class="firma-block">
       <div class="firma-item">
-        <div class="firma-line"></div>
+        <div class="firma-line firma-line--con-firma">${firmaHTML}</div>
         <div class="firma-label">Entregado por</div>
         <div class="firma-name">${prov.nombre || '—'}</div>
         <div class="firma-info">${prov.profesion || ''}</div>

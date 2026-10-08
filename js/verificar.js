@@ -582,6 +582,9 @@
 
     var watermarkHTML = (!isFactura && docCfg.mostrarWatermark !== false) ? '<div class="watermark-doc">COTIZACIÓN</div>' : '';
     var selloHTML = '<div class="sello-container">' + generarSello(date, numDoc, isFactura ? 'factura' : 'cotizacion', record.estado) + '</div>';
+    var firmaHTML = (window.JCDC_FIRMA && window.JCDC_FIRMA.length > 50)
+      ? '<img src="' + window.JCDC_FIRMA + '" alt="Firma" class="firma-img">'
+      : '';
     var qrDataUrl = getQrDataUrl();
     var qrHTML = qrDataUrl ? '<div class="qr-block"><div class="qr-inner"><div class="qr-container"><img src="' + qrDataUrl + '" alt="QR" style="width:100%;height:100%;display:block;"></div><div class="qr-label">VERIFICA EN: jcdurancasado.github.io/inf/verificar.html</div></div></div>' : '';
 
@@ -622,7 +625,8 @@
       '.verif strong{color:#0c4a6e;font-weight:700;}' +
       '.firma-wrapper{position:relative;margin-top:26px;padding-top:6px;page-break-inside:avoid;break-inside:avoid;}' +
       '.firma-block{display:grid;grid-template-columns:1fr 1fr;gap:60px;}.firma-item{text-align:center;}' +
-      '.firma-line{border-bottom:1.3px solid #111;height:42px;width:70%;margin:0 auto 8px;}' +
+      '.firma-line{border-bottom:1.3px solid #111;height:42px;width:70%;margin:0 auto 8px;position:relative;}' +
+      '.firma-img{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);max-width:270px;max-height:75px;object-fit:contain;pointer-events:none;mix-blend-mode:multiply;}' +
       '.firma-label{font-size:9px;color:#666;letter-spacing:1.2px;text-transform:uppercase;font-weight:700;}' +
       '.firma-name{font-size:12px;font-weight:700;color:#111;margin-top:2px;}.firma-info{font-size:10px;color:#777;margin-top:2px;}' +
       '.sello-container{position:absolute;top:55%;left:50%;transform:translate(-50%,-50%) rotate(-14deg);width:175px;height:175px;pointer-events:none;z-index:5;opacity:0.78;}' +
@@ -666,7 +670,7 @@
       (record.codigoVC ? '<div class="verif">🔒 VERIFICACIÓN: <strong>' + record.codigoVC + '</strong> · ' + date + ' · Ref: ' + numDoc + '</div>' : '') +
       '<div class="firma-wrapper">' + selloHTML +
       '<div class="firma-block">' +
-      '<div class="firma-item"><div class="firma-line"></div><div class="firma-label">Entregado por</div><div class="firma-name">' + (prov.nombre || '—') + '</div><div class="firma-info">' + (prov.profesion || '') + '</div><div class="firma-info">Cédula: ' + (prov.cedula || '—') + '</div></div>' +
+      '<div class="firma-item"><div class="firma-line firma-line--con-firma">' + firmaHTML + '</div><div class="firma-label">Entregado por</div><div class="firma-name">' + (prov.nombre || '—') + '</div><div class="firma-info">' + (prov.profesion || '') + '</div><div class="firma-info">Cédula: ' + (prov.cedula || '—') + '</div></div>' +
       '<div class="firma-item"><div class="firma-line"></div><div class="firma-label">' + (isFactura ? 'Recibido por' : 'Aprobado por') + '</div><div class="firma-name">' + (cli.nombre || 'Cliente') + '</div><div class="firma-info">' + (cli.cedula ? 'Cédula: ' + cli.cedula : '') + '</div><div class="firma-info">Fecha: _______________</div></div>' +
       '</div></div>' + qrHTML +
       '<div class="footer"><strong>' + (prov.nombre || 'JCDURANCASADO') + '</strong> · Redes · Ciberseguridad · Soporte Técnico<br>' + (prov.email || '') + ' · ' + (prov.telefono || '') + ' · ' + (prov.web || '') + '</div>';

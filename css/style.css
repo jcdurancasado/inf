@@ -12299,3 +12299,80 @@ body.jcdc-modal-open a,
 body.jcdc-modal-open input {
   cursor: none !important;
 }
+
+
+
+
+
+/* ============================================
+   BOTÓN FLOTANTE · CARGAR FIRMA (ADMIN)
+============================================ */
+.jcdc-firma-btn {
+  position: fixed;
+  bottom: 30px;
+  left: 30px;
+  z-index: 9998;
+  display: none;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1.25rem;
+  background: var(--bg-panel);
+  border: 1.5px solid var(--neon-purple);
+  border-radius: 100px;
+  color: var(--neon-purple);
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 0 20px rgba(184, 41, 221, 0.35);
+  text-transform: uppercase;
+}
+.jcdc-firma-btn i { font-size: 0.95rem; }
+.jcdc-firma-btn:hover {
+  background: var(--neon-purple);
+  color: var(--bg-primary);
+  box-shadow: 0 0 30px rgba(184, 41, 221, 0.65);
+  transform: translateY(-2px);
+}
+.jcdc-firma-btn--ok {
+  border-color: var(--neon-green);
+  color: var(--neon-green);
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.35);
+}
+.jcdc-firma-btn--ok:hover {
+  background: var(--neon-green);
+  color: var(--bg-primary);
+  box-shadow: 0 0 30px rgba(0, 255, 136, 0.65);
+}
+
+[data-theme="light"] .jcdc-firma-btn {
+  background: #ffffff;
+  border-color: #7c3aed;
+  color: #7c3aed;
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.25);
+}
+[data-theme="light"] .jcdc-firma-btn:hover {
+  background: #7c3aed;
+  color: #ffffff;
+}
+[data-theme="light"] .jcdc-firma-btn--ok {
+  border-color: #059669;
+  color: #059669;
+}
+[data-theme="light"] .jcdc-firma-btn--ok:hover {
+  background: #059669;
+  color: #ffffff;
+}
+
+@media (max-width: 480px) {
+  .jcdc-firma-btn {
+    bottom: 20px;
+    left: 14px;
+    padding: 0.6rem 1rem;
+    font-size: 0.68rem;
+  }
+  .jcdc-firma-btn span { display: none; }
+  .jcdc-firma-btn i { font-size: 1.1rem; }
+}

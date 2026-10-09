@@ -286,6 +286,10 @@
           if (typeof Toast !== 'undefined') {
             Toast.show(d.admin ? 'Modo administrador activado' : 'Acceso concedido por 20 minutos', 'success', 2000);
           }
+        } else if (r.status === 429) {
+          // Rate limit alcanzado
+          error.textContent = d.error || '⏳ Demasiados intentos. Espera un minuto.';
+          error.style.color = '#ffaa00';
         } else {
           error.textContent = d.error || '❌ Código incorrecto';
           error.style.color = '#ff3333';

@@ -167,12 +167,14 @@
     const toggleEye = overlay.querySelector('#pagosOtpToggle');
 
     let intervalTimer = null;
+    let rateLimitTimer = null;
     let expiraEnModal = null;
 
     setTimeout(() => input.focus(), 80);
 
     function cerrar() {
       if (intervalTimer) clearInterval(intervalTimer);
+      if (rateLimitTimer) clearInterval(rateLimitTimer);
       document.body.classList.remove('jcdc-modal-open');
       overlay.classList.add('pwd-overlay--closing');
       setTimeout(() => overlay.remove(), 220);
@@ -191,6 +193,25 @@
       const s = String(r % 60).padStart(2, '0');
       timerEl.style.color = r < 180 ? '#ffaa00' : '#00f0ff';
       timerEl.textContent = '⏱ Tiempo restante: ' + m + ':' + s;
+    }
+
+    function iniciarCountdownRateLimit(segundos) {
+      if (rateLimitTimer) clearInterval(rateLimitTimer);
+      let restante = segundos;
+      error.style.color = '#ffaa00';
+      error.textContent = '⏳ Demasiados intentos. Espera ' + restante + 's antes de volver a intentarlo.';
+      rateLimitTimer = setInterval(function () {
+        restante--;
+        if (restante <= 0) {
+          clearInterval(rateLimitTimer);
+          rateLimitTimer = null;
+          error.textContent = '';
+          error.style.color = '#ff3333';
+          if (typeof Toast !== 'undefined') Toast.show('Ya puedes volver a intentarlo', 'info', 2000);
+          return;
+        }
+        error.textContent = '⏳ Demasiados intentos. Espera ' + restante + 's antes de volver a intentarlo.';
+      }, 1000);
     }
 
     if (toggleEye) {
@@ -287,9 +308,9 @@
             Toast.show(d.admin ? 'Modo administrador activado' : 'Acceso concedido por 20 minutos', 'success', 2000);
           }
         } else if (r.status === 429) {
-          // Rate limit alcanzado
-          error.textContent = d.error || '⏳ Demasiados intentos. Espera un minuto.';
-          error.style.color = '#ffaa00';
+          // Rate limit alcanzado → countdown en vivo
+          const retryAfter = parseInt(d.retryAfter, 10) || 60;
+          iniciarCountdownRateLimit(retryAfter);
         } else {
           error.textContent = d.error || '❌ Código incorrecto';
           error.style.color = '#ff3333';

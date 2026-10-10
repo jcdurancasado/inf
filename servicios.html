@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('jcdc_theme');
+        var theme = saved || 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+        if (sessionStorage.getItem('jcdc_booted') === '1') {
+          document.documentElement.classList.add('jcdc-booted');
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="description" content="Catálogo completo de servicios profesionales: Redes, Ciberseguridad, Formación, Cloud, CCTV y Reparación Técnica." />
+  <link rel="canonical" href="https://jcdurancasado.github.io/inf/servicios.html" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="theme-color" content="#00f0ff" />
+  <title>JCDC - Servicios Profesionales</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Rajdhani:wght@400;500;600&family=Share+Tech+Mono&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Rajdhani:wght@400;500;600&family=Share+Tech+Mono&display=swap" media="print" onload="this.media='all'" />
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Rajdhani:wght@400;500;600&family=Share+Tech+Mono&display=swap" />
+  </noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="icon" type="image/png" href="img/foto.png" />
+  <link rel="apple-touch-icon" href="img/icons/icon-192.png" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="css/style.css" />
+
+  <script data-goatcounter="https://jcdurancasado.goatcounter.com/count"
+          async src="//gc.zgo.at/count.js"></script>
+
+  <style>
+    .serv-hero { text-align: center; margin-bottom: var(--space-2xl); padding-top: var(--space-md); }
+    .serv-hero__title { font-family: var(--font-display); font-size: clamp(1.8rem, 4.5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin: var(--space-md) 0; }
+    .serv-hero__subtitle { font-size: 1.05rem; color: var(--text-secondary); max-width: 640px; margin: 0 auto var(--space-lg); line-height: 1.7; }
+    .serv-hero__stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-md); max-width: 820px; margin: 0 auto; padding: var(--space-lg) 0; border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); align-items: center; }
+    .serv-hero__stat { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem; min-height: 60px; }
+    .serv-hero__stat strong { font-family: var(--font-display); font-size: clamp(1.2rem, 2.4vw, 1.7rem); font-weight: 800; background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: -0.02em; white-space: nowrap; line-height: 1; text-align: center; }
+    .serv-hero__stat span { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.12em; color: var(--text-muted); text-transform: uppercase; white-space: nowrap; text-align: center; }
+    @media (max-width: 640px) {
+      .serv-hero__stats { grid-template-columns: repeat(2, 1fr); gap: var(--space-md); max-width: 420px; }
+    }
+
+    .serv-controls { display: flex; flex-direction: column; gap: var(--space-md); max-width: 900px; margin: 0 auto var(--space-xl); }
+    .serv-search { position: relative; display: flex; align-items: center; }
+    .serv-search i { position: absolute; left: 1rem; color: var(--text-muted); pointer-events: none; }
+    .serv-search input { width: 100%; padding: 0.9rem 3rem 0.9rem 2.75rem; background: var(--bg-panel); border: 1.5px solid var(--border-subtle); border-radius: 100px; color: var(--text-primary); font-family: var(--font-mono); font-size: 0.9rem; outline: none; transition: var(--transition); }
+    .serv-search input:focus { border-color: var(--neon-cyan); box-shadow: 0 0 0 3px rgba(0,240,255,0.1); }
+    .serv-search__clear { position: absolute; right: 0.75rem; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: var(--text-muted); cursor: pointer; border-radius: 50%; transition: var(--transition); }
+    .serv-search__clear:hover { background: rgba(255,0,110,0.1); color: var(--neon-pink); }
+    .serv-filters { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; }
+    .serv-filter { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.55rem 1.1rem; background: var(--bg-panel); border: 1px solid var(--border-subtle); border-radius: 100px; font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; color: var(--text-secondary); cursor: pointer; transition: var(--transition); }
+    .serv-filter i { font-size: 0.75rem; opacity: 0.8; }
+    .serv-filter:hover { border-color: var(--neon-cyan); color: var(--neon-cyan); transform: translateY(-2px); }
+    .serv-filter.active { background: rgba(0,240,255,0.1); border-color: var(--neon-cyan); color: var(--neon-cyan); box-shadow: 0 0 15px rgba(0,240,255,0.3); }
+
+    .serv-grid { display: grid; gap: var(--space-lg); max-width: 1100px; margin: 0 auto; }
+    .serv-card { display: flex; flex-direction: column; padding: var(--space-xl); background: var(--bg-panel); border: 1.5px solid var(--border-subtle); border-radius: var(--radius-lg); transition: var(--transition); position: relative; overflow: hidden; scroll-margin-top: calc(var(--header-height) + 20px); }
+    .serv-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent, var(--neon-cyan)), transparent); transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease; }
+    .serv-card:hover { border-color: var(--accent, var(--neon-cyan)); transform: translateY(-4px); box-shadow: 0 15px 40px rgba(0,0,0,0.3), 0 0 30px color-mix(in srgb, var(--accent, var(--neon-cyan)) 25%, transparent); }
+    .serv-card:hover::before { transform: scaleX(1); }
+    .serv-card[data-hidden="true"] { display: none; }
+
+    .serv-card--red        { --accent: var(--neon-cyan); }
+    .serv-card--audit      { --accent: var(--neon-purple); }
+    .serv-card--training   { --accent: var(--neon-green); }
+    .serv-card--support    { --accent: var(--neon-yellow); }
+    .serv-card--reparacion { --accent: var(--neon-orange); }
+    .serv-card--wifi       { --accent: #4a8bff; }
+    .serv-card--firewall   { --accent: #ff4d4d; }
+    .serv-card--cableado   { --accent: #00c389; }
+    .serv-card--vpn        { --accent: #b829dd; }
+    .serv-card--pentest    { --accent: #ff006e; }
+    .serv-card--cloud      { --accent: #00bcd4; }
+    .serv-card--cctv       { --accent: #ff6b00; }
+    .serv-card--mentoria   { --accent: #ffee00; }
+
+    .serv-card__head { display: flex; align-items: flex-start; gap: var(--space-lg); margin-bottom: var(--space-lg); }
+    .serv-card__icon { width: 64px; height: 64px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: color-mix(in srgb, var(--accent, var(--neon-cyan)) 12%, transparent); border: 1.5px solid var(--accent, var(--neon-cyan)); border-radius: var(--radius-md); color: var(--accent, var(--neon-cyan)); font-size: 1.6rem; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .serv-card:hover .serv-card__icon { transform: scale(1.08) rotate(-6deg); box-shadow: 0 0 25px color-mix(in srgb, var(--accent, var(--neon-cyan)) 50%, transparent); }
+    .serv-card__heading { flex: 1; min-width: 0; }
+    .serv-card__tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.2em; padding: 0.3rem 0.75rem; border-radius: 100px; border: 1px solid var(--accent, var(--neon-cyan)); color: var(--accent, var(--neon-cyan)); background: color-mix(in srgb, var(--accent, var(--neon-cyan)) 8%, transparent); margin-bottom: 0.6rem; }
+    .serv-card__title { font-family: var(--font-display); font-size: 1.25rem; font-weight: 800; color: var(--text-primary); letter-spacing: 0.01em; line-height: 1.2; margin-bottom: 0.4rem; }
+    .serv-card__subtitle { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; }
+
+    .serv-card__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-lg); margin-bottom: var(--space-lg); }
+    @media (max-width: 768px) { .serv-card__grid { grid-template-columns: 1fr; } }
+
+    .serv-block__title { font-family: var(--font-display); font-size: 0.78rem; font-weight: 700; color: var(--accent, var(--neon-cyan)); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.5rem; }
+    .serv-block__title i { font-size: 0.85rem; }
+    .serv-block__list { display: flex; flex-direction: column; gap: 0.4rem; }
+    .serv-block__list li { display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.88rem; color: var(--text-secondary); line-height: 1.5; }
+    .serv-block__list li i { color: var(--accent, var(--neon-cyan)); font-size: 0.75rem; margin-top: 0.35rem; flex-shrink: 0; }
+
+    .serv-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-md); padding: var(--space-md) 0; border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); margin-bottom: var(--space-lg); }
+    @media (max-width: 640px) { .serv-meta { grid-template-columns: 1fr 1fr; } }
+    .serv-meta__item { display: flex; flex-direction: column; gap: 0.2rem; }
+    .serv-meta__item span { font-family: var(--font-mono); font-size: 0.62rem; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; }
+    .serv-meta__item strong { font-family: var(--font-display); font-size: 0.88rem; color: var(--text-primary); font-weight: 700; }
+
+    .serv-card__actions { display: flex; gap: var(--space-md); flex-wrap: wrap; }
+    .serv-card__actions .cyber-btn { flex: 1; min-width: 180px; justify-content: center; }
+
+    .serv-empty { text-align: center; padding: var(--space-3xl) var(--space-md); color: var(--text-muted); }
+    .serv-empty i { font-size: 3rem; color: var(--neon-cyan); opacity: 0.4; display: block; margin-bottom: var(--space-md); }
+    .serv-empty p { font-family: var(--font-mono); font-size: 0.9rem; margin-bottom: var(--space-lg); }
+
+    [data-theme="light"] .serv-card { background: #ffffff; }
+    [data-theme="light"] .serv-search input, [data-theme="light"] .serv-filter { background: #ffffff; }
+  </style>
+</head>
+
+<body>
+
+  <div class="scroll-progress" aria-hidden="true"><div class="scroll-progress__bar" id="scrollProgressBar"></div></div>
+  <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+  <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+  <div class="scanlines" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+  <div class="cyber-grid" aria-hidden="true"></div>
+  <canvas id="particles" class="particles" aria-hidden="true"></canvas>
+  <div class="toast-container" aria-live="polite"></div>
+
+  <div class="boot-sequence" id="boot-sequence">
+    <div class="boot-content">
+      <div class="boot-logo"><span class="boot-text">JCDURANCASADO · NETCORE</span></div>
+      <div class="boot-lines" id="boot-lines"></div>
+      <div class="boot-progress"><div class="boot-bar" id="boot-bar"></div></div>
+      <div class="boot-status" id="boot-status">Inicializando NETCORE...</div>
+    </div>
+  </div>
+
+  <header class="header" data-header>
+    <div class="header__scanline"></div>
+    <div class="container header__container">
+      <a href="index.html" class="logo" aria-label="Inicio">
+        <div class="logo__symbol">
+          <svg viewBox="0 0 100 100" class="logo__svg logo__svg--nexus">
+            <path d="M50 4 L88 26 L88 62 Q88 88 50 96 Q12 88 12 62 L12 26 Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-dasharray="240" stroke-dashoffset="240" class="nexus-shield"/>
+            <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.3" stroke-dasharray="3 6" class="nexus-ring nexus-ring--1"/>
+            <circle cx="50" cy="50" r="34" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5" stroke-dasharray="8 4" class="nexus-ring nexus-ring--2"/>
+            <circle cx="50" cy="50" r="26" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.6" stroke-dasharray="2 3" class="nexus-ring nexus-ring--3"/>
+            <path d="M50 50 L50 8 A42 42 0 0 1 85 28 Z" fill="currentColor" opacity="0.09" class="nexus-sweep"/>
+            <path d="M50 38 L60 44 L60 56 L50 62 L40 56 L40 44 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" class="nexus-core"/>
+            <circle cx="50" cy="50" r="4" fill="currentColor" class="nexus-center"/>
+            <circle cx="50" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="1.5" class="nexus-pulse nexus-pulse--1"/>
+            <circle cx="50" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="1.5" class="nexus-pulse nexus-pulse--2"/>
+            <circle cx="50" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="1.5" class="nexus-pulse nexus-pulse--3"/>
+            <line x1="50" y1="50" x2="50" y2="14" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--1"/>
+            <line x1="50" y1="50" x2="81" y2="32" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--2"/>
+            <line x1="50" y1="50" x2="81" y2="68" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--3"/>
+            <line x1="50" y1="50" x2="50" y2="86" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--4"/>
+            <line x1="50" y1="50" x2="19" y2="68" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--5"/>
+            <line x1="50" y1="50" x2="19" y2="32" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--6"/>
+            <circle cx="50" cy="14" r="2.5" fill="currentColor" class="nexus-node nexus-node--1"/>
+            <circle cx="81" cy="32" r="2.5" fill="currentColor" class="nexus-node nexus-node--2"/>
+            <circle cx="81" cy="68" r="2.5" fill="currentColor" class="nexus-node nexus-node--3"/>
+            <circle cx="50" cy="86" r="2.5" fill="currentColor" class="nexus-node nexus-node--4"/>
+            <circle cx="19" cy="68" r="2.5" fill="currentColor" class="nexus-node nexus-node--5"/>
+            <circle cx="19" cy="32" r="2.5" fill="currentColor" class="nexus-node nexus-node--6"/>
+            <line x1="50" y1="4"  x2="50" y2="9"  stroke="currentColor" stroke-width="1.8"/>
+            <line x1="88" y1="26" x2="83" y2="29" stroke="currentColor" stroke-width="1.8"/>
+            <line x1="88" y1="62" x2="83" y2="59" stroke="currentColor" stroke-width="1.8"/>
+            <line x1="50" y1="96" x2="50" y2="91" stroke="currentColor" stroke-width="1.8"/>
+            <line x1="12" y1="62" x2="17" y2="59" stroke="currentColor" stroke-width="1.8"/>
+            <line x1="12" y1="26" x2="17" y2="29" stroke="currentColor" stroke-width="1.8"/>
+          </svg>
+        </div>
+      </a>
+
+      <nav id="nav-menu" class="nav" data-nav aria-label="Navegación principal">
+        <ul class="nav__list">
+          <li><a href="index.html#inicio" class="nav__link">INICIO</a></li>
+          <li><a href="index.html#perfil" class="nav__link">PERFIL</a></li>
+          <li><a href="servicios.html" class="nav__link nav__link--active">SERVICIOS</a></li>
+          <li><a href="index.html#trayectoria" class="nav__link">TRAYECTORIA</a></li>
+          <li><a href="toolkit.html" class="nav__link">TOOLKIT</a></li>
+          <li><a href="netpro.html" class="nav__link">NETPRO</a></li>
+          <li><a href="cursos.html" class="nav__link"><i class="fa-solid fa-graduation-cap"></i>&nbsp;CURSOS</a></li>
+          <li><a href="cotizador.html" class="nav__link nav__link--quote"><i class="fa-solid fa-calculator"></i>&nbsp;COTIZAR</a></li>
+          <li><a href="index.html#contacto" class="nav__link nav__link--cta">CONTACTO</a></li>
+        </ul>
+      </nav>
+
+      <button class="nav-toggle" aria-label="Menú" aria-expanded="false" aria-controls="nav-menu" data-nav-toggle>
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="section section--cyber servicios-section" aria-labelledby="serv-title">
+      <div class="cyber-section__bg" aria-hidden="true">
+        <div class="cyber-lines"></div>
+        <div class="cyber-hexagons"></div>
+      </div>
+
+      <div class="container">
+
+        <div class="serv-hero" data-reveal>
+          <span class="section__eyebrow">[ CATÁLOGO DE SERVICIOS ]</span>
+          <h1 id="serv-title" class="serv-hero__title">
+            SERVICIOS<br>
+            <span class="text-gradient">PROFESIONALES</span>
+          </h1>
+          <p class="serv-hero__subtitle">
+            Catálogo completo de soluciones técnicas. Cada servicio está diseñado para resolver problemas reales de infraestructura, seguridad, formación y soporte.
+          </p>
+          <div class="serv-hero__stats">
+            <div class="serv-hero__stat"><strong>13</strong><span>Servicios</span></div>
+            <div class="serv-hero__stat"><strong>7+</strong><span>Años activo</span></div>
+            <div class="serv-hero__stat"><strong>RD+Global</strong><span>Cobertura</span></div>
+            <div class="serv-hero__stat"><strong>100%</strong><span>Garantía</span></div>
+          </div>
+        </div>
+
+        <div class="serv-controls" data-reveal>
+          <div class="serv-search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="servSearch" placeholder="Buscar servicio, tecnología o palabra clave..." autocomplete="off" spellcheck="false" />
+            <button type="button" class="serv-search__clear" id="servSearchClear" aria-label="Limpiar" hidden><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <div class="serv-filters" role="tablist">
+            <button type="button" class="serv-filter active" data-filter="all"><i class="fa-solid fa-layer-group"></i> Todos</button>
+            <button type="button" class="serv-filter" data-filter="red"><i class="fa-solid fa-network-wired"></i> Redes</button>
+            <button type="button" class="serv-filter" data-filter="audit"><i class="fa-solid fa-shield-halved"></i> Seguridad</button>
+            <button type="button" class="serv-filter" data-filter="training"><i class="fa-solid fa-chalkboard-user"></i> Formación</button>
+            <button type="button" class="serv-filter" data-filter="support"><i class="fa-solid fa-screwdriver-wrench"></i> Soporte</button>
+            <button type="button" class="serv-filter" data-filter="cloud"><i class="fa-solid fa-cloud"></i> Cloud</button>
+            <button type="button" class="serv-filter" data-filter="cctv"><i class="fa-solid fa-video"></i> CCTV</button>
+            <button type="button" class="serv-filter" data-filter="reparacion"><i class="fa-solid fa-toolbox"></i> Reparación</button>
+          </div>
+        </div>
+
+        <div class="serv-grid" id="servGrid">
+
+          <!-- ===== RED EMPRESARIAL ===== -->
+          <article class="serv-card serv-card--red" id="red" data-serv="red" data-reveal>
+            <div class="serv-card__head">
+              <div class="serv-card__icon"><i class="fa-solid fa-network-wired"></i></div>
+              <div class="serv-card__heading">
+                <span class="serv-card__tag">REDES · CISCO</span>
+                <h2 class="serv-card__title">Red Empresarial</h2>
+                <p class="serv-card__subtitle">Diseño, implementación y documentación de infraestructura de red empresarial.</p>
+              </div>
+            </div>
+            <div class="serv-card__grid">
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-check"></i> Levantamiento completo de la red existente</li>
+                  <li><i class="fa-solid fa-check"></i> Diseño de topología física y lógica documentada</li>
+                  <li><i class="fa-solid fa-check"></i> Configuración de routers Cisco, switches L2/L3 y APs</li>
+                  <li><i class="fa-solid fa-check"></i> Segmentación con VLANs, trunking 802.1Q y STP</li>
+                  <li><i class="fa-solid fa-check"></i> Enrutamiento estático, OSPF y BGP básico</li>
+                  <li><i class="fa-solid fa-check"></i> VPNs site-to-site (IPsec) y acceso remoto (SSL)</li>
+                  <li><i class="fa-solid fa-check"></i> QoS para tráfico crítico (voz, video, datos)</li>
+                  <li><i class="fa-solid fa-check"></i> Direccionamiento IP y DHCP centralizado</li>
+                  <li><i class="fa-solid fa-check"></i> Documentación técnica + diagramas en Visio/Draw.io</li>
+                  <li><i class="fa-solid fa-check"></i> Capacitación al personal de TI</li>
+                </ul>
+              </div>
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-1"></i> Reunión inicial para entender necesidades del negocio</li>
+                  <li><i class="fa-solid fa-2"></i> Inventario y análisis de la infraestructura actual</li>
+                  <li><i class="fa-solid fa-3"></i> Propuesta técnica con diagrama preliminar</li>
+                  <li><i class="fa-solid fa-4"></i> Configuración y despliegue por fases</li>
+                  <li><i class="fa-solid fa-5"></i> Pruebas de conectividad, rendimiento y failover</li>
+                  <li><i class="fa-solid fa-6"></i> Documentación final y transferencia de conocimiento</li>
+                </ul>
+              </div>
+            </div>
+            <div class="serv-meta">
+              <div class="serv-meta__item"><span>Modalidad</span><strong>Presencial / Remoto</strong></div>
+              <div class="serv-meta__item"><span>Cobertura</span><strong>RD + Global</strong></div>
+              <div class="serv-meta__item"><span>Duración</span><strong>1 a 4 semanas</strong></div>
+            </div>
+            <div class="serv-card__actions">
+              <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
+              <a href="index.html#contacto" class="cyber-btn cyber-btn--secondary"><span>CONSULTAR</span><i class="fa-solid fa-comments"></i></a>
+            </div>
+          </article>
+
+          <!-- ===== AUDITORÍA DE SEGURIDAD ===== -->
+          <article class="serv-card serv-card--audit" id="audit" data-serv="audit" data-reveal>
+            <div class="serv-card__head">
+              <div class="serv-card__icon"><i class="fa-solid fa-shield-halved"></i></div>
+              <div class="serv-card__heading">
+                <span class="serv-card__tag">CIBERSEGURIDAD</span>
+                <h2 class="serv-card__title">Auditoría de Seguridad</h2>
+                <p class="serv-card__subtitle">Evaluación completa del estado de seguridad de tu infraestructura.</p>
+              </div>
+            <div class="serv-card__grid">
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-check"></i> Escaneo de puertos, servicios y vulnerabilidades conocidas</li>
+                  <li><i class="fa-solid fa-check"></i> Análisis de configuración de routers, switches y firewalls</li>
+                  <li><i class="fa-solid fa-check"></i> Revisión de políticas de contraseñas y accesos</li>
+                  <li><i class="fa-solid fa-check"></i> Análisis de logs y eventos de seguridad</li>
+                  <li><i class="fa-solid fa-check"></i> Pruebas de penetración controladas (red interna y externa)</li>
+                  <li><i class="fa-solid fa-check"></i> Detección de servicios expuestos y puertos abiertos</li>
+                  <li><i class="fa-solid fa-check"></i> Plan de hardening por criticidad (CVSS)</li>
+                  <li><i class="fa-solid fa-check"></i> Recomendaciones priorizadas por riesgo</li>
+                  <li><i class="fa-solid fa-check"></i> Informe ejecutivo (para dirección) + técnico (para TI)</li>
+                  <li><i class="fa-solid fa-check"></i> Reunión de cierre para explicar hallazgos</li>
+                </ul>
+              </div>
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-1"></i> Firma de autorización y NDA para pruebas</li>
+                  <li><i class="fa-solid fa-2"></i> Recolección pasiva de información (OSINT)</li>
+                  <li><i class="fa-solid fa-3"></i> Escaneo activo con Nmap, Nessus, OpenVAS</li>
+                  <li><i class="fa-solid fa-4"></i> Explotación controlada de hallazgos</li>
+                  <li><i class="fa-solid fa-5"></i> Clasificación por severidad (Crítica a Baja)</li>
+                  <li><i class="fa-solid fa-6"></i> Entrega de informe + presentación de resultados</li>
+                </ul>
+              </div>
+            </div>
+            <div class="serv-meta">
+              <div class="serv-meta__item"><span>Modalidad</span><strong>Remoto / Presencial</strong></div>
+              <div class="serv-meta__item"><span>Cobertura</span><strong>Global</strong></div>
+              <div class="serv-meta__item"><span>Duración</span><strong>1 a 3 semanas</strong></div>
+            </div>
+            <div class="serv-card__actions">
+              <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
+              <a href="index.html#contacto" class="cyber-btn cyber-btn--secondary"><span>CONSULTAR</span><i class="fa-solid fa-comments"></i></a>
+            </div>
+          </article>
+
+          <!-- ===== CAPACITACIÓN TÉCNICA ===== -->
+          <article class="serv-card serv-card--training" id="training" data-serv="training" data-reveal>
+            <div class="serv-card__head">
+              <div class="serv-card__icon"><i class="fa-solid fa-chalkboard-user"></i></div>
+              <div class="serv-card__heading">
+                <span class="serv-card__tag">FORMACIÓN · CISCO ACADEMY</span>
+                <h2 class="serv-card__title">Capacitación Técnica</h2>
+                <p class="serv-card__subtitle">Formación oficial Cisco Networking Academy para empresas y profesionales.</p>
+              </div>
+            </div>
+            <div class="serv-card__grid">
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-check"></i> Diseño de ruta formativa según objetivos del equipo</li>
+                  <li><i class="fa-solid fa-check"></i> Acceso a material oficial Cisco Networking Academy</li>
+                  <li><i class="fa-solid fa-check"></i> Rutas disponibles: CCNA (3 módulos), CCNP, CyberOps, IT Essentials</li>
+                  <li><i class="fa-solid fa-check"></i> Laboratorios prácticos en Packet Tracer y equipos reales</li>
+                  <li><i class="fa-solid fa-check"></i> Casos reales adaptados al sector de la empresa</li>
+                  <li><i class="fa-solid fa-check"></i> Evaluaciones por módulo y examen final</li>
+                  <li><i class="fa-solid fa-check"></i> Certificado digital verificable (Cisco / Credly)</li>
+                  <li><i class="fa-solid fa-check"></i> Material de estudio descargable</li>
+                  <li><i class="fa-solid fa-check"></i> Grabación de sesiones virtuales</li>
+                  <li><i class="fa-solid fa-check"></i> Soporte post-curso por 30 días</li>
+                </ul>
+              </div>
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-1"></i> Diagnóstico del nivel inicial del grupo</li>
+                  <li><i class="fa-solid fa-2"></i> Diseño del temario y cronograma</li>
+                  <li><i class="fa-solid fa-3"></i> Sesiones teórico-prácticas (presencial o virtual)</li>
+                  <li><i class="fa-solid fa-4"></i> Laboratorios guiados con retroalimentación</li>
+                  <li><i class="fa-solid fa-5"></i> Evaluación por módulo y examen final</li>
+                  <li><i class="fa-solid fa-6"></i> Entrega de certificado y plan de mejora continua</li>
+                </ul>
+              </div>
+            </div>
+            <div class="serv-meta">
+              <div class="serv-meta__item"><span>Modalidad</span><strong>Presencial / Virtual</strong></div>
+              <div class="serv-meta__item"><span>Cobertura</span><strong>RD + Global</strong></div>
+              <div class="serv-meta__item"><span>Duración</span><strong>Variable (a medida)</strong></div>
+            </div>
+            <div class="serv-card__actions">
+              <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
+              <a href="cursos.html" class="cyber-btn cyber-btn--secondary"><span>VER CURSOS</span><i class="fa-solid fa-graduation-cap"></i></a>
+            </div>
+          </article>
+
+          <!-- ===== SOPORTE MENSUAL ===== -->
+          <article class="serv-card serv-card--support" id="support" data-serv="support" data-reveal>
+            <div class="serv-card__head">
+              <div class="serv-card__icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+              <div class="serv-card__heading">
+                <span class="serv-card__tag">SOPORTE CONTINUO</span>
+                <h2 class="serv-card__title">Soporte Mensual</h2>
+                <p class="serv-card__subtitle">Mantenimiento preventivo y asistencia técnica continua para tu infraestructura.</p>
+              </div>
+            </div>
+            <div class="serv-card__grid">
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-check"></i> Monitoreo proactivo 24/7 de red y servicios críticos</li>
+                  <li><i class="fa-solid fa-check"></i> Mantenimiento preventivo programado (mensual o bimensual)</li>
+                  <li><i class="fa-solid fa-check"></i> Atención de incidencias por prioridad con SLA definido</li>
+                  <li><i class="fa-solid fa-check"></i> Actualización de firmware y parches de seguridad</li>
+                  <li><i class="fa-solid fa-check"></i> Gestión de respaldos automáticos y verificación</li>
+                  <li><i class="fa-solid fa-check"></i> Antivirus y protección de endpoints</li>
+                  <li><i class="fa-solid fa-check"></i> Administración de usuarios y permisos</li>
+                  <li><i class="fa-solid fa-check"></i> Reporte mensual con métricas y hallazgos</li>
+                  <li><i class="fa-solid fa-check"></i> Reunión mensual de seguimiento</li>
+                  <li><i class="fa-solid fa-check"></i> Horas de soporte remoto incluidas (según plan)</li>
+                </ul>
+              </div>
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-1"></i> Auditoría inicial de infraestructura</li>
+                  <li><i class="fa-solid fa-2"></i> Configuración de monitoreo y alertas</li>
+                  <li><i class="fa-solid fa-3"></i> Definición de SLAs según criticidad</li>
+                  <li><i class="fa-solid fa-4"></i> Atención de tickets vía WhatsApp / email / panel</li>
+                  <li><i class="fa-solid fa-5"></i> Mantenimiento preventivo programado</li>
+                  <li><i class="fa-solid fa-6"></i> Reportes y reuniones mensuales de revisión</li>
+                </ul>
+              </div>
+            </div>
+            <div class="serv-meta">
+              <div class="serv-meta__item"><span>Modalidad</span><strong>Remoto + Visitas</strong></div>
+              <div class="serv-meta__item"><span>Cobertura</span><strong>RD + Global</strong></div>
+              <div class="serv-meta__item"><span>Contrato</span><strong>Mensual</strong></div>
+            </div>
+            <div class="serv-card__actions">
+              <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
+              <a href="index.html#contacto" class="cyber-btn cyber-btn--secondary"><span>CONSULTAR</span><i class="fa-solid fa-comments"></i></a>
+            </div>
+          </article>
+
+          <!-- ===== REPARACIÓN TÉCNICA ===== -->
+          <article class="serv-card serv-card--reparacion" id="reparacion" data-serv="reparacion" data-reveal>
+            <div class="serv-card__head">
+              <div class="serv-card__icon"><i class="fa-solid fa-toolbox"></i></div>
+              <div class="serv-card__heading">
+                <span class="serv-card__tag">SERVICIO TÉCNICO</span>
+                <h2 class="serv-card__title">Reparación Técnica</h2>
+                <p class="serv-card__subtitle">Reparación de impresoras, laptops, PCs y equipos de red. Diagnóstico honesto y garantía.</p>
+              </div>
+            </div>
+            <div class="serv-card__grid">
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-check"></i> Diagnóstico inicial sin costo (presencial o remoto)</li>
+                  <li><i class="fa-solid fa-check"></i> Reparación de impresoras (inyección, láser, matricial)</li>
+                  <li><i class="fa-solid fa-check"></i> Mantenimiento de laptops y PCs (limpieza, pasta térmica)</li>
+                  <li><i class="fa-solid fa-check"></i> Cambio e instalación de componentes (RAM, SSD, HDD, pantalla, teclado)</li>
+                  <li><i class="fa-solid fa-check"></i> Formateo, instalación de Windows/Linux y drivers</li>
+                  <li><i class="fa-solid fa-check"></i> Eliminación de virus, malware y ransomware</li>
+                  <li><i class="fa-solid fa-check"></i> Recuperación de datos (discos dañados, archivos borrados)</li>
+                  <li><i class="fa-solid fa-check"></i> Optimización de rendimiento</li>
+                  <li><i class="fa-solid fa-check"></i> Reparación de equipos de red (routers, switches)</li>
+                  <li><i class="fa-solid fa-check"></i> Garantía de 30 a 365 días por escrito</li>
+                </ul>
+              </div>
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-1"></i> Recepción del equipo y descripción del problema</li>
+                  <li><i class="fa-solid fa-2"></i> Diagnóstico técnico (presencial o remoto)</li>
+                  <li><i class="fa-solid fa-3"></i> Cotización previa aprobada por el cliente</li>
+                  <li><i class="fa-solid fa-4"></i> Reparación con repuestos originales o de calidad</li>
+                  <li><i class="fa-solid fa-5"></i> Pruebas exhaustivas antes de entregar</li>
+                  <li><i class="fa-solid fa-6"></i> Entrega con documentación y garantía por escrito</li>
+                </ul>
+              </div>
+            </div>
+            <div class="serv-meta">
+              <div class="serv-meta__item"><span>Modalidad</span><strong>Presencial / Taller</strong></div>
+              <div class="serv-meta__item"><span>Cobertura</span><strong>RD</strong></div>
+              <div class="serv-meta__item"><span>Duración</span><strong>24h a 5 días</strong></div>
+            </div>
+            <div class="serv-card__actions">
+              <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
+              <a href="index.html#contacto" class="cyber-btn cyber-btn--secondary"><span>CONSULTAR</span><i class="fa-solid fa-comments"></i></a>
+            </div>
+          </article>
+
+          <!-- ===== DISEÑO WIFI EMPRESARIAL ===== -->
+          <article class="serv-card serv-card--wifi" id="wifi" data-serv="red" data-reveal>
+            <div class="serv-card__head">
+              <div class="serv-card__icon"><i class="fa-solid fa-wifi"></i></div>
+              <div class="serv-card__heading">
+                <span class="serv-card__tag">REDES INALÁMBRICAS</span>
+                <h2 class="serv-card__title">Diseño de Red WiFi Empresarial</h2>
+                <p class="serv-card__subtitle">Planificación, site survey y configuración de redes WiFi de alto rendimiento.</p>
+              </div>
+            </div>
+            <div class="serv-card__grid">
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-check"></i> Site survey con análisis de interferencias</li>
+                  <li><i class="fa-solid fa-check"></i> Planificación de canales en 2.4 / 5 / 6 GHz</li>
+                  <li><i class="fa-solid fa-check"></i> Ubicación óptima de access points con heat map</li>
+                  <li><i class="fa-solid fa-check"></i> Configuración de SSIDs múltiples (empleados, invitados, IoT)</li>
+                  <li><i class="fa-solid fa-check"></i> VLANs por tipo de usuario y roaming sin cortes</li>
+                  <li><i class="fa-solid fa-check"></i> Portal cautivo / autenticación 802.1X (opcional)</li>
+                  <li><i class="fa-solid fa-check"></i> Ancho de banda y QoS para aplicaciones críticas</li>
+                  <li><i class="fa-solid fa-check"></i> Configuración de seguridad WPA2/WPA3-Enterprise</li>
+                  <li><i class="fa-solid fa-check"></i> Validación con herramientas profesionales (Ekahau, NetSpot)</li>
+                  <li><i class="fa-solid fa-check"></i> Entrega de mapa de calor final</li>
+                </ul>
+              </div>
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-1"></i> Levantamiento del plano y características del local</li>
+                  <li><i class="fa-solid fa-2"></i> Análisis de interferencias y cobertura actual</li>
+                  <li><i class="fa-solid fa-3"></i> Diseño de ubicación de APs con heat map predictivo</li>
+                  <li><i class="fa-solid fa-4"></i> Instalación física y configuración de red</li>
+                  <li><i class="fa-solid fa-5"></i> Validación post-instalación con medición real</li>
+                  <li><i class="fa-solid fa-6"></i> Entrega de documentación + mapa de cobertura</li>
+                </ul>
+              </div>
+            </div>
+            <div class="serv-meta">
+              <div class="serv-meta__item"><span>Modalidad</span><strong>Presencial</strong></div>
+              <div class="serv-meta__item"><span>Cobertura</span><strong>RD</strong></div>
+              <div class="serv-meta__item"><span>Duración</span><strong>2 a 5 días</strong></div>
+            </div>
+            <div class="serv-card__actions">
+              <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
+              <a href="index.html#contacto" class="cyber-btn cyber-btn--secondary"><span>CONSULTAR</span><i class="fa-solid fa-comments"></i></a>
+            </div>
+          </article>
+
+          <!-- ===== FIREWALL ===== -->
+          <article class="serv-card serv-card--firewall" id="firewall" data-serv="audit" data-reveal>
+            <div class="serv-card__head">
+              <div class="serv-card__icon"><i class="fa-solid fa-fire-flame-curved"></i></div>
+              <div class="serv-card__heading">
+                <span class="serv-card__tag">CIBERSEGURIDAD · PERÍMETRO</span>
+                <h2 class="serv-card__title">Firewall y Seguridad Perimetral</h2>
+                <p class="serv-card__subtitle">Protección del borde de tu red con firewalls de nueva generación.</p>
+              </div>
+            </div>
+            <div class="serv-card__grid">
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-check"></i> Configuración de Fortinet, pfSense, OPNsense o Cisco ASA</li>
+                  <li><i class="fa-solid fa-check"></i> Reglas de firewall basadas en zona y aplicación</li>
+                  <li><i class="fa-solid fa-check"></i> NAT, port forwarding y segmentación de red (DMZ)</li>
+                  <li><i class="fa-solid fa-check"></i> Filtrado de contenido web y bloqueo por categorías</li>
+                  <li><i class="fa-solid fa-check"></i> VPN integrada (IPsec / SSL) para acceso remoto</li>
+                  <li><i class="fa-solid fa-check"></i> Detección y prevención de intrusiones (IDS/IPS)</li>
+                  <li><i class="fa-solid fa-check"></i> Antivirus y anti-malware a nivel de gateway</li>
+                  <li><i class="fa-solid fa-check"></i> Logs centralizados y alertas en tiempo real</li>
+                  <li><i class="fa-solid fa-check"></i> Respaldos de configuración periódicos</li>
+                  <li><i class="fa-solid fa-check"></i> Documentación completa de reglas y políticas</li>
+                </ul>
+              </div>
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-1"></i> Análisis de tráfico y servicios requeridos</li>
+                  <li><i class="fa-solid fa-2"></i> Selección del equipo adecuado al tamaño de red</li>
+                  <li><i class="fa-solid fa-3"></i> Instalación física y configuración base</li>
+                  <li><i class="fa-solid fa-4"></i> Definición de políticas y reglas por zona</li>
+                  <li><i class="fa-solid fa-5"></i> Pruebas de penetración desde el exterior</li>
+                  <li><i class="fa-solid fa-6"></i> Documentación final y capacitación al equipo</li>
+                </ul>
+              </div>
+            </div>
+            <div class="serv-meta">
+              <div class="serv-meta__item"><span>Modalidad</span><strong>Presencial / Remoto</strong></div>
+              <div class="serv-meta__item"><span>Cobertura</span><strong>RD + Global</strong></div>
+              <div class="serv-meta__item"><span>Duración</span><strong>3 a 7 días</strong></div>
+            </div>
+            <div class="serv-card__actions">
+              <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
+              <a href="index.html#contacto" class="cyber-btn cyber-btn--secondary"><span>CONSULTAR</span><i class="fa-solid fa-comments"></i></a>
+            </div>
+          </article>
+
+          <!-- ===== CABLEADO ESTRUCTURADO ===== -->
+          <article class="serv-card serv-card--cableado" id="cableado" data-serv="red" data-reveal>
+            <div class="serv-card__head">
+              <div class="serv-card__icon"><i class="fa-solid fa-ethernet"></i></div>
+              <div class="serv-card__heading">
+                <span class="serv-card__tag">REDES · INFRAESTRUCTURA</span>
+                <h2 class="serv-card__title">Cableado Estructurado Certificado</h2>
+                <p class="serv-card__subtitle">Instalación de cableado Cat 5e / 6 / 6A con certificación de puntos.</p>
+              </div>
+            </div>
+            <div class="serv-card__grid">
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-check"></i> Diseño de rutas y canalizaciones (bandejas, tuberías)</li>
+                  <li><i class="fa-solid fa-check"></i> Cableado UTP/FTP Cat 5e, 6 o 6A</li>
+                  <li><i class="fa-solid fa-check"></i> Ponchado profesional y etiquetado de extremos</li>
+                  <li><i class="fa-solid fa-check"></i> Instalación de patch panel y jacks RJ45</li>
+                  <li><i class="fa-solid fa-check"></i> Certificación de cada punto con tester Fluke</li>
+                  <li><i class="fa-solid fa-check"></i> Pruebas de continuidad, NEXT y pérdida de retorno</li>
+                  <li><i class="fa-solid fa-check"></i> Reporte de certificación por punto</li>
+                  <li><i class="fa-solid fa-check"></i> Documentación con rutas y numeración</li>
+                  <li><i class="fa-solid fa-check"></i> Ordenamiento de racks y cable managers</li>
+                  <li><i class="fa-solid fa-check"></i> Garantía sobre la instalación</li>
+                </ul>
+              </div>
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-1"></i> Visita técnica y medición de distancias</li>
+                  <li><i class="fa-solid fa-2"></i> Presupuesto por punto + materiales detallados</li>
+                  <li><i class="fa-solid fa-3"></i> Instalación del cableado por fases</li>
+                  <li><i class="fa-solid fa-4"></i> Ponchado en patch panel y rosetas</li>
+                  <li><i class="fa-solid fa-5"></i> Certificación de cada punto con tester</li>
+                  <li><i class="fa-solid fa-6"></i> Entrega de plano, reporte y garantía</li>
+                </ul>
+              </div>
+            </div>
+            <div class="serv-meta">
+              <div class="serv-meta__item"><span>Modalidad</span><strong>Presencial</strong></div>
+              <div class="serv-meta__item"><span>Cobertura</span><strong>RD</strong></div>
+              <div class="serv-meta__item"><span>Precio</span><strong>Por punto</strong></div>
+            </div>
+            <div class="serv-card__actions">
+              <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
+              <a href="index.html#contacto" class="cyber-btn cyber-btn--secondary"><span>CONSULTAR</span><i class="fa-solid fa-comments"></i></a>
+            </div>
+          </article>
+
+          <!-- ===== VPN CORPORATIVA ===== -->
+          <article class="serv-card serv-card--vpn" id="vpn" data-serv="red" data-reveal>
+            <div class="serv-card__head">
+              <div class="serv-card__icon"><i class="fa-solid fa-user-shield"></i></div>
+              <div class="serv-card__heading">
+                <span class="serv-card__tag">REDES · ACCESO SEGURO</span>
+                <h2 class="serv-card__title">VPN Corporativa (Site-to-Site)</h2>
+                <p class="serv-card__subtitle">Conexión segura entre sedes y acceso remoto para empleados.</p>
+              </div>
+            </div>
+            <div class="serv-card__grid">
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-check"></i> VPN Site-to-Site entre sedes</li>
+                  <li><i class="fa-solid fa-check"></i> VPN Remote Access para empleados en cualquier lugar</li>
+                  <li><i class="fa-solid fa-check"></i> Configuración con IPsec, SSL/TLS o WireGuard</li>
+                  <li><i class="fa-solid fa-check"></i> Autenticación por usuario, certificado o MFA</li>
+                  <li><i class="fa-solid fa-check"></i> Split tunneling (opcional para optimizar tráfico)</li>
+                  <li><i class="fa-solid fa-check"></i> Reglas de firewall integradas</li>
+                  <li><i class="fa-solid fa-check"></i> QoS para tráfico VPN sensible</li>
+                  <li><i class="fa-solid fa-check"></i> Manual de configuración para usuarios</li>
+                  <li><i class="fa-solid fa-check"></i> Perfiles preconfigurados (.ovpn, WireGuard, etc.)</li>
+                  <li><i class="fa-solid fa-check"></i> Soporte durante la primera semana de uso</li>
+                </ul>
+              </div>
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-1"></i> Análisis de sedes, usuarios y tráfico esperado</li>
+                  <li><i class="fa-solid fa-2"></i> Diseño de la topología VPN (hub-and-spoke o malla)</li>
+                  <li><i class="fa-solid fa-3"></i> Configuración de endpoints y políticas</li>
+                  <li><i class="fa-solid fa-4"></i> Pruebas de túnel, throughput y failover</li>
+                  <li><i class="fa-solid fa-5"></i> Despliegue y entrega de perfiles a usuarios</li>
+                  <li><i class="fa-solid fa-6"></i> Capacitación y manual de uso</li>
+                </ul>
+              </div>
+            </div>
+            <div class="serv-meta">
+              <div class="serv-meta__item"><span>Modalidad</span><strong>Remoto + Presencial</strong></div>
+              <div class="serv-meta__item"><span>Cobertura</span><strong>RD + Global</strong></div>
+              <div class="serv-meta__item"><span>Duración</span><strong>2 a 5 días</strong></div>
+            </div>
+            <div class="serv-card__actions">
+              <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
+              <a href="index.html#contacto" class="cyber-btn cyber-btn--secondary"><span>CONSULTAR</span><i class="fa-solid fa-comments"></i></a>
+            </div>
+          </article>
+
+          <!-- ===== PENTESTING ===== -->
+          <article class="serv-card serv-card--pentest" id="pentest" data-serv="audit" data-reveal>
+            <div class="serv-card__head">
+              <div class="serv-card__icon"><i class="fa-solid fa-bullseye"></i></div>
+              <div class="serv-card__heading">
+                <span class="serv-card__tag">CIBERSEGURIDAD OFENSIVA</span>
+                <h2 class="serv-card__title">Pentesting</h2>
+                <p class="serv-card__subtitle">Pruebas de penetración autorizadas sobre infraestructura y aplicaciones web.</p>
+              </div>
+            </div>
+            <div class="serv-card__grid">
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-check"></i> Reconocimiento pasivo (OSINT) y activo</li>
+                  <li><i class="fa-solid fa-check"></i> Escaneo de vulnerabilidades con herramientas pro</li>
+                  <li><i class="fa-solid fa-check"></i> Explotación controlada de hallazgos (con autorización)</li>
+                  <li><i class="fa-solid fa-check"></i> Pruebas en red interna y externa</li>
+                  <li><i class="fa-solid fa-check"></i> Pruebas en aplicaciones web (OWASP Top 10)</li>
+                  <li><i class="fa-solid fa-check"></i> Escalada de privilegios y post-explotación</li>
+                  <li><i class="fa-solid fa-check"></i> Pruebas de ingeniería social (opcional)</li>
+                  <li><i class="fa-solid fa-check"></i> Prueba de contraseñas y hashes (offline)</li>
+                  <li><i class="fa-solid fa-check"></i> Informe ejecutivo + técnico con PoC y capturas</li>
+                  <li><i class="fa-solid fa-check"></i> Plan de remediación priorizado por riesgo</li>
+                </ul>
+              </div>
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-1"></i> Firma de autorización y NDA</li>
+                  <li><i class="fa-solid fa-2"></i> Definición clara del alcance y reglas de juego</li>
+                  <li><i class="fa-solid fa-3"></i> Reconocimiento y escaneo (Nmap, Nessus, Burp)</li>
+                  <li><i class="fa-solid fa-4"></i> Explotación controlada con evidencia</li>
+                  <li><i class="fa-solid fa-5"></i> Post-explotación, pivoting y persistencia</li>
+                  <li><i class="fa-solid fa-6"></i> Informe final + presentación ejecutiva</li>
+                </ul>
+              </div>
+            </div>
+            <div class="serv-meta">
+              <div class="serv-meta__item"><span>Modalidad</span><strong>Remoto</strong></div>
+              <div class="serv-meta__item"><span>Cobertura</span><strong>Global</strong></div>
+              <div class="serv-meta__item"><span>Duración</span><strong>1 a 3 semanas</strong></div>
+            </div>
+            <div class="serv-card__actions">
+              <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
+              <a href="index.html#contacto" class="cyber-btn cyber-btn--secondary"><span>CONSULTAR</span><i class="fa-solid fa-comments"></i></a>
+            </div>
+          </article>
+
+          <!-- ===== CLOUD / M365 ===== -->
+          <article class="serv-card serv-card--cloud" id="cloud" data-serv="cloud" data-reveal>
+            <div class="serv-card__head">
+              <div class="serv-card__icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+              <div class="serv-card__heading">
+                <span class="serv-card__tag">CLOUD · PRODUCTIVIDAD</span>
+                <h2 class="serv-card__title">Migración a Microsoft 365 / Google Workspace</h2>
+                <p class="serv-card__subtitle">Correo corporativo profesional, almacenamiento y colaboración en la nube.</p>
+              </div>
+            </div>
+            <div class="serv-card__grid">
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-check"></i> Configuración de dominio propio</li>
+                  <li><i class="fa-solid fa-check"></i> Migración de correos existentes sin pérdida</li>
+                  <li><i class="fa-solid fa-check"></i> Creación de buzones, alias, grupos y listas</li>
+                  <li><i class="fa-solid fa-check"></i> Configuración de SPF, DKIM y DMARC</li>
+                  <li><i class="fa-solid fa-check"></i> Firma corporativa unificada para todos</li>
+                  <li><i class="fa-solid fa-check"></i> Políticas de seguridad (MFA, anti-phishing)</li>
+                  <li><i class="fa-solid fa-check"></i> Configuración de OneDrive / Google Drive</li>
+                  <li><i class="fa-solid fa-check"></i> Teams / Meet / Calendar configurados</li>
+                  <li><i class="fa-solid fa-check"></i> Configuración en dispositivos móviles y PC</li>
+                  <li><i class="fa-solid fa-check"></i> Capacitación al equipo + manual PDF</li>
+                </ul>
+              </div>
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-1"></i> Análisis de cuentas y datos actuales</li>
+                  <li><i class="fa-solid fa-2"></i> Alta del dominio en la plataforma elegida</li>
+                  <li><i class="fa-solid fa-3"></i> Verificación DNS (SPF, DKIM, DMARC)</li>
+                  <li><i class="fa-solid fa-4"></i> Migración de correos y archivos compartidos</li>
+                  <li><i class="fa-solid fa-5"></i> Configuración de dispositivos y apps</li>
+                  <li><i class="fa-solid fa-6"></i> Capacitación y entrega de manual</li>
+                </ul>
+              </div>
+            </div>
+            <div class="serv-meta">
+              <div class="serv-meta__item"><span>Modalidad</span><strong>Remoto</strong></div>
+              <div class="serv-meta__item"><span>Cobertura</span><strong>Global</strong></div>
+              <div class="serv-meta__item"><span>Duración</span><strong>2 a 7 días</strong></div>
+            </div>
+            <div class="serv-card__actions">
+              <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
+              <a href="index.html#contacto" class="cyber-btn cyber-btn--secondary"><span>CONSULTAR</span><i class="fa-solid fa-comments"></i></a>
+            </div>
+          </article>
+
+          <!-- ===== CCTV IP ===== -->
+          <article class="serv-card serv-card--cctv" id="cctv" data-serv="cctv" data-reveal>
+            <div class="serv-card__head">
+              <div class="serv-card__icon"><i class="fa-solid fa-video"></i></div>
+              <div class="serv-card__heading">
+                <span class="serv-card__tag">VIDEOVIGILANCIA</span>
+                <h2 class="serv-card__title">Instalación de CCTV IP</h2>
+                <p class="serv-card__subtitle">Cámaras IP Hikvision / Dahua con NVR, visualización remota y almacenamiento.</p>
+              </div>
+            </div>
+            <div class="serv-card__grid">
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-check"></i> Análisis de puntos de instalación y ángulos de visión</li>
+                  <li><i class="fa-solid fa-check"></i> Cámaras IP (domo, bala, PTZ) Hikvision / Dahua / otras</li>
+                  <li><i class="fa-solid fa-check"></i> Configuración de NVR / NAS con retención</li>
+                  <li><i class="fa-solid fa-check"></i> Acceso remoto desde app móvil y web</li>
+                  <li><i class="fa-solid fa-check"></i> Cableado de red (PoE) y alimentación</li>
+                  <li><i class="fa-solid fa-check"></i> Configuración de grabación por movimiento o continua</li>
+                  <li><i class="fa-solid fa-check"></i> Detección de movimiento y alertas</li>
+                  <li><i class="fa-solid fa-check"></i> Configuración de backups automáticos</li>
+                  <li><i class="fa-solid fa-check"></i> Cálculo de almacenamiento según días de retención</li>
+                  <li><i class="fa-solid fa-check"></i> Capacitación de uso al cliente</li>
+                </ul>
+              </div>
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-1"></i> Visita técnica y levantamiento del sitio</li>
+                  <li><i class="fa-solid fa-2"></i> Diseño y presupuesto por cámara</li>
+                  <li><i class="fa-solid fa-3"></i> Instalación física, cableado y montaje</li>
+                  <li><i class="fa-solid fa-4"></i> Configuración de red y NVR</li>
+                  <li><i class="fa-solid fa-5"></i> Pruebas de grabación, movimiento y remoto</li>
+                  <li><i class="fa-solid fa-6"></i> Capacitación al cliente + manual de uso</li>
+                </ul>
+              </div>
+            </div>
+            <div class="serv-meta">
+              <div class="serv-meta__item"><span>Modalidad</span><strong>Presencial</strong></div>
+              <div class="serv-meta__item"><span>Cobertura</span><strong>RD</strong></div>
+              <div class="serv-meta__item"><span>Precio</span><strong>Por cámara</strong></div>
+            </div>
+            <div class="serv-card__actions">
+              <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
+              <a href="index.html#contacto" class="cyber-btn cyber-btn--secondary"><span>CONSULTAR</span><i class="fa-solid fa-comments"></i></a>
+            </div>
+          </article>
+
+          <!-- ===== MENTORÍA 1:1 ===== -->
+          <article class="serv-card serv-card--mentoria" id="mentoria" data-serv="training" data-reveal>
+            <div class="serv-card__head">
+              <div class="serv-card__icon"><i class="fa-solid fa-user-graduate"></i></div>
+              <div class="serv-card__heading">
+                <span class="serv-card__tag">FORMACIÓN PERSONALIZADA</span>
+                <h2 class="serv-card__title">Mentoría Técnica 1:1</h2>
+                <p class="serv-card__subtitle">Sesiones privadas por videollamada para resolver dudas puntuales o preparar certificaciones.</p>
+              </div>
+            </div>
+            <div class="serv-card__grid">
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-check"></i> Sesiones 1:1 por videollamada (Zoom / Meet / Teams)</li>
+                  <li><i class="fa-solid fa-check"></i> Temario 100% adaptado a tus necesidades</li>
+                  <li><i class="fa-solid fa-check"></i> Compartir pantalla y laboratorios en vivo</li>
+                  <li><i class="fa-solid fa-check"></i> Preparación para CCNA, CCNP, CyberOps, ITE</li>
+                  <li><i class="fa-solid fa-check"></i> Resolución de dudas técnicas puntuales</li>
+                  <li><i class="fa-solid fa-check"></i> Revisión de tu configuración / proyecto personal</li>
+                  <li><i class="fa-solid fa-check"></i> Grabación de cada sesión (opcional)</li>
+                  <li><i class="fa-solid fa-check"></i> Materiales, ejercicios y guías descargables</li>
+                  <li><i class="fa-solid fa-check"></i> Soporte por chat entre sesiones</li>
+                  <li><i class="fa-solid fa-check"></i> Descuentos por paquetes de horas</li>
+                </ul>
+              </div>
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-1"></i> Llamada inicial gratuita (15 min) para conocernos</li>
+                  <li><i class="fa-solid fa-2"></i> Definición clara de objetivos y plazo</li>
+                  <li><i class="fa-solid fa-3"></i> Plan de sesiones y temario personalizado</li>
+                  <li><i class="fa-solid fa-4"></i> Sesiones programadas según tu disponibilidad</li>
+                  <li><i class="fa-solid fa-5"></i> Ejercicios y proyectos entre sesiones</li>
+                  <li><i class="fa-solid fa-6"></i> Evaluación de progreso y ajuste continuo</li>
+                </ul>
+              </div>
+            </div>
+            <div class="serv-meta">
+              <div class="serv-meta__item"><span>Modalidad</span><strong>Virtual</strong></div>
+              <div class="serv-meta__item"><span>Cobertura</span><strong>Global</strong></div>
+              <div class="serv-meta__item"><span>Precio</span><strong>Por hora</strong></div>
+            </div>
+            <div class="serv-card__actions">
+              <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
+              <a href="index.html#contacto" class="cyber-btn cyber-btn--secondary"><span>CONSULTAR</span><i class="fa-solid fa-comments"></i></a>
+            </div>
+          </article>
+
+        </div>
+
+        <div class="serv-empty" id="servEmpty" hidden>
+          <i class="fa-solid fa-circle-question"></i>
+          <p>No se encontraron servicios con esos criterios.</p>
+          <button type="button" class="cyber-btn cyber-btn--secondary" id="servReset"><span>LIMPIAR FILTROS</span><i class="fa-solid fa-rotate-left"></i></button>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__grid-lines" aria-hidden="true"></div>
+    <div class="container">
+      <div class="footer__main">
+        <div class="footer__brand">
+          <a href="index.html" class="logo logo--footer" aria-label="Inicio">
+            <div class="logo__symbol">
+              <svg viewBox="0 0 100 100" class="logo__svg logo__svg--nexus">
+                <path d="M50 4 L88 26 L88 62 Q88 88 50 96 Q12 88 12 62 L12 26 Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-dasharray="240" stroke-dashoffset="240" class="nexus-shield"/>
+                <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.3" stroke-dasharray="3 6" class="nexus-ring nexus-ring--1"/>
+                <circle cx="50" cy="50" r="34" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5" stroke-dasharray="8 4" class="nexus-ring nexus-ring--2"/>
+                <circle cx="50" cy="50" r="26" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.6" stroke-dasharray="2 3" class="nexus-ring nexus-ring--3"/>
+                <path d="M50 50 L50 8 A42 42 0 0 1 85 28 Z" fill="currentColor" opacity="0.09" class="nexus-sweep"/>
+                <path d="M50 38 L60 44 L60 56 L50 62 L40 56 L40 44 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" class="nexus-core"/>
+                <circle cx="50" cy="50" r="4" fill="currentColor" class="nexus-center"/>
+                <circle cx="50" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="1.5" class="nexus-pulse nexus-pulse--1"/>
+                <circle cx="50" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="1.5" class="nexus-pulse nexus-pulse--2"/>
+                <circle cx="50" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="1.5" class="nexus-pulse nexus-pulse--3"/>
+                <line x1="50" y1="50" x2="50" y2="14" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--1"/>
+                <line x1="50" y1="50" x2="81" y2="32" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--2"/>
+                <line x1="50" y1="50" x2="81" y2="68" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--3"/>
+                <line x1="50" y1="50" x2="50" y2="86" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--4"/>
+                <line x1="50" y1="50" x2="19" y2="68" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--5"/>
+                <line x1="50" y1="50" x2="19" y2="32" stroke="currentColor" stroke-width="0.9" class="nexus-data nexus-data--6"/>
+                <circle cx="50" cy="14" r="2.5" fill="currentColor" class="nexus-node nexus-node--1"/>
+                <circle cx="81" cy="32" r="2.5" fill="currentColor" class="nexus-node nexus-node--2"/>
+                <circle cx="81" cy="68" r="2.5" fill="currentColor" class="nexus-node nexus-node--3"/>
+                <circle cx="50" cy="86" r="2.5" fill="currentColor" class="nexus-node nexus-node--4"/>
+                <circle cx="19" cy="68" r="2.5" fill="currentColor" class="nexus-node nexus-node--5"/>
+                <circle cx="19" cy="32" r="2.5" fill="currentColor" class="nexus-node nexus-node--6"/>
+                <line x1="50" y1="4"  x2="50" y2="9"  stroke="currentColor" stroke-width="1.8"/>
+                <line x1="88" y1="26" x2="83" y2="29" stroke="currentColor" stroke-width="1.8"/>
+                <line x1="88" y1="62" x2="83" y2="59" stroke="currentColor" stroke-width="1.8"/>
+                <line x1="50" y1="96" x2="50" y2="91" stroke="currentColor" stroke-width="1.8"/>
+                <line x1="12" y1="62" x2="17" y2="59" stroke="currentColor" stroke-width="1.8"/>
+                <line x1="12" y1="26" x2="17" y2="29" stroke="currentColor" stroke-width="1.8"/>
+              </svg>
+            </div>
+          </a>
+          <div class="footer__status"><span class="badge__text"><i class="fa-solid fa-signal"></i> DISPONIBLE PARA PROYECTOS</span></div>
+        </div>
+
+        <div class="footer__nav">
+          <div class="footer__col">
+            <h4>[ NAVEGACIÓN ]</h4>
+            <ul>
+              <li><a href="index.html#inicio">Inicio</a></li>
+              <li><a href="index.html#perfil">Perfil</a></li>
+              <li><a href="servicios.html">Servicios</a></li>
+            </ul>
+          </div>
+          <div class="footer__col">
+            <h4>[ RECURSOS ]</h4>
+            <ul>
+              <li><a href="toolkit.html">Toolkit</a></li>
+              <li><a href="netpro.html">NetPro</a></li>
+              <li><a href="cotizador.html">Cotizador</a></li>
+            </ul>
+          </div>
+          <div class="footer__col">
+            <h4>[ CONTACTO ]</h4>
+            <ul>
+              <li><a href="mailto:jcdurancasado@gmail.com">Email</a></li>
+              <li><a href="https://wa.me/18294213163" target="_blank" rel="me noopener">WhatsApp</a></li>
+              <li><a href="https://t.me/jcdurancasado" target="_blank" rel="me noopener">Telegram</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer__bottom">
+        <p>&copy; <span data-year>2024</span> JCDURANCASADO · TODOS LOS DERECHOS RESERVADOS.</p>
+      </div>
+    </div>
+  </footer>
+
+  <div class="floating-stack">
+    <button class="scroll-top" id="scrollTop" aria-label="Subir al inicio"><span class="scroll-shock" aria-hidden="true"></span><span class="scroll-shock-2" aria-hidden="true"></span><i class="fa-solid fa-arrow-up"></i></button>
+    <a href="https://calendly.com/jcdurancasado" target="_blank" rel="me noopener" class="call-float" id="callFloat" aria-label="Agendar llamada"><i class="fa-solid fa-calendar-check"></i><span class="call-check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="call-float__tooltip">Agendar llamada</span></a>
+    <button class="notif-btn" id="notifBtn" aria-label="Activar notificaciones" hidden><span class="notif-waves notif-waves--left" aria-hidden="true"><span class="notif-wave"></span><span class="notif-wave"></span><span class="notif-wave"></span></span><span class="notif-waves notif-waves--right" aria-hidden="true"><span class="notif-wave"></span><span class="notif-wave"></span><span class="notif-wave"></span></span><i class="fa-solid fa-bell"></i><span class="notif-btn__tooltip">Activar notificaciones</span></button>
+    <a href="pagos.html" class="pay-float" aria-label="Ver métodos de pago"><span class="pay-scan" aria-hidden="true"></span><i class="fa-solid fa-credit-card"></i><span class="float-tooltip">Ver pagos</span></a>
+    <button class="sound-toggle" id="soundToggle" aria-label="Sonidos" aria-pressed="false"><i class="fa-solid fa-volume-xmark"></i><span class="float-tooltip" id="soundTooltip">Activar sonidos</span></button>
+    <button class="theme-toggle-float" id="themeToggle" aria-label="Cambiar tema"><i class="fa-solid fa-circle-half-stroke"></i><span class="float-tooltip">Cambiar tema</span></button>
+    <button class="install-btn" id="installBtn" aria-label="Instalar aplicación" hidden><i class="fa-solid fa-download"></i><span class="install-btn__tooltip">Instalar app</span></button>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      var input = document.getElementById('servSearch');
+      var clearBtn = document.getElementById('servSearchClear');
+      var filters = document.querySelectorAll('.serv-filter');
+      var cards = document.querySelectorAll('.serv-card[data-serv]');
+      var empty = document.getElementById('servEmpty');
+      var reset = document.getElementById('servReset');
+      if (!input || !cards.length) return;
+
+      var activeFilter = 'all';
+      var term = '';
+
+      function apply() {
+        var visible = 0;
+        cards.forEach(function (card) {
+          var serv = card.dataset.serv || '';
+          var text = (card.textContent || '').toLowerCase();
+          var matchFilter = activeFilter === 'all' || serv === activeFilter;
+          var matchTerm = !term || text.indexOf(term) !== -1;
+          var show = matchFilter && matchTerm;
+          card.dataset.hidden = show ? 'false' : 'true';
+          if (show) visible++;
+        });
+        if (empty) empty.hidden = visible > 0;
+      }
+
+      input.addEventListener('input', function () {
+        term = input.value.trim().toLowerCase();
+        if (clearBtn) clearBtn.hidden = !term;
+        apply();
+      });
+
+      if (clearBtn) clearBtn.addEventListener('click', function () {
+        input.value = '';
+        term = '';
+        clearBtn.hidden = true;
+        input.focus();
+        apply();
+      });
+
+      filters.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          filters.forEach(function (b) { b.classList.toggle('active', b === btn); });
+          activeFilter = btn.dataset.filter || 'all';
+          apply();
+        });
+      });
+
+      if (reset) reset.addEventListener('click', function () {
+        input.value = '';
+        term = '';
+        if (clearBtn) clearBtn.hidden = true;
+        activeFilter = 'all';
+        filters.forEach(function (b) { b.classList.toggle('active', b.dataset.filter === 'all'); });
+        apply();
+      });
+
+      try {
+        var hash = (window.location.hash || '').replace('#', '');
+        if (hash && document.getElementById(hash)) {
+          setTimeout(function () {
+            var target = document.getElementById(hash);
+            if (target) {
+              target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              target.style.outline = '2px solid var(--neon-cyan)';
+              setTimeout(function () { target.style.outline = ''; }, 2000);
+            }
+          }, 400);
+        }
+      } catch (e) {}
+    })();
+  </script>
+</body>
+</html>

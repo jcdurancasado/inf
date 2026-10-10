@@ -12376,3 +12376,83 @@ body.jcdc-modal-open input {
   .jcdc-firma-btn span { display: none; }
   .jcdc-firma-btn i { font-size: 1.1rem; }
 }
+
+/* ============================================
+   INDEX · Botón "Ver detalles" en tarjetas de servicios
+============================================ */
+.service-card__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: var(--space-md);
+  padding: 0.75rem 1.25rem;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--neon-cyan);
+  border: 1.5px solid rgba(0,240,255,0.4);
+  border-radius: var(--radius-sm);
+  background: rgba(0,240,255,0.03);
+  text-decoration: none;
+  transition: var(--transition);
+}
+.service-card__btn:hover {
+  background: var(--neon-cyan);
+  color: var(--bg-primary);
+  border-color: var(--neon-cyan);
+  box-shadow: 0 8px 20px rgba(0,240,255,0.35);
+  transform: translateY(-2px);
+}
+.service-card__btn i { transition: transform 0.3s ease; }
+.service-card__btn:hover i { transform: translateX(4px); }
+
+.service-card--accent .service-card__btn {
+  color: var(--neon-purple);
+  border-color: rgba(184,41,221,0.4);
+  background: rgba(184,41,221,0.03);
+}
+.service-card--accent .service-card__btn:hover {
+  background: var(--neon-purple);
+  color: var(--bg-primary);
+  border-color: var(--neon-purple);
+  box-shadow: 0 8px 20px rgba(184,41,221,0.35);
+}
+
+/* Bloque "Ver los 13 servicios" */
+.services-more {
+  text-align: center;
+  margin-top: var(--space-2xl);
+  padding-top: var(--space-xl);
+  border-top: 1px solid var(--border-subtle);
+}
+.services-more__text {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-lg);
+  font-family: var(--font-mono);
+  letter-spacing: 0.03em;
+}
+.services-more .cyber-btn i { transition: transform 0.3s ease; }
+.services-more .cyber-btn:hover i { transform: translateX(4px); }
+
+[data-theme="light"] .service-card__btn {
+  color: #0088cc;
+  border-color: rgba(0,136,204,0.3);
+  background: rgba(0,136,204,0.04);
+}
+[data-theme="light"] .service-card__btn:hover {
+  background: #0088cc;
+  color: #ffffff;
+}
+[data-theme="light"] .service-card--accent .service-card__btn {
+  color: #7c3aed;
+  border-color: rgba(124,58,237,0.3);
+}
+[data-theme="light"] .service-card--accent .service-card__btn:hover {
+  background: #7c3aed;
+  color: #ffffff;
+}

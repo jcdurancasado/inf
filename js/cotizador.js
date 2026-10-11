@@ -1256,8 +1256,10 @@ const QuoteWizard = {
       html += '    <span class="quote-field__rate">' + f.unitLabel + '</span>';
       html += '  </div>';
       html += '  <div class="quote-field__row">';
-      html += '    <input type="range" class="quote-range" min="' + f.min + '" max="' + f.max + '" step="' + f.step + '" value="' + val + '" data-field-slider="' + f.id + '">';
+      html += '    <button type="button" class="quote-step-btn" data-step-btn="' + f.id + '" data-dir="-1" aria-label="Disminuir">−</button>';
+      html += '    <input type="range" class="quote-range" min="' + f.min + '" max="' + f.max + '" step="1" value="' + val + '" data-field-slider="' + f.id + '" data-min="' + f.min + '" data-max="' + f.max + '">';
       html += '    <span class="quote-field__val" data-field-val="' + f.id + '">' + val + '</span>';
+      html += '    <button type="button" class="quote-step-btn" data-step-btn="' + f.id + '" data-dir="1" aria-label="Aumentar">+</button>';
       html += '  </div>';
       html += '</div>';
     }.bind(this));
@@ -1277,6 +1279,26 @@ const QuoteWizard = {
       slider.addEventListener('input', function () {
         self.values[id] = parseInt(slider.value, 10);
         if (valEl) valEl.textContent = slider.value;
+      });
+    });
+
+    // Botones +/− de ajuste fino (siempre de 1 en 1)
+    this.els.fields.querySelectorAll('[data-step-btn]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const id = btn.dataset.stepBtn;
+        const dir = parseInt(btn.dataset.dir, 10);
+        const slider = self.els.fields.querySelector('[data-field-slider="' + id + '"]');
+        if (!slider) return;
+        const min = parseInt(slider.dataset.min, 10);
+        const max = parseInt(slider.dataset.max, 10);
+        let current = parseInt(slider.value, 10) || 0;
+        let next = current + dir;
+        if (next < min) next = min;
+        if (next > max) next = max;
+        slider.value = next;
+        self.values[id] = next;
+        const valEl = self.els.fields.querySelector('[data-field-val="' + id + '"]');
+        if (valEl) valEl.textContent = next;
       });
     });
 

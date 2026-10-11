@@ -1001,6 +1001,107 @@
   }
 
   // ============================================================
+  // TARGETICAS · Modal para elegir cantidad
+  // ============================================================
+  function pedirCantidadTargeticas(numDoc, clienteNombre) {
+    return new Promise(function (resolve) {
+      var overlay = document.createElement('div');
+      overlay.className = 'verify-pwd-overlay';
+      overlay.innerHTML =
+        '<div class="verify-pwd verify-pwd--targetica">' +
+        '  <h3><i class="fa-solid fa-tag"></i> TARGETICAS DE GARANTÍA</h3>' +
+        '  <p>Factura: <strong>' + numDoc + '</strong>' +
+             (clienteNombre ? '<br>Cliente: <strong>' + clienteNombre + '</strong>' : '') +
+             '<br><br>¿Cuántas etiquetas necesitas imprimir?</p>' +
+        '  <div class="verify-pwd__qty">' +
+        '    <button type="button" data-qty="1">1</button>' +
+        '    <button type="button" data-qty="2">2</button>' +
+        '    <button type="button" data-qty="4">4</button>' +
+        '    <button type="button" data-qty="8">8</button>' +
+        '    <button type="button" data-qty="12" class="active">12</button>' +
+        '  </div>' +
+        '  <div class="verify-pwd__actions">' +
+        '    <button type="button" class="cancel" id="qtyCancel">Cancelar</button>' +
+        '    <button type="button" class="ok" id="qtyOk">Imprimir</button>' +
+        '  </div>' +
+        '</div>';
+      document.body.appendChild(overlay);
+      document.body.classList.add('jcdc-modal-open');
+
+      var qtyBtns = overlay.querySelectorAll('[data-qty]');
+      var selectedQty = 12;
+
+      qtyBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          qtyBtns.forEach(function (b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          selectedQty = parseInt(btn.getAttribute('data-qty'), 10);
+        });
+      });
+
+      function cerrar(v) {
+        document.body.classList.remove('jcdc-modal-open');
+        overlay.remove();
+        resolve(v);
+      }
+
+      overlay.querySelector('#qtyOk').addEventListener('click', function () { cerrar(selectedQty); });
+      overlay.querySelector('#qtyCancel').addEventListener('click', function () { cerrar(null); });
+      overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) cerrar(null);
+      });
+      document.addEventListener('keydown', function esc(e) {
+        if (e.key === 'Escape') { document.removeEventListener('keydown', esc); cerrar(null); }
+        if (e.key === 'Enter')  { document.removeEventListener('keydown', esc); cerrar(selectedQty); }
+      });
+    });
+  }
+
+  // ============================================================
+  // TARGETICAS · Imprimir desde el panel admin
+  // ============================================================
+  async function imprimirTargeticaDesdeDoc(doc) {
+    if (typeof window.JCDC_Targetica === 'undefined' || typeof window.JCDC_Targetica.print !== 'function') {
+      if (typeof Toast !== 'undefined') Toast.show('Módulo targetica.js no cargado', 'error', 2500);
+      return;
+    }
+
+    const s = doc.snapshot || {};
+    const cli = s.cliente || {};
+    const prov = (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.proveedor) || {};
+
+    // Reconstruir nombre del equipo legible
+    let equipoLabel = s.equipo || doc.equipo || 'Equipo';
+    const equipoId = s.equipo;
+    if (equipoId && window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.equipos) {
+      const eq = window.SOPORTE_CONFIG.equipos.find(function (e) { return e.id === equipoId; });
+      if (eq) equipoLabel = eq.label;
+    }
+
+    // Fecha de emisión
+    const fechaEmision = s.fechaEmision || (doc.fechaISO ? doc.fechaISO.slice(0, 10) : new Date().toISOString().slice(0, 10));
+
+    // Preguntar cantidad al admin
+    var cantidad = await pedirCantidadTargeticas(doc.numero, cli.nombre || doc.cliente || '');
+    if (!cantidad) return;
+
+    window.JCDC_Targetica.print({
+      numero: doc.numero,
+      tipoDoc: doc.tipo,
+      estado: doc.estado,
+      fechaEmision: fechaEmision,
+      garantiaDias: s.garantia || 30,
+      cliente: { nombre: cli.nombre || doc.cliente || 'Cliente', telefono: cli.telefono || '' },
+      equipo: equipoLabel,
+      marca: s.marca || '',
+      modelo: s.modelo || '',
+      descripcion: s.descripcion || '',
+      codigoVC: doc.codigoVC || '',
+      cantidad: cantidad
+    });
+  }
+
+  // ============================================================
   // INIT
   // ============================================================
   function init() {
@@ -1251,6 +1352,10 @@
         html += '    <button type="button" class="admin-lista__accion" data-action="ver" data-id="' + d._id + '" data-code="' + code + '" title="Ver documento"><i class="fa-solid fa-eye"></i></button>';
         html += '    <button type="button" class="admin-lista__accion" data-action="download" data-id="' + d._id + '" data-code="' + code + '" title="Descargar PDF"><i class="fa-solid fa-download"></i></button>';
         html += '    <button type="button" class="admin-lista__accion" data-action="print" data-id="' + d._id + '" data-code="' + code + '" title="Imprimir"><i class="fa-solid fa-print"></i></button>';
+        // Botón targetica: solo en facturas pagadas
+        if (d.tipo === 'factura' && d.estado === 'pagada') {
+          html += '    <button type="button" class="admin-lista__accion admin-lista__accion--targetica" data-action="targetica" data-id="' + d._id + '" data-code="' + code + '" title="Imprimir targeticas de garantía"><i class="fa-solid fa-tag"></i></button>';
+        }
         html += '    <button type="button" class="admin-lista__accion admin-lista__accion--email" data-action="email" data-id="' + d._id + '" data-code="' + code + '" title="Enviar por correo al cliente"><i class="fa-solid fa-envelope"></i></button>';
         html += '    <button type="button" class="admin-lista__accion admin-lista__accion--del" data-action="del" data-id="' + d._id + '" data-code="' + code + '" title="Eliminar permanentemente"><i class="fa-solid fa-trash"></i></button>';
         html += '  </div>';
@@ -1309,6 +1414,9 @@
           } else if (tipo === 'email') {
             if (!doc) { alert('No se encontró el documento.'); return; }
             solicitarEnviarEmail(doc);
+          } else if (tipo === 'targetica') {
+            if (!doc) { alert('No se encontró el documento.'); return; }
+            imprimirTargeticaDesdeDoc(doc);
           } else if (tipo === 'del') {
             if (!doc) { alert('No se encontró el documento.'); return; }
             solicitarEliminar(doc, todosLosDocs, renderListaAdmin);

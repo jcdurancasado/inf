@@ -1,6 +1,12 @@
 /**
  * JCDURANCASADO · Cotizador de Servicios
- * v3 — Factura protegida + sello PAGADO + código verificación
+ * v4 — 13 servicios + garantía con % + validez admin + targeticas
+ * Mantiene intacta la lógica de:
+ *   · OTP por WhatsApp + clave admin
+ *   · Firebase Auth (login admin)
+ *   · Sello, QR, código de verificación, PDF, email
+ *   · Registro en Firestore + localStorage
+ *   · Badge admin/cliente + timeout 30 min
  */
 'use strict';
 
@@ -11,72 +17,72 @@ const QuoteWizard = {
   values: {},
   extras: {},
   reparacion: null,
-  RATE_DOP: 60,
   facturaUnlocked: false,
   cotizacionUnlocked: false,
 
-  services: {
-    red: {
-      label: 'Red Empresarial',
-      base: 500,
-      fields: [
-        { id: 'users',    label: 'Usuarios / dispositivos', min: 1, max: 500, step: 5, default: 20, unit: 8,   unitLabel: '$8 por usuario' },
-        { id: 'branches', label: 'Sucursales',              min: 1, max: 30,  step: 1, default: 1,  unit: 150, unitLabel: '$150 por sucursal' }
-      ]
-    },
-    audit: {
-      label: 'Auditoría de Seguridad',
-      base: 800,
-      fields: [
-        { id: 'servers',  label: 'Servidores a auditar', min: 1, max: 100, step: 1, default: 3, unit: 100, unitLabel: '$100 por servidor' },
-        { id: 'branches', label: 'Sucursales',           min: 1, max: 30,  step: 1, default: 1, unit: 200, unitLabel: '$200 por sucursal' }
-      ]
-    },
-    training: {
-      label: 'Capacitación Técnica',
-      base: 300,
-      fields: [
-        { id: 'students', label: 'Estudiantes',  min: 5, max: 200, step: 5, default: 15, unit: 25, unitLabel: '$25 por estudiante' },
-        { id: 'hours',    label: 'Horas totales', min: 4, max: 200, step: 4, default: 24, unit: 15, unitLabel: '$15 por hora' }
-      ]
-    },
-    support: {
-      label: 'Soporte Mensual',
-      base: 200,
-      fields: [
-        { id: 'users', label: 'Usuarios', min: 1, max: 500, step: 5, default: 20, unit: 3, unitLabel: '$3 por usuario/mes' }
-      ]
-    },
-    reparacion: {
-      label: 'Reparación Técnica',
-      base: 0,
-      custom: true
-    }
-  },
+  // Estado nuevo: garantía y validez para TODOS los servicios
+  garantiaSeleccionada: 30,
+  diasValidez: 15,
+  cantidadTargeticas: 12,
 
-  extrasDef: {
-    docs:        { label: 'Documentación técnica',        price: 150 },
-    certificate: { label: 'Certificado por escrito',      price: 50  },
-    onsite:      { label: 'Visita presencial',            price: 100 },
-    training:    { label: 'Capacitación al equipo (4h)',  price: 200 },
-    urgent:      { label: 'Entrega urgente (< 1 semana)', price: 0, percentage: 0.30 }
+  // ============================================
+  // CONFIGURACIÓN (cargada desde SOPORTE_CONFIG)
+  // ============================================
+  services: {},
+  categories: {
+    redes:     { label: 'REDES',                 icon: 'fa-network-wired' },
+    seguridad: { label: 'SEGURIDAD',             icon: 'fa-shield-halved' },
+    formacion: { label: 'FORMACIÓN',             icon: 'fa-chalkboard-user' },
+    cloud:     { label: 'CLOUD & CCTV',          icon: 'fa-cloud' },
+    soporte:   { label: 'SOPORTE & REPARACIÓN',  icon: 'fa-screwdriver-wrench' }
   },
+  extrasDef: {},
 
   els: {},
 
-  /* ============================================
-     INIT
-  ============================================ */
+  // ============================================
+  // GETTERS dinámicos
+  // ============================================
+  get RATE_DOP() {
+    return (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.rateDop) || 60;
+  },
+  get garantiaTramos() {
+    return (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.garantiaTramos) || [
+      { dias: 0,   label: 'Sin garantía', pct: 0    },
+      { dias: 15,  label: '15 días',      pct: 0.03 },
+      { dias: 30,  label: '30 días',      pct: 0.06 },
+      { dias: 60,  label: '60 días',      pct: 0.10 },
+      { dias: 90,  label: '90 días',      pct: 0.15 },
+      { dias: 180, label: '6 meses',      pct: 0.22 },
+      { dias: 365, label: '1 año',        pct: 0.35 }
+    ];
+  },
+
+  // ============================================
+  // INIT
+  // ============================================
   init() {
+    // Cargar servicios y extras desde config
+    if (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.serviciosCotizador) {
+      this.services = window.SOPORTE_CONFIG.serviciosCotizador;
+    }
+    if (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.extrasDef) {
+      this.extrasDef = window.SOPORTE_CONFIG.extrasDef;
+    }
+    // Validez por defecto desde config
+    if (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.documentos) {
+      this.diasValidez = window.SOPORTE_CONFIG.documentos.cotizacionValidezDias || 15;
+    }
+
     const wizard = document.getElementById('quoteWizard');
-    
-    // SIEMPRE arrancar bloqueado hasta que el usuario se autentique
+
+    // SIEMPRE arrancar bloqueado
     this.facturaUnlocked = false;
     this.cotizacionUnlocked = false;
     this._tipoAcceso = null;
     this._expiraEn = null;
-    
-    // Detectar si ya hay sesión admin activa
+
+    // Detectar sesión admin activa
     if (window.auth) {
       const self = this;
       window.auth.onAuthStateChanged(function (user) {
@@ -91,7 +97,7 @@ const QuoteWizard = {
         }
       });
     }
-    
+
     if (!wizard) return;
 
     this.els = {
@@ -104,30 +110,16 @@ const QuoteWizard = {
       summary: document.getElementById('quoteSummary'),
       back: document.getElementById('quoteBack'),
       next: document.getElementById('quoteNext'),
-      restart: document.getElementById('quoteRestart')
+      restart: document.getElementById('quoteRestart'),
+      servicesHost: document.getElementById('quoteServicesHost')
     };
 
     const self = this;
-    document.querySelectorAll('[data-service]').forEach(function (opt) {
-      opt.addEventListener('click', async function () {
-        const servicioId = opt.dataset.service;
 
-        // Bloqueo: si no está desbloqueado, pedir código ANTES de seleccionar
-        if (!self.cotizacionUnlocked && !self.facturaUnlocked) {
-          const ok = await self.pedirCodigoOTP();
-          if (!ok) return;
-        }
+    // Generar los 13 servicios (si hay host en el HTML)
+    this.renderServicesHost();
 
-        document.querySelectorAll('[data-service]').forEach(function (o) { o.classList.remove('checked'); });
-        opt.classList.add('checked');
-        const input = opt.querySelector('input');
-        if (input) input.checked = true;
-        self.service = servicioId;
-        self.loadDefaults();
-        self.updateNextBtn();
-      });
-    });
-
+    // Extras (los existentes en HTML)
     document.querySelectorAll('[data-extra]').forEach(function (opt) {
       opt.addEventListener('click', function (e) {
         e.preventDefault();
@@ -154,9 +146,134 @@ const QuoteWizard = {
     this.updateNextBtn();
   },
 
-  /* ============================================
-     SEGURIDAD · Verificación de contraseña
-  ============================================ */
+  // ============================================
+  // RENDER · Servicios del Paso 1 (13 por categoría)
+  // ============================================
+  renderServicesHost() {
+    // Contenedor de servicios (con fallback al viejo)
+    let host = (this.els && this.els.servicesHost) || document.querySelector('.quote-options--services');
+    if (host && !this.els.servicesHost) {
+      this.els.servicesHost = host;
+      if (!host.id) host.id = 'quoteServicesHost';
+    }
+    if (!host) {
+      console.warn('[JCDC] No se encontró contenedor de servicios.');
+      return;
+    }
+
+    // Vaciar cualquier servicio hardcoded del HTML viejo
+    host.innerHTML = '';
+
+    // Contenedor de filtros (chips)
+    const filtersHost = document.getElementById('quoteServicesFilters');
+
+    const self = this;
+    const cats = this.categories;
+    const svcs = this.services;
+
+    // ============================================
+    // 1. FILTROS TIPO CHIPS
+    // ============================================
+    if (filtersHost) {
+      let chipsHtml = '';
+      chipsHtml += '<button type="button" class="quote-services-filters__chip active" data-filter="all">';
+      chipsHtml += '  <i class="fa-solid fa-layer-group"></i><span>Todos</span>';
+      chipsHtml += '</button>';
+      Object.keys(cats).forEach(function (catId) {
+        chipsHtml += '<button type="button" class="quote-services-filters__chip" data-filter="' + catId + '">';
+        chipsHtml += '  <i class="fa-solid ' + cats[catId].icon + '"></i><span>' + cats[catId].label + '</span>';
+        chipsHtml += '</button>';
+      });
+      filtersHost.innerHTML = chipsHtml;
+
+      // Handler de filtrado
+      filtersHost.querySelectorAll('.quote-services-filters__chip').forEach(function (chip) {
+        chip.addEventListener('click', function () {
+          filtersHost.querySelectorAll('.quote-services-filters__chip').forEach(function (c) {
+            c.classList.remove('active');
+          });
+          chip.classList.add('active');
+          const filter = chip.dataset.filter || 'all';
+
+          host.querySelectorAll('.quote-option[data-service]').forEach(function (card) {
+            const cat = card.dataset.category || 'otros';
+            const show = (filter === 'all') || (cat === filter);
+            card.dataset.hidden = show ? 'false' : 'true';
+          });
+        });
+      });
+    }
+
+    // ============================================
+    // 2. SERVICIOS (sin etiquetas de categoría)
+    // ============================================
+    let html = '';
+    Object.keys(cats).forEach(function (catId) {
+      Object.keys(svcs).forEach(function (id) {
+        const s = svcs[id];
+        if (s.category !== catId) return;
+        html += '<label class="quote-option" data-service="' + id + '" data-category="' + catId + '">';
+        html += '  <input type="radio" name="service" value="' + id + '">';
+        html += '  <span class="quote-option__icon"><i class="fa-solid ' + (s.icon || 'fa-circle') + '"></i></span>';
+        html += '  <span class="quote-option__name">' + s.label + '</span>';
+        html += '  <span class="quote-option__desc">' + (s.desc || '') + '</span>';
+        html += '</label>';
+      });
+    });
+
+    host.innerHTML = html;
+
+    // ============================================
+    // 3. HANDLERS DE SELECCIÓN
+    // ============================================
+    host.querySelectorAll('[data-service]').forEach(function (opt) {
+      opt.addEventListener('click', async function () {
+        const servicioId = opt.dataset.service;
+
+        if (!self.cotizacionUnlocked && !self.facturaUnlocked) {
+          const ok = await self.pedirCodigoOTP();
+          if (!ok) return;
+        }
+
+        host.querySelectorAll('[data-service]').forEach(function (o) { o.classList.remove('checked'); });
+        opt.classList.add('checked');
+        const input = opt.querySelector('input');
+        if (input) input.checked = true;
+        self.service = servicioId;
+        self.loadDefaults();
+        self._aplicarFiltrosExtras(servicioId);
+        self.updateNextBtn();
+      });
+    });
+  },
+
+  // ============================================
+  // FILTRO · Extras no aplicables al servicio
+  // ============================================
+  _aplicarFiltrosExtras(serviceId) {
+    if (!this.extrasDef) return;
+    document.querySelectorAll('[data-extra]').forEach(function (opt) {
+      const key = opt.dataset.extra;
+      const def = QuoteWizard.extrasDef[key];
+      if (!def) return;
+      const excl = def.excludes || [];
+      const hidden = excl.indexOf(serviceId) !== -1;
+
+      opt.style.display = hidden ? 'none' : '';
+      if (hidden) {
+        const input = opt.querySelector('input');
+        if (input && input.checked) {
+          input.checked = false;
+          opt.classList.remove('checked');
+          QuoteWizard.extras[key] = false;
+        }
+      }
+    });
+  },
+
+  // ============================================
+  // SEGURIDAD · Hash y contraseña
+  // ============================================
   async sha256Hex(str) {
     const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
     return [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2, '0')).join('');
@@ -171,10 +288,9 @@ const QuoteWizard = {
     return input === (sec.facturaPassword || '');
   },
 
-  /* ============================================
-     SEGURIDAD · Inyectar estilos del modal
-     (auto-contenido, no depende de style.css)
-  ============================================ */
+  // ============================================
+  // Estilos del modal (auto-contenido)
+  // ============================================
   _inyectarEstilosModal() {
     if (document.getElementById('jcdc-pwd-modal-styles')) return;
     const style = document.createElement('style');
@@ -371,11 +487,8 @@ const QuoteWizard = {
         color: #ff3333;
       }
 
-      /* Cursor encima del modal */
       body.jcdc-modal-open .cursor-dot,
-      body.jcdc-modal-open .cursor-ring {
-        z-index: 100002 !important;
-      }
+      body.jcdc-modal-open .cursor-ring { z-index: 100002 !important; }
       body.jcdc-modal-open { cursor: none; }
       body.jcdc-modal-open a,
       body.jcdc-modal-open button,
@@ -391,17 +504,13 @@ const QuoteWizard = {
     document.head.appendChild(style);
   },
 
+  // ============================================
+  // FACTURA · Login admin (Firebase Auth)
+  // ============================================
   async pedirPasswordFactura() {
-    // Verificar SIEMPRE contra Firebase, no confiar en facturaUnlocked
     if (window.auth && window.auth.currentUser) {
       this.facturaUnlocked = true;
       this._activarModoAdmin();
-      return true;
-    }
-
-    // Si ya hay sesión activa de Firebase Auth, desbloquear directo
-    if (window.auth && window.auth.currentUser) {
-      this.facturaUnlocked = true;
       return true;
     }
 
@@ -503,13 +612,13 @@ const QuoteWizard = {
       });
     });
   },
-  /* ============================================
-     OTP · Código temporal para COTIZACIÓN
-  ============================================ */
+
+  // ============================================
+  // OTP · Código temporal para COTIZACIÓN
+  // ============================================
   async pedirCodigoOTP() {
     if (this.cotizacionUnlocked) return true;
 
-    // ✅ Limpiar cualquier modal huérfano antes de crear uno nuevo
     document.querySelectorAll('.pwd-overlay').forEach(function (el) {
       if (el.parentNode) el.parentNode.removeChild(el);
     });
@@ -603,26 +712,28 @@ const QuoteWizard = {
         error.textContent = '';
         error.style.color = '#ff3333';
 
-// Hora en República Dominicana (UTC-4, sin DST)
-var horaRD = parseInt(
-  new Intl.DateTimeFormat('en-US', {
-    timeZone: 'America/Santo_Domingo',
-    hour: 'numeric',
-    hour12: false
-  }).format(new Date()),
-  10
-);
+        // Hora en RD
+        var horaRD = parseInt(
+          new Intl.DateTimeFormat('en-US', {
+            timeZone: 'America/Santo_Domingo',
+            hour: 'numeric',
+            hour12: false
+          }).format(new Date()),
+          10
+        );
+        var saludo = (horaRD >= 5 && horaRD < 12) ? 'buenos días'
+                   : (horaRD >= 12 && horaRD < 19) ? 'buenas tardes'
+                   : 'buenas noches';
+        var waMsg = encodeURIComponent(
+          'Hola Julio C. Durán Casado, ' + saludo + '. Estoy intentando generar una cotización desde el cotizador de tu sitio web y el sistema me solicita un código de acceso temporal. ¿Podrías facilitármelo, por favor? Muchas gracias.'
+        );
+        var wa = (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.whatsapp) || '18294213163';
+        window.open('https://wa.me/' + wa + '?text=' + waMsg, '_blank', 'noopener');
 
-var saludo = (horaRD >= 5 && horaRD < 12) ? 'buenos días'
-           : (horaRD >= 12 && horaRD < 19) ? 'buenas tardes'
-           : 'buenas noches';
-
-var waMsg = encodeURIComponent(
-  'Hola Julio C. Durán Casado, ' + saludo + '. Estoy intentando generar una cotización desde el cotizador de tu sitio web y el sistema me solicita un código de acceso temporal. ¿Podrías facilitármelo, por favor? Muchas gracias.'
-);        window.open('https://wa.me/18294213163?text=' + waMsg, '_blank', 'noopener');
+        const apiBase = (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.apiBaseUrl) || 'https://jcdcapi.vercel.app';
 
         try {
-          const r = await fetch('https://jcdcapi.vercel.app/api/solicitar-codigo', {
+          const r = await fetch(apiBase + '/api/solicitar-codigo', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({})
@@ -664,10 +775,12 @@ var waMsg = encodeURIComponent(
         error.textContent = 'Verificando...';
         error.style.color = '#00f0ff';
 
+        const apiBase = (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.apiBaseUrl) || 'https://jcdcapi.vercel.app';
+
         try {
           if (!esOTP) {
             // Clave admin
-            const r = await fetch('https://jcdcapi.vercel.app/api/validar-admin-key', {
+            const r = await fetch(apiBase + '/api/validar-admin-key', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ clave: valor })
@@ -693,7 +806,7 @@ var waMsg = encodeURIComponent(
             }
           } else {
             // OTP
-            const r = await fetch('https://jcdcapi.vercel.app/api/validar-codigo', {
+            const r = await fetch(apiBase + '/api/validar-codigo', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ codigo: valor })
@@ -754,13 +867,13 @@ var waMsg = encodeURIComponent(
     });
   },
 
-  /* ============================================
-     CONFIRMACIÓN PERSONALIZADA
-  ============================================ */
+  // ============================================
+  // CONFIRMACIÓN personalizada
+  // ============================================
   _confirmar(mensaje, opciones) {
     opciones = opciones || {};
     const titulo = opciones.titulo || '¿Confirmar acción?';
-    const tipo = opciones.tipo || 'info'; // 'info' | 'warning' | 'danger'
+    const tipo = opciones.tipo || 'info';
     const okLabel = opciones.okLabel || 'Aceptar';
     const cancelLabel = opciones.cancelLabel || 'Cancelar';
     const icono = opciones.icono || (tipo === 'danger' ? 'fa-triangle-exclamation' : tipo === 'warning' ? 'fa-circle-exclamation' : 'fa-circle-question');
@@ -800,9 +913,9 @@ var waMsg = encodeURIComponent(
     });
   },
 
-  /* ============================================
-     BADGE DE ESTADO (Admin / Cliente)
-  ============================================ */
+  // ============================================
+  // BADGES de estado
+  // ============================================
   _mostrarBadgeAdmin() {
     const self = this;
     const previo = document.getElementById('jcdcStatusBadge');
@@ -855,7 +968,6 @@ var waMsg = encodeURIComponent(
     const seg = String(restante % 60).padStart(2, '0');
     el.textContent = min + ':' + seg;
 
-    // Semáforo: > 10 min = verde · 3-10 min = amarillo · < 3 min = rojo
     badge.classList.remove('jcdc-status-badge--ok', 'jcdc-status-badge--warn', 'jcdc-status-badge--danger');
     if (restante <= 180) {
       badge.classList.add('jcdc-status-badge--danger');
@@ -874,6 +986,7 @@ var waMsg = encodeURIComponent(
       self._cerrarSesionCliente();
     }
   },
+
   _iniciarTimerCliente() {
     const self = this;
     if (self._timerBadge) clearInterval(self._timerBadge);
@@ -889,38 +1002,35 @@ var waMsg = encodeURIComponent(
     const badge = document.getElementById('jcdcStatusBadge');
     if (badge && badge.parentNode) badge.parentNode.removeChild(badge);
 
-    // Rebobinar al paso 1
     this._reiniciarWizard();
 
     if (typeof Toast !== 'undefined') Toast.show('Acceso temporal finalizado', 'info', 2500);
   },
 
-  /* ============================================
-     ADMIN SESSION · Timeout + Logout
-  ============================================ */
+  // ============================================
+  // ADMIN SESSION
+  // ============================================
   _activarModoAdmin() {
     const self = this;
 
-    // Remover el botón viejo si existe (para evitar duplicados)
     const viejo = document.getElementById('adminLogoutFloat');
     if (viejo) viejo.remove();
 
-    // Si no existe el bloque COTIZACIÓN/FACTURA todavía, esperar
     var docType = document.querySelector('.rep-doc-type');
     if (!docType || !docType.parentNode) return;
 
-    // Ya no creamos botón flotante — el badge es el único control
-    // Remover cualquier botón huérfano de versiones anteriores
     document.querySelectorAll('.admin-logout-float').forEach(function (el) {
       if (el.parentNode) el.parentNode.removeChild(el);
     });
 
-    // Actualizar badge de FACTURA (si existe)
     this._actualizarBadgeFactura(true);
 
-    // Timeout de 30 minutos sin actividad
+    // Mostrar bloque de validez si existe
+    const validezWrap = document.getElementById('repValidezWrap');
+    if (validezWrap) validezWrap.style.display = 'block';
+
     this._reiniciarTimeoutAdmin();
-    // Evitar acumular listeners
+
     if (this._adminListeners) {
       this._adminListeners.forEach(function (l) {
         document.removeEventListener(l.evt, l.fn);
@@ -942,14 +1052,17 @@ var waMsg = encodeURIComponent(
         if (typeof Toast !== 'undefined') Toast.show('Sesión cerrada por inactividad', 'info', 2500);
         self._cerrarSesionAdmin();
       }
-    }, 30 * 60 * 1000); // 30 minutos
+    }, 30 * 60 * 1000);
   },
+
   _reiniciarWizard() {
     this.currentStep = 1;
     this.service = null;
     this.values = {};
     this.extras = {};
     this.reparacion = null;
+    this.garantiaSeleccionada = 30;
+    this.diasValidez = (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.documentos && window.SOPORTE_CONFIG.documentos.cotizacionValidezDias) || 15;
 
     document.querySelectorAll('[data-service]').forEach(function (o) {
       o.classList.remove('checked');
@@ -958,6 +1071,7 @@ var waMsg = encodeURIComponent(
     });
     document.querySelectorAll('[data-extra]').forEach(function (o) {
       o.classList.remove('checked');
+      o.style.display = '';
       const inp = o.querySelector('input');
       if (inp) inp.checked = false;
     });
@@ -976,29 +1090,31 @@ var waMsg = encodeURIComponent(
       window.auth.signOut().catch(function (e) { console.warn(e); });
     }
 
-    // Resetear TODOS los flags
     this.facturaUnlocked = false;
     this.cotizacionUnlocked = false;
     this._tipoAcceso = null;
     this._expiraEn = null;
 
-    // Remover cualquier botón flotante huérfano
     document.querySelectorAll('.admin-logout-float').forEach(function (el) {
       if (el.parentNode) el.parentNode.removeChild(el);
     });
 
-    // Remover badge de estado
     const badge = document.getElementById('jcdcStatusBadge');
     if (badge && badge.parentNode) badge.parentNode.removeChild(badge);
 
-    // Resetear UI de factura (badge)
     this._actualizarBadgeFactura(false);
 
-    // Rebobinar al paso 1
+    const validezWrap = document.getElementById('repValidezWrap');
+    if (validezWrap) validezWrap.style.display = 'none';
+
     this._reiniciarWizard();
 
     if (typeof Toast !== 'undefined') Toast.show('Sesión cerrada', 'info', 1800);
   },
+
+  // ============================================
+  // BADGE FACTURA (refactor sin cloneNode)
+  // ============================================
   _actualizarBadgeFactura(esAdmin) {
     const btnFactura = document.querySelector('.rep-doc-btn[data-tipodoc="factura"]');
     if (!btnFactura) return;
@@ -1007,7 +1123,6 @@ var waMsg = encodeURIComponent(
     const small = btnFactura.querySelector('small');
 
     if (esAdmin) {
-      // Botón FACTURA en modo admin
       btnFactura.classList.add('rep-doc-btn--admin');
       btnFactura.classList.remove('rep-doc-btn--locked');
       if (small) small.textContent = 'Acceso autorizado · puedes facturar';
@@ -1018,9 +1133,8 @@ var waMsg = encodeURIComponent(
         badge.style.cursor = 'pointer';
         badge.style.display = '';
 
-        if (!badge._hasClickHandler) {
-          badge._hasClickHandler = true;
-          badge.addEventListener('click', function (e) {
+        if (!badge._jcdcHandler) {
+          badge._jcdcHandler = function (e) {
             e.stopPropagation();
             e.preventDefault();
             QuoteWizard._confirmar(
@@ -1029,29 +1143,31 @@ var waMsg = encodeURIComponent(
             ).then(function (ok) {
               if (ok) QuoteWizard._cerrarSesionAdmin();
             });
-          });
+          };
+          badge.addEventListener('click', badge._jcdcHandler);
         }
       }
     } else {
-      // Botón FACTURA en modo normal (cliente o sin sesión)
       btnFactura.classList.remove('rep-doc-btn--admin');
       btnFactura.classList.add('rep-doc-btn--locked');
       if (small) small.textContent = 'Requiere contraseña · solo personal autorizado';
 
       if (badge) {
+        if (badge._jcdcHandler) {
+          badge.removeEventListener('click', badge._jcdcHandler);
+          badge._jcdcHandler = null;
+        }
         badge.className = 'rep-lock-badge';
         badge.innerHTML = '<i class="fa-solid fa-lock"></i> PRIVADO';
         badge.style.cursor = '';
         badge.style.display = '';
-        badge._hasClickHandler = false;
-        const clone = badge.cloneNode(true);
-        badge.parentNode.replaceChild(clone, badge);
       }
     }
   },
-  /* ============================================
-     HELPERS
-  ============================================ */
+
+  // ============================================
+  // HELPERS
+  // ============================================
   loadDefaults() {
     this.values = {};
     const cfg = this.services[this.service];
@@ -1123,9 +1239,9 @@ var waMsg = encodeURIComponent(
     window.scrollTo({ top: top, behavior: 'smooth' });
   },
 
-  /* ============================================
-     RENDER · Campos normales
-  ============================================ */
+  // ============================================
+  // RENDER · Campos normales + Garantía + Validez
+  // ============================================
   renderFields() {
     const cfg = this.services[this.service];
     if (!cfg) return;
@@ -1145,6 +1261,13 @@ var waMsg = encodeURIComponent(
       html += '  </div>';
       html += '</div>';
     }.bind(this));
+
+    // Bloque de Garantía (todos los servicios)
+    html += this._renderGarantiaBlock();
+
+    // Bloque de Validez (solo admin)
+    html += this._renderValidezBlock();
+
     this.els.fields.innerHTML = html;
 
     const self = this;
@@ -1156,11 +1279,90 @@ var waMsg = encodeURIComponent(
         if (valEl) valEl.textContent = slider.value;
       });
     });
+
+    this._attachGarantiaHandlers();
+    this._attachValidezHandlers();
   },
 
-  /* ============================================
-     RENDER · Reparación Técnica
-  ============================================ */
+  // ============================================
+  // HTML · Bloque de Garantía (reutilizable)
+  // ============================================
+  _renderGarantiaBlock() {
+    const tramos = this.garantiaTramos;
+    let html = '';
+    html += '<div class="rep-block">';
+    html += '  <h4 class="rep-block__title"><i class="fa-solid fa-shield-halved"></i> Garantía del servicio</h4>';
+    html += '  <p class="rep-block__hint">A mayor garantía, mayor cobertura. El porcentaje se suma al total.</p>';
+    html += '  <div class="rep-garantia__opts">';
+    tramos.forEach(function (t) {
+      const active = (t.dias === QuoteWizard.garantiaSeleccionada) ? ' active' : '';
+      const pctTxt = t.pct > 0 ? '<span class="pct">+' + Math.round(t.pct * 100) + '%</span>' : '';
+      html += '<button type="button" class="rep-garantia-btn' + active + '" data-garantia="' + t.dias + '">';
+      if (t.dias === 0) html += '<i class="fa-solid fa-ban"></i> ';
+      html += t.label + ' ' + pctTxt;
+      html += '</button>';
+    });
+    html += '  </div>';
+    html += '</div>';
+    return html;
+  },
+
+  // ============================================
+  // HTML · Bloque de Validez (solo admin)
+  // ============================================
+  _renderValidezBlock() {
+    const cfg = window.SOPORTE_CONFIG || {};
+    const opts = (cfg.documentos && cfg.documentos.cotizacionValidezOpciones) || [15, 30, 45, 60];
+    const current = this.diasValidez;
+    const show = (this.facturaUnlocked || this._tipoAcceso === 'admin');
+
+    let html = '<div class="rep-block rep-validez" id="repValidezWrap" style="display:' + (show ? 'block' : 'none') + ';">';
+    html += '  <h4 class="rep-block__title"><i class="fa-solid fa-calendar-check"></i> Validez de la cotización <span class="rep-validez__badge">SOLO ADMIN</span></h4>';
+    html += '  <p class="rep-block__hint">Días que la cotización permanece vigente desde su emisión.</p>';
+    html += '  <div class="rep-validez__opts">';
+    opts.forEach(function (d) {
+      const active = (d === current) ? ' active' : '';
+      html += '<button type="button" class="rep-validez__btn' + active + '" data-validez="' + d + '">' + d + ' días</button>';
+    });
+    html += '  </div>';
+    html += '</div>';
+    return html;
+  },
+
+  _attachGarantiaHandlers() {
+    const self = this;
+    document.querySelectorAll('.rep-garantia-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('.rep-garantia-btn').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        self.garantiaSeleccionada = parseInt(btn.dataset.garantia, 10);
+        if (self.reparacion) self.reparacion.garantia = self.garantiaSeleccionada;
+      });
+    });
+  },
+
+  _attachValidezHandlers() {
+    const self = this;
+    document.querySelectorAll('.rep-validez__btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('.rep-validez__btn').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        const dias = parseInt(btn.dataset.validez, 10);
+        self.diasValidez = dias;
+        if (self.reparacion) {
+          self.reparacion.diasValidez = dias;
+          const nuevaVenc = new Date(new Date(self.reparacion.fechaEmision).getTime() + dias * 24 * 60 * 60 * 1000);
+          self.reparacion.fechaVencimiento = nuevaVenc.toISOString().slice(0, 10);
+        }
+        const smallCot = document.querySelector('.rep-doc-btn[data-tipodoc="cotizacion"] small');
+        if (smallCot) smallCot.textContent = 'Documento informativo · válido ' + dias + ' días';
+      });
+    });
+  },
+
+  // ============================================
+  // RENDER · Reparación Técnica
+  // ============================================
   renderReparacionFields() {
     const cfg = window.SOPORTE_CONFIG;
     if (!cfg) {
@@ -1185,7 +1387,7 @@ var waMsg = encodeURIComponent(
       contador = Math.floor(Math.random() * 900 + 100);
     }
     const numDoc = 'COT-' + hoy + '-' + String(contador).padStart(3, '0');
-    const diasValidez = (cfg.documentos && cfg.documentos.cotizacionValidezDias) || 7;
+    const diasValidez = this.diasValidez || ((cfg.documentos && cfg.documentos.cotizacionValidezDias) || 15);
     const venc = new Date(now.getTime() + diasValidez * 24 * 60 * 60 * 1000);
 
     this.reparacion = {
@@ -1196,7 +1398,7 @@ var waMsg = encodeURIComponent(
       descripcion: '',
       tipoDoc: 'cotizacion',
       estado: 'pagada',
-      garantia: 30,
+      garantia: this.garantiaSeleccionada,
       numero: numDoc,
       fechaEmision: now.toISOString().slice(0, 10),
       fechaVencimiento: venc.toISOString().slice(0, 10),
@@ -1207,11 +1409,10 @@ var waMsg = encodeURIComponent(
     };
 
     const self = this;
-    const esFactura = false;
 
     let html = '';
 
-    // Tipo documento — con candado en FACTURA
+    // Tipo documento
     html += '<div class="rep-doc-type">';
     html += '  <button type="button" class="rep-doc-btn active" data-tipodoc="cotizacion">';
     html += '    <i class="fa-solid fa-file-invoice"></i> COTIZACIÓN';
@@ -1224,6 +1425,7 @@ var waMsg = encodeURIComponent(
     html += '  </button>';
     html += '</div>';
 
+    // Estado factura
     html += '<div class="rep-estado" id="repEstadoWrap" style="display:none;">';
     html += '  <label class="rep-estado__label">Estado de la factura:</label>';
     html += '  <div class="rep-estado__opts">';
@@ -1232,7 +1434,7 @@ var waMsg = encodeURIComponent(
     html += '  </div>';
     html += '</div>';
 
-    // Datos del cliente
+    // Cliente
     html += '<div class="rep-block">';
     html += '  <h4 class="rep-block__title"><i class="fa-solid fa-user"></i> Datos del cliente</h4>';
     html += '  <div class="rep-grid-2">';
@@ -1289,20 +1491,11 @@ var waMsg = encodeURIComponent(
     html += '  </div>';
     html += '</div>';
 
-    // Garantía
-    html += '<div class="rep-block">';
-    html += '  <h4 class="rep-block__title"><i class="fa-solid fa-shield-halved"></i> Garantía del servicio</h4>';
-    html += '  <p class="rep-block__hint">Selecciona el tiempo de garantía sobre la reparación.</p>';
-    html += '  <div class="rep-garantia__opts">';
-    html += '    <button type="button" class="rep-garantia-btn" data-garantia="0"><i class="fa-solid fa-ban"></i> Sin garantía</button>';
-    html += '    <button type="button" class="rep-garantia-btn" data-garantia="15">15 días</button>';
-    html += '    <button type="button" class="rep-garantia-btn active" data-garantia="30">30 días</button>';
-    html += '    <button type="button" class="rep-garantia-btn" data-garantia="60">60 días</button>';
-    html += '    <button type="button" class="rep-garantia-btn" data-garantia="90">90 días</button>';
-    html += '    <button type="button" class="rep-garantia-btn" data-garantia="180">6 meses</button>';
-    html += '    <button type="button" class="rep-garantia-btn" data-garantia="365">1 año</button>';
-    html += '  </div>';
-    html += '</div>';
+    // Garantía (con %)
+    html += this._renderGarantiaBlock();
+
+    // Validez (solo admin)
+    html += this._renderValidezBlock();
 
     // Observaciones
     html += '<div class="rep-block">';
@@ -1318,12 +1511,14 @@ var waMsg = encodeURIComponent(
 
     this.els.fields.innerHTML = html;
 
-    // Si ya está autenticado como admin, actualizar badge de FACTURA
+    // Si ya está admin
     if (self.facturaUnlocked || self._tipoAcceso === 'admin') {
       self._actualizarBadgeFactura(true);
+      const vw = document.getElementById('repValidezWrap');
+      if (vw) vw.style.display = 'block';
     }
 
-    // Eventos tipo doc — FACTURA pide contraseña
+    // Eventos tipo doc
     document.querySelectorAll('.rep-doc-btn').forEach(function (btn) {
       btn.addEventListener('click', async function () {
         const tipo = btn.dataset.tipodoc;
@@ -1336,11 +1531,9 @@ var waMsg = encodeURIComponent(
         }
 
         if (tipo === 'factura') {
-          // Si es admin (vía clave), ya está habilitado
           if (self._tipoAcceso === 'admin' || self.facturaUnlocked) {
-            // Ya autorizado, sigue
+            // ya autorizado
           } else if (self._tipoAcceso === 'client') {
-            // Cliente con OTP no puede facturar
             if (typeof Toast !== 'undefined') Toast.show('Factura solo disponible para administrador', 'info', 2500);
             return;
           } else if (window.auth && window.auth.currentUser) {
@@ -1355,6 +1548,20 @@ var waMsg = encodeURIComponent(
 
         document.querySelectorAll('.rep-doc-btn').forEach(function (b) { b.classList.remove('active'); });
         btn.classList.add('active');
+
+        // Regenerar número según tipo de documento
+        if (self.reparacion.tipoDoc !== tipo) {
+          const prefijoActual = (self.reparacion.numero || '').slice(0, 3);
+          const prefijoNuevo = (tipo === 'factura') ? 'FAC' : 'COT';
+          if (prefijoActual !== prefijoNuevo) {
+            // Cambiar el prefijo conservando la parte de fecha y contador
+            const partes = (self.reparacion.numero || '').split('-');
+            if (partes.length >= 2) {
+              self.reparacion.numero = prefijoNuevo + '-' + partes.slice(1).join('-');
+            }
+          }
+        }
+
         self.reparacion.tipoDoc = tipo;
 
         if (tipo === 'factura') {
@@ -1364,29 +1571,24 @@ var waMsg = encodeURIComponent(
           if (fb) fb.classList.add('rep-doc-btn--locked');
         }
 
-        // Mostrar/ocultar selector de estado
         const estadoWrap = document.getElementById('repEstadoWrap');
-        if (estadoWrap) {
-          estadoWrap.style.display = (tipo === 'factura') ? 'block' : 'none';
+        if (estadoWrap) estadoWrap.style.display = (tipo === 'factura') ? 'block' : 'none';
+
+        // Validez visible solo en cotización y admin
+        const validezWrap = document.getElementById('repValidezWrap');
+        if (validezWrap) {
+          const esAdmin = (self._tipoAcceso === 'admin' || self.facturaUnlocked);
+          validezWrap.style.display = (tipo === 'cotizacion' && esAdmin) ? 'block' : 'none';
         }
       });
     });
 
-    // Eventos del selector PAGADA / NO PAGADA
+    // Estado pagada/no pagada
     document.querySelectorAll('.rep-estado-btn').forEach(function (btn) {
       btn.addEventListener('click', function () {
         document.querySelectorAll('.rep-estado-btn').forEach(function (b) { b.classList.remove('active'); });
         btn.classList.add('active');
         self.reparacion.estado = btn.dataset.estado;
-      });
-    });
-
-    // Eventos del selector de GARANTÍA
-    document.querySelectorAll('.rep-garantia-btn').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        document.querySelectorAll('.rep-garantia-btn').forEach(function (b) { b.classList.remove('active'); });
-        btn.classList.add('active');
-        self.reparacion.garantia = parseInt(btn.dataset.garantia, 10);
       });
     });
 
@@ -1438,7 +1640,11 @@ var waMsg = encodeURIComponent(
     const descEl = document.getElementById('repDesc');
     if (descEl) descEl.addEventListener('input', function (e) { self.reparacion.descripcion = e.target.value; });
 
-    // Si hay sesión admin activa, mostrar botón de logout
+    // Attach garantía + validez
+    this._attachGarantiaHandlers();
+    this._attachValidezHandlers();
+
+    // Si admin activo, reaplicar
     if (self.facturaUnlocked && window.auth && window.auth.currentUser) {
       self._activarModoAdmin();
     }
@@ -1487,9 +1693,39 @@ var waMsg = encodeURIComponent(
     return total;
   },
 
-  /* ============================================
-     CÓDIGO DE VERIFICACIÓN
-  ============================================ */
+  // ============================================
+  // TARGETICA
+  // ============================================
+  imprimirTargetica() {
+    if (typeof window.JCDC_Targetica === 'undefined' || typeof window.JCDC_Targetica.print !== 'function') {
+      if (typeof Toast !== 'undefined') Toast.show('Módulo targetica.js no cargado', 'error', 2500);
+      return;
+    }
+
+    const rep = this.reparacion;
+    if (!rep) return;
+
+    const equipo = (window.SOPORTE_CONFIG.equipos || []).find(function (e) { return e.id === rep.equipo; });
+
+    window.JCDC_Targetica.print({
+      numero: rep.numero,
+      tipoDoc: rep.tipoDoc,
+      estado: rep.estado,
+      fechaEmision: rep.fechaEmision,
+      garantiaDias: rep.garantia,
+      cliente: rep.cliente,
+      equipo: equipo ? equipo.label : rep.equipo,
+      marca: rep.marca,
+      modelo: rep.modelo,
+      descripcion: rep.descripcion,
+      codigoVC: this.generarCodigoVerificacion(rep.numero, rep.fechaEmision, String(this.updateRepTotal())),
+      cantidad: this.cantidadTargeticas || 12
+    });
+  },
+
+  // ============================================
+  // CÓDIGO DE VERIFICACIÓN
+  // ============================================
   generarCodigoVerificacion(numDoc, fecha, contenido) {
     const sec = (window.SOPORTE_CONFIG.security && window.SOPORTE_CONFIG.security.docSecret) || 'jcdc';
     const data = numDoc + '|' + fecha + '|' + contenido + '|' + sec;
@@ -1501,19 +1737,21 @@ var waMsg = encodeURIComponent(
     return 'VC-' + hex.slice(0, 4) + '-' + hex.slice(4, 8);
   },
 
-  /* ============================================
-     CÁLCULOS
-  ============================================ */
+  // ============================================
+  // CÁLCULOS (con garantía)
+  // ============================================
   calculate() {
     const self = this;
 
+    // ------------------ REPARACIÓN ------------------
     if (this.service === 'reparacion') {
       const calc = this.calcularReparacion();
       const lines = calc.lines;
       let total = calc.total;
+
+      // Extras
       let extrasTotal = 0;
       let urgentPct = 0;
-
       Object.keys(this.extrasDef).forEach(function (key) {
         if (!self.extras[key]) return;
         const ex = self.extrasDef[key];
@@ -1525,8 +1763,17 @@ var waMsg = encodeURIComponent(
           lines.push({ label: ex.label, sub: '$' + ex.price + ' USD', value: exDop });
         }
       });
-
       total += extrasTotal;
+
+      // Garantía (todos los servicios)
+      const tramo = self.garantiaTramos.find(function (t) { return t.dias === self.garantiaSeleccionada; });
+      if (tramo && tramo.pct > 0) {
+        const gAmount = Math.round(total * tramo.pct);
+        lines.push({ label: 'Garantía ' + tramo.label, sub: '+' + Math.round(tramo.pct * 100) + '%', value: gAmount });
+        total += gAmount;
+      }
+
+      // Urgente
       if (urgentPct > 0) {
         const urgAmount = Math.round(total * urgentPct);
         lines.push({ label: 'Entrega urgente', sub: '+' + (urgentPct * 100) + '%', value: urgAmount });
@@ -1535,7 +1782,10 @@ var waMsg = encodeURIComponent(
       return { lines: lines, total: total };
     }
 
+    // ------------------ SERVICIOS NORMALES ------------------
     const cfg = this.services[this.service];
+    if (!cfg) return { lines: [], total: 0 };
+
     const lines = [];
     let subtotal = cfg.base;
     lines.push({ label: cfg.label + ' · base', value: cfg.base });
@@ -1547,6 +1797,7 @@ var waMsg = encodeURIComponent(
       lines.push({ label: f.label, sub: qty + ' × $' + f.unit, value: cost });
     });
 
+    // Extras
     let extrasTotal = 0;
     let urgentPct = 0;
     Object.keys(this.extrasDef).forEach(function (key) {
@@ -1561,11 +1812,22 @@ var waMsg = encodeURIComponent(
     });
 
     let total = subtotal + extrasTotal;
+
+    // Garantía
+    const tramo = this.garantiaTramos.find(function (t) { return t.dias === self.garantiaSeleccionada; });
+    if (tramo && tramo.pct > 0) {
+      const gAmount = Math.round(total * tramo.pct);
+      lines.push({ label: 'Garantía ' + tramo.label, sub: '+' + Math.round(tramo.pct * 100) + '%', value: gAmount });
+      total += gAmount;
+    }
+
+    // Urgente
     if (urgentPct > 0) {
       const urgAmount = Math.round(total * urgentPct);
       lines.push({ label: 'Entrega urgente', sub: '+' + (urgentPct * 100) + '%', value: urgAmount });
       total += urgAmount;
     }
+
     return { lines: lines, total: total };
   },
 
@@ -1593,9 +1855,9 @@ var waMsg = encodeURIComponent(
     return { lines: lines, total: total };
   },
 
-  /* ============================================
-     RENDER SUMMARY
-  ============================================ */
+  // ============================================
+  // RENDER SUMMARY
+  // ============================================
   renderSummary() {
     const calc = this.calculate();
     const lines = calc.lines;
@@ -1661,17 +1923,88 @@ var waMsg = encodeURIComponent(
     }
 
     this.els.summary.innerHTML = html;
+
+    // Gestionar el botón targetica DENTRO del contenedor de acciones
+    this._actualizarBloqueTargetica(isReparacion);
   },
 
-  /* ============================================
-     RESTART
-  ============================================ */
+  // ============================================
+  // BLOQUE TARGETICA en Paso 4
+  // ============================================
+  _actualizarBloqueTargetica(isReparacion) {
+    const self = this;
+    const actionsContainer = document.querySelector('.quote-cta__actions');
+    if (!actionsContainer) return;
+
+    // Remover bloque targetica previo (si existe)
+    const prev = actionsContainer.querySelector('.rep-targetica-wrap');
+    if (prev) prev.remove();
+
+    // Solo aplica para reparación + factura pagada + admin + datos completos
+    if (!isReparacion || !this.reparacion) return;
+    const rep = this.reparacion;
+    const esAdmin = (this._tipoAcceso === 'admin' || this.facturaUnlocked);
+    const esFactura = rep.tipoDoc === 'factura';
+    const esPagada = rep.estado === 'pagada';
+    const tieneDatos = !!rep.cliente.nombre && !!rep.equipo;
+    if (!(esAdmin && esFactura && esPagada && tieneDatos)) return;
+
+    // Cantidad por defecto (o la última elegida)
+    const cantidadActual = this.cantidadTargeticas || 12;
+
+    // HTML del bloque
+    const wrap = document.createElement('div');
+    wrap.className = 'rep-targetica-wrap';
+    wrap.innerHTML = `
+      <div class="rep-targetica-count">
+        <span class="rep-targetica-count__label">Cantidad de targeticas:</span>
+        <div class="rep-targetica-count__opts">
+          <button type="button" class="rep-targetica-count__btn${cantidadActual === 1 ? ' active' : ''}" data-count="1">1</button>
+          <button type="button" class="rep-targetica-count__btn${cantidadActual === 2 ? ' active' : ''}" data-count="2">2</button>
+          <button type="button" class="rep-targetica-count__btn${cantidadActual === 4 ? ' active' : ''}" data-count="4">4</button>
+          <button type="button" class="rep-targetica-count__btn${cantidadActual === 8 ? ' active' : ''}" data-count="8">8</button>
+          <button type="button" class="rep-targetica-count__btn${cantidadActual === 12 ? ' active' : ''}" data-count="12">12</button>
+        </div>
+      </div>
+      <button type="button" class="rep-targetica-btn" id="repTargeticaBtn">
+        <i class="fa-solid fa-tag"></i>
+        <span id="repTargeticaBtnLabel">IMPRIMIR ${cantidadActual} TARGETICA${cantidadActual === 1 ? '' : 'S'}</span>
+      </button>
+    `;
+
+    // Insertar como primer hijo del contenedor de acciones
+    actionsContainer.insertBefore(wrap, actionsContainer.firstChild);
+
+    // Handlers de cantidad
+    wrap.querySelectorAll('.rep-targetica-count__btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const n = parseInt(btn.dataset.count, 10);
+        self.cantidadTargeticas = n;
+        wrap.querySelectorAll('.rep-targetica-count__btn').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        const lbl = document.getElementById('repTargeticaBtnLabel');
+        if (lbl) lbl.textContent = 'IMPRIMIR ' + n + ' TARGETICA' + (n === 1 ? '' : 'S');
+      });
+    });
+
+    // Handler del botón imprimir
+    const tBtn = document.getElementById('repTargeticaBtn');
+    if (tBtn) {
+      tBtn.addEventListener('click', function () { self.imprimirTargetica(); });
+    }
+  },
+
+  // ============================================
+  // RESTART
+  // ============================================
   restart() {
     this.currentStep = 1;
     this.service = null;
     this.values = {};
     this.extras = {};
     this.reparacion = null;
+    this.garantiaSeleccionada = 30;
+    this.diasValidez = (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.documentos && window.SOPORTE_CONFIG.documentos.cotizacionValidezDias) || 15;
 
     document.querySelectorAll('[data-service]').forEach(function (o) {
       o.classList.remove('checked');
@@ -1680,6 +2013,7 @@ var waMsg = encodeURIComponent(
     });
     document.querySelectorAll('[data-extra]').forEach(function (o) {
       o.classList.remove('checked');
+      o.style.display = '';
       const inp = o.querySelector('input');
       if (inp) inp.checked = false;
     });
@@ -1690,9 +2024,9 @@ var waMsg = encodeURIComponent(
     if (typeof Toast !== 'undefined') Toast.show('Cotizador reiniciado', 'info', 1600);
   },
 
-  /* ============================================
-     TEXTO PLANO
-  ============================================ */
+  // ============================================
+  // TEXTO PLANO
+  // ============================================
   buildPlainText() {
     const cfg = this.services[this.service];
     const calc = this.calculate();
@@ -1753,7 +2087,8 @@ var waMsg = encodeURIComponent(
     }
     this.registrarDocumento();
     const txt = this.buildPlainText();
-    const url = 'https://wa.me/18090000000?text=' + encodeURIComponent(txt);
+    const wa = (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.whatsapp) || '18294213163';
+    const url = 'https://wa.me/' + wa + '?text=' + encodeURIComponent(txt);
     window.open(url, '_blank', 'noopener');
     if (typeof Toast !== 'undefined') Toast.show('Abriendo WhatsApp…', 'success', 1800);
   },
@@ -1771,9 +2106,9 @@ var waMsg = encodeURIComponent(
     window.location.href = url;
   },
 
-  /* ============================================
-     SELLO PAGADO (SVG azul)
-  ============================================ */
+  // ============================================
+  // SELLO (idéntico al original)
+  // ============================================
   generarSello(fecha, numDoc, tipoDoc, estado) {
     const cfg = window.SOPORTE_CONFIG.documentos || {};
     const prov = (window.SOPORTE_CONFIG.proveedor) || {};
@@ -1827,9 +2162,9 @@ var waMsg = encodeURIComponent(
 </svg>`;
   },
 
-  /* ============================================
-     GUARDAR REGISTRO · llamar desde WhatsApp, Email y PDF
-  ============================================ */
+  // ============================================
+  // REGISTRAR DOCUMENTO (Firestore + email)
+  // ============================================
   registrarDocumento() {
     if (!this.service) return '';
 
@@ -1851,6 +2186,9 @@ var waMsg = encodeURIComponent(
       ? this.generarCodigoVerificacion(rep.numero, rep.fechaEmision, total.toString())
       : '';
 
+    // Si es factura, generamos código VC aunque sea reparación
+    const codigoFinal = codigoVC || '';
+
     try {
       const registro = JSON.parse(localStorage.getItem('jcdc_registro_docs') || '[]');
       const idx = registro.findIndex(function (r) { return r.numero === numDoc; });
@@ -1869,6 +2207,8 @@ var waMsg = encodeURIComponent(
         });
       }
 
+      const cfgServicio = this.services[this.service] || {};
+
       const nuevoDoc = {
         tipo: isFactura ? 'factura' : 'cotizacion',
         estado: isFactura ? estado : '—',
@@ -1878,8 +2218,8 @@ var waMsg = encodeURIComponent(
         total: total,
         moneda: isReparacion ? 'DOP' : 'USD',
         cliente: rep ? (rep.cliente.nombre || '—') : '—',
-        equipo: rep ? (rep.equipo || '—') : '—',
-        codigoVC: codigoVC,
+        equipo: rep ? (rep.equipo || '—') : (cfgServicio.label || '—'),
+        codigoVC: codigoFinal,
         timestamp: Date.now(),
         historial: historial,
         comentarios: (idx >= 0 && registro[idx].comentarios) ? registro[idx].comentarios : [],
@@ -1888,8 +2228,8 @@ var waMsg = encodeURIComponent(
           numero: numDoc,
           fechaEmision: rep ? rep.fechaEmision : new Date().toISOString().slice(0, 10),
           fechaVencimiento: rep ? rep.fechaVencimiento : '',
-          diasValidez: rep ? rep.diasValidez : 7,
-          garantia: rep ? (rep.garantia || 30) : 30,
+          diasValidez: rep ? rep.diasValidez : this.diasValidez,
+          garantia: rep ? (rep.garantia || this.garantiaSeleccionada) : this.garantiaSeleccionada,
           cliente: rep ? JSON.parse(JSON.stringify(rep.cliente || {})) : {},
           equipo: rep ? rep.equipo : '',
           marca: rep ? rep.marca : '',
@@ -1907,14 +2247,12 @@ var waMsg = encodeURIComponent(
       else registro.push(nuevoDoc);
 
       localStorage.setItem('jcdc_registro_docs', JSON.stringify(registro));
-      console.log('[JCDC] Registro guardado en localStorage:', numDoc, codigoVC);
+      console.log('[JCDC] Registro guardado:', numDoc, codigoFinal);
 
-      // === SUBIR A FIRESTORE ===
+      // Firestore
       try {
-        var self = this;
         var db = window.db;
-        if (db) {
-          // Recolectar todo el documento
+        if (db && codigoFinal) {
           var docParaNube = {
             tipo: nuevoDoc.tipo,
             estado: nuevoDoc.estado,
@@ -1932,69 +2270,57 @@ var waMsg = encodeURIComponent(
             snapshot: nuevoDoc.snapshot
           };
 
-          db.collection('documentos').doc(codigoVC).set(docParaNube)
-            .then(function () {
-              console.log('[Firestore] ✓ Documento subido:', codigoVC);
-            })
-            .catch(function (err) {
-              console.error('[Firestore] ✗ Error subiendo:', err);
-            });
-        } else {
-          console.warn('[Firestore] window.db no disponible');
+          db.collection('documentos').doc(codigoFinal).set(docParaNube)
+            .then(function () { console.log('[Firestore] ✓', codigoFinal); })
+            .catch(function (err) { console.error('[Firestore] ✗', err); });
         }
       } catch (e) {
-        console.error('[Firestore] Error inesperado:', e);
+        console.error('[Firestore] Error:', e);
       }
-      // === FIN SUBIR A FIRESTORE ===
 
-      // === ENVIAR EMAIL AL ADMIN (solo una vez por documento) ===
+      // Email admin
       try {
         this._emailsEnviados = this._emailsEnviados || {};
-        if (!this._emailsEnviados[codigoVC]) {
-          this._emailsEnviados[codigoVC] = true;
+        if (codigoFinal && !this._emailsEnviados[codigoFinal]) {
+          this._emailsEnviados[codigoFinal] = true;
+
+          var apiBase = (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.apiBaseUrl) || 'https://jcdcapi.vercel.app';
 
           var payload = {
             tipo: isFactura ? 'factura' : 'cotizacion',
             numero: numDoc,
-            codigoVC: codigoVC,
+            codigoVC: codigoFinal,
             cliente: rep ? (rep.cliente.nombre || 'Sin nombre') : 'Sin nombre',
             total: total,
             moneda: isReparacion ? 'DOP' : 'USD',
             fecha: date
           };
 
-          fetch('https://jcdcapi.vercel.app/api/enviar-cotizacion', {
+          fetch(apiBase + '/api/enviar-cotizacion', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
           })
           .then(function (r) { return r.json(); })
           .then(function (d) {
-            if (d && d.ok) {
-              console.log('[JCDC] ✓ Email enviado al admin:', numDoc);
-            } else {
-              console.warn('[JCDC] Email no enviado:', d);
-            }
+            if (d && d.ok) console.log('[JCDC] ✓ Email enviado:', numDoc);
           })
-          .catch(function (err) {
-            console.warn('[JCDC] No se pudo enviar email (no bloquea):', err);
-          });
+          .catch(function (err) { console.warn('[JCDC] Email fail:', err); });
         }
       } catch (e) {
-        console.warn('[JCDC] Error enviando email:', e);
+        console.warn('[JCDC] Error email:', e);
       }
-      // === FIN ENVIAR EMAIL ===
 
-      return codigoVC;
+      return codigoFinal;
     } catch (e) {
-      console.error('[JCDC] Error guardando registro:', e);
-      return codigoVC;
+      console.error('[JCDC] Error guardando:', e);
+      return codigoFinal;
     }
   },
 
-  /* ============================================
-     PDF
-  ============================================ */
+  // ============================================
+  // PDF (mismo flujo + línea de garantía)
+  // ============================================
   downloadPDF() {
     if (!this.service) {
       if (typeof Toast !== 'undefined') Toast.show('Completa el cotizador primero', 'info', 2000);
@@ -2019,7 +2345,6 @@ var waMsg = encodeURIComponent(
     const tituloDoc = isFactura ? 'FACTURA' : 'COTIZACIÓN';
     const rate = this.RATE_DOP;
 
-    // Color según tipo de documento
     let colorDoc;
     if (isFactura) {
       colorDoc = esPagada ? (docCfg.colorSelloPagado || '#0a7f2e') : (docCfg.colorSelloNoPagada || '#c81e1e');
@@ -2082,13 +2407,13 @@ var waMsg = encodeURIComponent(
     const totalRow = isReparacion ? ('RD$' + dop.toLocaleString('es-DO')) : ('$' + usd.toLocaleString('en-US'));
 
     const hora = new Date().toLocaleTimeString('es-DO', { hour: '2-digit', minute: '2-digit' });
-    const garantiaDias = (rep && typeof rep.garantia === 'number') ? rep.garantia : 30;
+    const garantiaDias = (rep && typeof rep.garantia === 'number') ? rep.garantia : this.garantiaSeleccionada;
     const garantiaTexto = garantiaDias === 0
       ? 'Este servicio <strong>no incluye garantía</strong>.'
-      : 'Garantía de <strong>' + garantiaDias + ' días</strong> sobre la reparación.';
+      : 'Garantía de <strong>' + garantiaDias + ' días</strong> sobre el servicio.';
     const notaTexto = isFactura
       ? '<strong>Nota:</strong> Esta factura corresponde al servicio descrito arriba. ' + garantiaTexto + ' Gracias por su preferencia.'
-      : '<strong>Nota:</strong> Cotización generada desde el cotizador web <strong>jcdurancasado.github.io/inf</strong> el ' + date + ' a las ' + hora + '. Válida por ' + (rep ? rep.diasValidez : 7) + ' días.';
+      : '<strong>Nota:</strong> Cotización generada desde el cotizador web <strong>jcdurancasado.github.io/inf</strong> el ' + date + ' a las ' + hora + '. Válida por ' + (rep ? rep.diasValidez : this.diasValidez) + ' días.';
 
     const observacionesTexto = (rep && rep.descripcion && rep.descripcion.trim())
       ? rep.descripcion
@@ -2127,238 +2452,58 @@ var waMsg = encodeURIComponent(
       line-height: 1.4;
       position: relative;
     }
-
-    /* ===== HEADER ===== */
     .header { border-bottom: 3px solid ${colorDoc}; padding-bottom: 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
     .brand { font-size: 17px; font-weight: 800; color: #0a0a0f; letter-spacing: 0.5px; }
     .brand small { display: block; font-size: 9px; font-weight: 400; color: #666; letter-spacing: 2px; margin-top: 3px; }
     .meta { text-align: right; font-size: 11px; color: #666; }
     .meta strong { color: #111; font-size: 14px; display: block; letter-spacing: 0.5px; }
-
-    /* ===== TÍTULO ===== */
-    .doc-type {
-      text-align: center;
-      font-size: 24px;
-      font-weight: 900;
-      letter-spacing: 5px;
-      color: ${colorDoc};
-      margin-bottom: 4px;
-      text-transform: uppercase;
-    }
+    .doc-type { text-align: center; font-size: 24px; font-weight: 900; letter-spacing: 5px; color: ${colorDoc}; margin-bottom: 4px; text-transform: uppercase; }
     .doc-sub { text-align: center; font-size: 11px; color: #666; margin-bottom: 14px; }
-
-    /* ===== INFO BLOCKS ===== */
     .info-block { margin-bottom: 10px; }
-    .info-block__title {
-      font-size: 9.5px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      color: #0369a1;
-      margin-bottom: 5px;
-      padding-bottom: 2px;
-      border-bottom: 1px solid #e0e6ed;
-    }
-    .info-block__grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
-    }
-    .ii {
-      padding: 6px 8px;
-      background: #f5f7fa;
-      border-radius: 3px;
-      border-left: 2.5px solid ${colorDoc};
-    }
+    .info-block__title { font-size: 9.5px; font-weight: 700; letter-spacing: 2px; color: #0369a1; margin-bottom: 5px; padding-bottom: 2px; border-bottom: 1px solid #e0e6ed; }
+    .info-block__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .ii { padding: 6px 8px; background: #f5f7fa; border-radius: 3px; border-left: 2.5px solid ${colorDoc}; }
     .ii--full { grid-column: 1 / -1; }
-    .ii span {
-      display: block;
-      font-size: 8px;
-      letter-spacing: 1px;
-      color: #94a3b8;
-      text-transform: uppercase;
-      margin-bottom: 2px;
-      font-weight: 600;
-    }
+    .ii span { display: block; font-size: 8px; letter-spacing: 1px; color: #94a3b8; text-transform: uppercase; margin-bottom: 2px; font-weight: 600; }
     .ii strong { font-size: 11.5px; color: #111; word-break: break-word; font-weight: 600; }
-
-    /* ===== DETALLE DEL SERVICIO (franja negra) ===== */
-    .section-title {
-      font-size: 11px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: #ffffff;
-      background: #000000;
-      padding: 8px 12px;
-      margin: 14px 0 0;
-      font-weight: 700;
-      border-radius: 3px 3px 0 0;
-      page-break-after: avoid;
-    }
-
-    /* ===== TABLA ===== */
+    .section-title { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #ffffff; background: #000000; padding: 8px 12px; margin: 14px 0 0; font-weight: 700; border-radius: 3px 3px 0 0; page-break-after: avoid; }
     table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 11px; page-break-inside: auto; }
     thead { display: table-header-group; }
-    thead th {
-      background: #2f2f42;
-      color: #fff;
-      padding: 6px 10px;
-      text-align: left;
-      font-size: 9px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      font-weight: 700;
-    }
+    thead th { background: #2f2f42; color: #fff; padding: 6px 10px; text-align: left; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 700; }
     thead th:last-child { text-align: right; }
     tbody td { padding: 7px 10px; border-bottom: 1px solid #e5e7eb; font-size: 11px; }
     tbody tr { page-break-inside: avoid; }
     tbody tr:last-child td { border-bottom: none; }
     .row-sub { font-size: 9.5px; color: #64748b; margin-top: 2px; font-weight: 500; }
     .row-price { text-align: right; font-weight: 700; white-space: nowrap; }
-
-    /* ===== TOTALES ===== */
-    .totals {
-      background: #f0f9ff;
-      padding: 14px 12px;
-      border-radius: 6px;
-      margin-bottom: 12px;
-      text-align: center;
-      border: 1.5px solid ${colorDoc};
-      page-break-inside: avoid;
-    }
+    .totals { background: #f0f9ff; padding: 14px 12px; border-radius: 6px; margin-bottom: 12px; text-align: center; border: 1.5px solid ${colorDoc}; page-break-inside: avoid; }
     .totals .label { font-size: 9px; letter-spacing: 2.5px; color: #666; margin-bottom: 4px; font-weight: 700; }
     .totals .amount { font-size: 24px; font-weight: 900; color: #0a0a0f; letter-spacing: -0.5px; }
     .totals .sub { font-size: 10px; color: #444; margin-top: 3px; }
-
-    /* ===== NOTA ===== */
-    .note {
-      padding: 8px 11px;
-      background: #fff9e6;
-      border-left: 3px solid #fbbf24;
-      border-radius: 0 3px 3px 0;
-      font-size: 10px;
-      color: #555;
-      line-height: 1.5;
-      margin-bottom: 10px;
-      page-break-inside: avoid;
-    }
-
-    /* ===== OBSERVACIONES ===== */
-    .obs {
-      padding: 8px 11px;
-      background: #f0f9ff;
-      border-left: 3px solid ${colorDoc};
-      border-radius: 0 3px 3px 0;
-      font-size: 10px;
-      color: #555;
-      line-height: 1.5;
-      margin-bottom: 10px;
-      min-height: 40px;
-      page-break-inside: avoid;
-    }
+    .note { padding: 8px 11px; background: #fff9e6; border-left: 3px solid #fbbf24; border-radius: 0 3px 3px 0; font-size: 10px; color: #555; line-height: 1.5; margin-bottom: 10px; page-break-inside: avoid; }
+    .obs { padding: 8px 11px; background: #f0f9ff; border-left: 3px solid ${colorDoc}; border-radius: 0 3px 3px 0; font-size: 10px; color: #555; line-height: 1.5; margin-bottom: 10px; min-height: 40px; page-break-inside: avoid; }
     .obs .obs-empty { color: #94a3b8; font-style: italic; }
     .obs strong { color: #111; }
-
-    /* ===== VERIFICACIÓN ===== */
-    .verif {
-      text-align: center;
-      padding: 7px 12px;
-      background: #f0f9ff;
-      border: 1px dashed ${colorDoc};
-      border-radius: 4px;
-      font-family: 'Courier New', monospace;
-      font-size: 10px;
-      color: ${colorDoc};
-      letter-spacing: 0.5px;
-      margin-bottom: 14px;
-      page-break-inside: avoid;
-    }
+    .verif { text-align: center; padding: 7px 12px; background: #f0f9ff; border: 1px dashed ${colorDoc}; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 10px; color: ${colorDoc}; letter-spacing: 0.5px; margin-bottom: 14px; page-break-inside: avoid; }
     .verif strong { color: #0c4a6e; font-weight: 700; }
-
-    /* ===== FIRMAS ===== */
-    .firma-wrapper {
-      position: relative;
-      margin-top: 26px;
-      padding-top: 6px;
-      page-break-inside: avoid;
-      break-inside: avoid;
-    }
-    .firma-block {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 60px;
-    }
+    .firma-wrapper { position: relative; margin-top: 26px; padding-top: 6px; page-break-inside: avoid; break-inside: avoid; }
+    .firma-block { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; }
     .firma-item { text-align: center; }
     .firma-line { border-bottom: 1.3px solid #111; height: 42px; width: 70%; margin: 0 auto 8px; position: relative; }
     .firma-img { position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); max-width: 270px; max-height: 75px; object-fit: contain; pointer-events: none; mix-blend-mode: multiply; }
     .firma-label { font-size: 9px; color: #666; letter-spacing: 1.2px; text-transform: uppercase; font-weight: 700; }
     .firma-name { font-size: 12px; font-weight: 700; color: #111; margin-top: 2px; }
     .firma-info { font-size: 10px; color: #777; margin-top: 2px; }
-
-    /* ===== SELLO ===== */
-    .sello-container {
-      position: absolute;
-      top: 55%;
-      left: 50%;
-      transform: translate(-50%, -50%) rotate(-14deg);
-      width: 175px;
-      height: 175px;
-      pointer-events: none;
-      z-index: 5;
-      opacity: 0.78;
-    }
+    .sello-container { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%) rotate(-14deg); width: 175px; height: 175px; pointer-events: none; z-index: 5; opacity: 0.78; }
     .sello-svg { width: 100%; height: 100%; display: block; }
-
-    /* ===== QR ===== */
-    .qr-block {
-      text-align: left;
-      margin: 14px 0 6px;
-      position: relative;
-      z-index: 3;
-      page-break-inside: avoid;
-    }
+    .qr-block { text-align: left; margin: 14px 0 6px; position: relative; z-index: 3; page-break-inside: avoid; }
     .qr-inner { display: inline-block; text-align: center; }
-    .qr-container {
-      display: inline-block;
-      width: 58px;
-      height: 58px;
-      background: #fff;
-      padding: 3px;
-      border-radius: 3px;
-      border: 1px solid #ddd;
-      line-height: 0;
-    }
+    .qr-container { display: inline-block; width: 58px; height: 58px; background: #fff; padding: 3px; border-radius: 3px; border: 1px solid #ddd; line-height: 0; }
     .qr-container canvas, .qr-container img { width: 100% !important; height: 100% !important; display: block; }
     .qr-label { font-size: 8px; color: #666; letter-spacing: 1px; margin-top: 3px; font-weight: 600; }
-
-    /* ===== FOOTER ===== */
-    .footer {
-      margin-top: 12px;
-      padding-top: 8px;
-      border-top: 1px solid #e5e7eb;
-      font-size: 9px;
-      color: #888;
-      text-align: center;
-      line-height: 1.5;
-      page-break-inside: avoid;
-    }
+    .footer { margin-top: 12px; padding-top: 8px; border-top: 1px solid #e5e7eb; font-size: 9px; color: #888; text-align: center; line-height: 1.5; page-break-inside: avoid; }
     .footer strong { color: #111; }
-
-    /* ===== WATERMARK ===== */
-    .watermark-doc {
-      position: fixed;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%) rotate(-28deg);
-      font-family: 'Arial Black', sans-serif;
-      font-size: 110px;
-      font-weight: 900;
-      color: rgba(0, 188, 212, 0.05);
-      letter-spacing: 14px;
-      white-space: nowrap;
-      pointer-events: none;
-      z-index: 0;
-      user-select: none;
-    }
-
+    .watermark-doc { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-28deg); font-family: 'Arial Black', sans-serif; font-size: 110px; font-weight: 900; color: rgba(0, 188, 212, 0.05); letter-spacing: 14px; white-space: nowrap; pointer-events: none; z-index: 0; user-select: none; }
     @media print {
       body { padding: 0; }
       .info-block { break-inside: avoid; }

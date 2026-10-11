@@ -124,7 +124,8 @@
           <li><a href="toolkit.html" class="nav__link">TOOLKIT</a></li>
           <li><a href="netpro.html" class="nav__link">NETPRO</a></li>
           <li><a href="cursos.html" class="nav__link"><i class="fa-solid fa-graduation-cap"></i>&nbsp;CURSOS</a></li>
-<li><a href="verificar.html" class="nav__link"><i class="fa-solid fa-shield-halved"></i>&nbsp;VERIFICAR</a></li>          <li><a href="index.html#contacto" class="nav__link nav__link--cta">CONTACTO</a></li>
+          <li><a href="verificar.html" class="nav__link"><i class="fa-solid fa-shield-halved"></i>&nbsp;VERIFICAR</a></li>          
+          <li><a href="contacto.html" class="nav__link nav__link--cta">CONTACTO</a></li>
         </ul>
       </nav>
 
@@ -182,10 +183,14 @@
 
           <!-- Panel 1 -->
           <div class="quote-panel active" data-panel="1">
-            <h3 class="quote-panel__title">¿Qué servicio necesitas?</h3>
-            <p class="quote-panel__help">Elige el área principal de tu proyecto.</p>
+            <div class="quote-panel__head">
+              <h3 class="quote-panel__title">¿Qué servicio necesitas?</h3>
+              <p class="quote-panel__help">Elige el área principal de tu proyecto.</p>
+            </div>
 
-            <div class="quote-options quote-options--services">
+            <div class="quote-services-filters" id="quoteServicesFilters" role="tablist" aria-label="Filtrar por categoría"></div>
+
+            <div class="quote-options quote-options--services" id="quoteServicesHost">
               <label class="quote-option" data-service="reparacion">
                 <input type="radio" name="service" value="reparacion">
                 <span class="quote-option__icon"><i class="fa-solid fa-toolbox"></i></span>
@@ -420,6 +425,7 @@
 <script src="js/main.js"></script>
 <script src="js/firma-admin.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+<script src="js/targetica.js"></script>
 <script src="js/cotizador.js"></script>
 </body>
 </html>

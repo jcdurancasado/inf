@@ -5,7 +5,7 @@
    · Assets → cache-first (rápido + offline)
 ============================================ */
 
-const CACHE_NAME = 'jcdc-v1.0.30';
+const CACHE_NAME = 'jcdc-v1.0.31';
 
 const ASSETS = [
   // Páginas
@@ -17,13 +17,19 @@ const ASSETS = [
   './cursos.html',
   './pagos.html',
   './contacto.html',
+  './verificar.html',
   // Estilos
   './css/style.css',
   // Scripts
   './js/main.js',
   './js/cotizador.js',
+  './js/targetica.js',
   './js/netpro.js',
   './js/pagos.js',
+  './js/verificar.js',
+  './js/servicios-config.js',
+  './js/firebase-config.js',
+  './js/firma-admin.js',
   // Manifest y assets
   './manifest.json',
   './img/foto.png',

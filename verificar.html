@@ -112,6 +112,8 @@ document.documentElement.setAttribute('data-theme', saved || 'dark');
     .admin-lista__accion:hover { border-color: var(--neon-cyan); color: var(--neon-cyan); background: rgba(0,240,255,0.06); }
     .admin-lista__accion--email:hover { border-color: var(--neon-purple); color: var(--neon-purple); background: rgba(184,41,221,0.08); }
     .admin-lista__accion--del:hover { border-color: var(--neon-red); color: var(--neon-red); background: rgba(255,51,51,0.06); }
+    .admin-lista__accion--targetica { border-color: rgba(0,255,136,0.3); color: var(--neon-green); }
+    .admin-lista__accion--targetica:hover { border-color: var(--neon-green); color: var(--neon-green); background: rgba(0,255,136,0.08); box-shadow: 0 0 10px rgba(0,255,136,0.3); }
     @media (max-width: 768px) {
       .admin-lista__acciones { gap: 2px; }
       .admin-lista__accion { width: 26px; height: 26px; font-size: 0.65rem; }
@@ -181,6 +183,53 @@ document.documentElement.setAttribute('data-theme', saved || 'dark');
     .verify-pwd input:focus { border-color: var(--neon-red); box-shadow: 0 0 0 3px rgba(255,51,51,0.15); }
     .verify-pwd .err { font-size: 0.75rem; color: var(--neon-red); min-height: 1.2em; margin-bottom: 12px; font-family: var(--font-mono); }
     .verify-pwd__actions { display: flex; gap: 8px; }
+
+    /* Modal targetica — selector de cantidad */
+    .verify-pwd--targetica {
+      border-color: var(--neon-green) !important;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.6), 0 0 40px rgba(0,255,136,0.25);
+    }
+    .verify-pwd--targetica h3 {
+      color: var(--neon-green) !important;
+    }
+    .verify-pwd--targetica .verify-pwd__actions .ok {
+      background: var(--neon-green);
+      color: var(--bg-primary);
+      border-color: var(--neon-green);
+    }
+    .verify-pwd--targetica .verify-pwd__actions .ok:hover {
+      box-shadow: 0 0 20px rgba(0,255,136,0.5);
+    }
+    .verify-pwd__qty {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      margin: 0 0 16px;
+      flex-wrap: wrap;
+    }
+    .verify-pwd__qty button {
+      min-width: 48px;
+      padding: 10px 14px;
+      background: var(--bg-primary);
+      border: 1.5px solid var(--border-subtle);
+      border-radius: 6px;
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.22s ease;
+    }
+    .verify-pwd__qty button:hover {
+      border-color: var(--neon-green);
+      color: var(--neon-green);
+    }
+    .verify-pwd__qty button.active {
+      background: rgba(0,255,136,0.12);
+      border-color: var(--neon-green);
+      color: var(--neon-green);
+      box-shadow: 0 0 12px rgba(0,255,136,0.3);
+    }
     .verify-pwd__actions button { flex: 1; padding: 0.85rem 1rem; border-radius: 6px; font-family: var(--font-display); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border: 1.5px solid; }
     .verify-pwd__actions .ok { background: var(--neon-red); color: var(--bg-primary); border-color: var(--neon-red); }
     .verify-pwd__actions .cancel { background: transparent; color: var(--text-secondary); border-color: var(--border-medium); }
@@ -488,6 +537,7 @@ document.documentElement.setAttribute('data-theme', saved || 'dark');
   <!-- Scripts del proyecto -->
   <script src="js/main.js"></script>
   <script src="js/firma-admin.js"></script>
+  <script src="js/targetica.js"></script>
   <script src="js/verificar.js"></script>
 </body>
 </html>

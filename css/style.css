@@ -8024,10 +8024,29 @@ html.jcdc-booted .boot-sequence {
 .quote-cta__note strong { color: var(--text-primary); }
 
 .quote-cta__actions {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: var(--space-md);
+  justify-content: stretch;
+  align-items: stretch;
+}
+.quote-cta__actions .cyber-btn {
+  width: 100% !important;
+  min-width: 0;
   justify-content: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* El bloque targetica ocupa la fila completa arriba */
+.quote-cta__actions .rep-targetica-wrap {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 640px) {
+  .quote-cta__actions {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Nav buttons */
@@ -11213,6 +11232,131 @@ html.jcdc-booted .boot-sequence {
 }
 
 
+/* ============ COTIZADOR · Head del Panel 1 (centrado) ============ */
+.quote-panel__head {
+  text-align: center;
+  margin-bottom: var(--space-xl);
+  padding: var(--space-md) 0 var(--space-lg);
+  position: relative;
+}
+.quote-panel__head::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 2px;
+  margin: var(--space-md) auto 0;
+  background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+  border-radius: 100px;
+  opacity: 0.6;
+}
+.quote-panel__head .quote-panel__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 2.8vw, 1.55rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+}
+.quote-panel__head .quote-panel__help {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+
+[data-theme="light"] .quote-panel__head .quote-panel__title { color: #0f172a; }
+
+/* ============ COTIZADOR · Chips de filtro de servicios ============ */
+.quote-services-filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: var(--space-xl);
+  padding: 0 var(--space-sm);
+}
+
+.quote-services-filters__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1rem;
+  background: var(--bg-primary);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 100px;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+.quote-services-filters__chip i {
+  font-size: 0.75rem;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+.quote-services-filters__chip:hover {
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  transform: translateY(-2px);
+}
+.quote-services-filters__chip:hover i { opacity: 1; }
+.quote-services-filters__chip.active {
+  background: rgba(0,240,255,0.1);
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  box-shadow: 0 0 15px rgba(0,240,255,0.3);
+}
+.quote-services-filters__chip.active i { opacity: 1; }
+
+/* Ocultar servicios filtrados */
+.quote-option[data-hidden="true"] {
+  display: none;
+}
+
+[data-theme="light"] .quote-services-filters__chip {
+  background: #f8fafc;
+  border-color: rgba(0,136,204,0.2);
+  color: #475569;
+}
+[data-theme="light"] .quote-services-filters__chip:hover {
+  border-color: #0088cc;
+  color: #0088cc;
+}
+[data-theme="light"] .quote-services-filters__chip.active {
+  background: rgba(0,136,204,0.1);
+  border-color: #0088cc;
+  color: #0088cc;
+  box-shadow: 0 0 15px rgba(0,136,204,0.25);
+}
+
+@media (max-width: 768px) {
+  .quote-services-filters {
+    gap: 0.4rem;
+    margin-bottom: var(--space-lg);
+  }
+  .quote-services-filters__chip {
+    padding: 0.45rem 0.8rem;
+    font-size: 0.62rem;
+    letter-spacing: 0.03em;
+  }
+  .quote-services-filters__chip i { font-size: 0.68rem; }
+}
+
+@media (max-width: 480px) {
+  .quote-panel__head { padding: var(--space-sm) 0 var(--space-md); margin-bottom: var(--space-lg); }
+  .quote-services-filters__chip span { display: none; }
+  .quote-services-filters__chip {
+    padding: 0.55rem 0.75rem;
+  }
+  .quote-services-filters__chip i { font-size: 0.85rem; opacity: 1; }
+}
 
 /* ============================================
    COTIZADOR · Reparación Técnica
@@ -11260,6 +11404,99 @@ html.jcdc-booted .boot-sequence {
 .rep-garantia-btn i { font-size: 0.75rem; }
 .rep-garantia-btn:hover { border-color: var(--neon-cyan); color: var(--neon-cyan); }
 .rep-garantia-btn.active { background: rgba(0, 240, 255, 0.1); border-color: var(--neon-cyan); color: var(--neon-cyan); box-shadow: 0 0 12px rgba(0, 240, 255, 0.25); }
+/* ============ COTIZADOR · Validez (solo admin) ============ */
+.rep-validez {
+  border-color: rgba(0,240,255,0.25) !important;
+  background: linear-gradient(135deg, rgba(0,240,255,0.03), rgba(184,41,221,0.03)) !important;
+}
+
+.rep-validez__opts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  gap: 0.5rem;
+}
+
+.rep-validez__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 0.9rem;
+  background: var(--bg-panel);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.rep-validez__btn:hover {
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  transform: translateY(-2px);
+  box-shadow: 0 0 12px rgba(0,240,255,0.25);
+}
+
+.rep-validez__btn.active {
+  background: rgba(0,240,255,0.12);
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  box-shadow:
+    0 0 15px rgba(0,240,255,0.35),
+    inset 0 0 10px rgba(0,240,255,0.08);
+  font-weight: 800;
+}
+
+/* Modo claro */
+[data-theme="light"] .rep-validez {
+  border-color: rgba(0,136,204,0.3) !important;
+  background: linear-gradient(135deg, rgba(0,136,204,0.04), rgba(124,58,237,0.03)) !important;
+}
+[data-theme="light"] .rep-validez__btn {
+  background: #ffffff;
+  border-color: rgba(0,136,204,0.25);
+  color: #475569;
+}
+[data-theme="light"] .rep-validez__btn:hover {
+  border-color: #0088cc;
+  color: #0088cc;
+}
+[data-theme="light"] .rep-validez__btn.active {
+  background: rgba(0,136,204,0.12);
+  border-color: #0088cc;
+  color: #0088cc;
+  box-shadow: 0 0 15px rgba(0,136,204,0.3);
+}
+.rep-validez__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.55rem;
+  margin-left: 0.5rem;
+  background: rgba(0,240,255,0.12);
+  border: 1px solid rgba(0,240,255,0.4);
+  border-radius: 100px;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--neon-cyan);
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+[data-theme="light"] .rep-validez__badge {
+  background: rgba(0,136,204,0.1);
+  border-color: rgba(0,136,204,0.4);
+  color: #0088cc;
+}
+@media (max-width: 480px) {
+  .rep-validez__opts { grid-template-columns: repeat(2, 1fr); }
+  .rep-validez__btn { font-size: 0.7rem; padding: 0.65rem 0.5rem; }
+}
 
 .rep-estado { margin-top: var(--space-md); padding: var(--space-md); background: var(--bg-primary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); }
 .rep-estado__label { display: block; font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.6rem; }
@@ -11268,6 +11505,131 @@ html.jcdc-booted .boot-sequence {
 .rep-estado-btn[data-estado="pagada"].active { background: rgba(0, 255, 136, 0.1); border-color: var(--neon-green); color: var(--neon-green); box-shadow: 0 0 15px rgba(0, 255, 136, 0.3); }
 .rep-estado-btn[data-estado="no-pagada"].active { background: rgba(255, 51, 51, 0.1); border-color: var(--neon-red); color: var(--neon-red); box-shadow: 0 0 15px rgba(255, 51, 51, 0.3); }
 .rep-estado-btn:hover { border-color: var(--border-medium); }
+/* ============ BOTÓN TARGETICAS DE GARANTÍA ============ */
+.rep-targetica-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 0;
+}
+
+.rep-targetica-count {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.55rem 0.85rem;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  flex-wrap: wrap;
+}
+.rep-targetica-count__label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.rep-targetica-count__opts {
+  display: flex;
+  gap: 0.35rem;
+  flex: 1;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+.rep-targetica-count__btn {
+  min-width: 40px;
+  padding: 0.4rem 0.7rem;
+  background: var(--bg-panel);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 100px;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.22s ease;
+}
+.rep-targetica-count__btn:hover {
+  border-color: var(--neon-green);
+  color: var(--neon-green);
+}
+.rep-targetica-count__btn.active {
+  background: rgba(0,255,136,0.12);
+  border-color: var(--neon-green);
+  color: var(--neon-green);
+  box-shadow: 0 0 12px rgba(0,255,136,0.3);
+}
+
+.rep-targetica-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  width: 100%;
+  padding: 1.05rem 1.5rem;
+  background: linear-gradient(135deg, rgba(0,255,136,0.12), rgba(0,240,255,0.08));
+  border: 1.5px solid var(--neon-green);
+  border-radius: var(--radius-md);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--neon-green);
+  cursor: pointer;
+  transition: all 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+  overflow: hidden;
+}
+.rep-targetica-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(45deg, transparent 30%, rgba(0,255,136,0.15) 50%, transparent 70%);
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+.rep-targetica-btn:hover::before { transform: translateX(100%); }
+.rep-targetica-btn:hover {
+  background: var(--neon-green);
+  color: var(--bg-primary);
+  box-shadow:
+    0 0 30px rgba(0,255,136,0.5),
+    0 8px 25px rgba(0,255,136,0.25);
+  transform: translateY(-2px);
+}
+.rep-targetica-btn i { font-size: 1.05rem; }
+
+[data-theme="light"] .rep-targetica-btn {
+  background: linear-gradient(135deg, rgba(5,150,105,0.1), rgba(0,136,204,0.06));
+  border-color: #059669;
+  color: #059669;
+}
+[data-theme="light"] .rep-targetica-btn:hover {
+  background: #059669;
+  color: #ffffff;
+}
+[data-theme="light"] .rep-targetica-count__btn.active {
+  background: rgba(5,150,105,0.12);
+  border-color: #059669;
+  color: #059669;
+}
+
+@media (max-width: 640px) {
+  .rep-targetica-count {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .rep-targetica-count__opts { justify-content: flex-start; }
+  .rep-targetica-btn {
+    font-size: 0.75rem;
+    padding: 0.9rem 1rem;
+    letter-spacing: 0.06em;
+  }
+}
 
 .rep-lock-badge { position: absolute; top: 8px; right: 8px; display: inline-flex; align-items: center; gap: 3px; padding: 0.2rem 0.5rem; background: rgba(255, 51, 51, 0.15); border: 1px solid rgba(255, 51, 51, 0.5); border-radius: 100px; font-family: var(--font-mono); font-size: 0.55rem; font-weight: 700; letter-spacing: 0.08em; color: var(--neon-red); text-shadow: 0 0 6px rgba(255, 51, 51, 0.6); }
 .rep-lock-badge i { font-size: 0.6rem; }

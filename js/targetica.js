@@ -18,7 +18,9 @@ window.JCDC_Targetica = {
     const garantiaDias = parseInt(data.garantiaDias, 10) || 0;
 
     const cliente = (data.cliente && data.cliente.nombre) ? data.cliente.nombre : 'Cliente';
-    const equipo = data.equipo || 'Equipo';
+    const servicioLabel = data.servicioLabel || data.equipo || 'Servicio';
+    const equipoLabel = data.equipoLabel || '';
+    const esReparacion = !!data.esReparacion;
     const marca = data.marca || '';
     const modelo = data.modelo || '';
     const codigoVC = data.codigoVC || '';
@@ -40,7 +42,9 @@ window.JCDC_Targetica = {
       garantiaTexto: garantiaTexto,
       fechaVencTxt: fechaVencTxt,
       cliente: cliente,
-      equipo: equipo,
+      servicioLabel: servicioLabel,
+      equipoLabel: equipoLabel,
+      esReparacion: esReparacion,
       marca: marca,
       modelo: modelo,
       codigoVC: codigoVC,
@@ -141,7 +145,7 @@ window.JCDC_Targetica = {
           <div class="sticker__brand">
             ${logoSVG}
             <div class="sticker__brandtext">
-              <strong>JCDurán</strong>
+              <strong>Julio C. Durán Casado</strong>
               <span>Redes · Ciberseguridad</span>
             </div>
           </div>
@@ -162,9 +166,15 @@ window.JCDC_Targetica = {
             <strong class="sticker__value">${esc(d.cliente)}</strong>
           </div>
           <div class="sticker__row">
-            <span class="sticker__label">Equipo</span>
-            <strong class="sticker__value">${esc(d.equipo)}${d.marca ? ' · ' + esc(d.marca) : ''}${d.modelo ? ' ' + esc(d.modelo) : ''}</strong>
+            <span class="sticker__label">Servicio</span>
+            <strong class="sticker__value">${esc(d.servicioLabel || 'Servicio')}</strong>
           </div>
+          ${d.esReparacion && d.equipoLabel ? `
+          <div class="sticker__row">
+            <span class="sticker__label">Equipo</span>
+            <strong class="sticker__value">${esc(d.equipoLabel)}</strong>
+          </div>
+          ` : ''}
         </div>
 
         <div class="sticker__dates">
@@ -272,11 +282,11 @@ window.JCDC_Targetica = {
       width: 216mm;
       min-height: 279mm;
       margin: 20px auto;
-      padding: 8mm;
+      padding: 7mm;
       background: #ffffff;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 3.5mm;
+      gap: 3mm;
       box-shadow: 0 8px 40px rgba(0,0,0,0.15);
       align-content: start;
     }
@@ -284,14 +294,14 @@ window.JCDC_Targetica = {
     /* Sticker — tamaño FIJO siempre */
     .sticker {
       width: 100%;
-      height: 58mm;
-      padding: 3mm 4mm 4mm;
+      height: 62mm;
+      padding: 2.5mm 3.5mm 3mm;
       background: #ffffff;
       border: 1.2px dashed #cbd5e1;
       border-radius: 3mm;
       display: flex;
       flex-direction: column;
-      gap: 1.4mm;
+      gap: 1mm;
       position: relative;
       overflow: hidden;
       break-inside: avoid;
@@ -329,11 +339,15 @@ window.JCDC_Targetica = {
       min-width: 0;
     }
     .sticker__brandtext strong {
-      font-size: 10pt;
+      font-size: 7.5pt;
       font-weight: 800;
       color: ${colorDoc};
-      letter-spacing: -0.02em;
-      line-height: 1;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
     }
     .sticker__brandtext span {
       font-size: 6pt;
@@ -392,13 +406,13 @@ window.JCDC_Targetica = {
     .sticker__info {
       display: flex;
       flex-direction: column;
-      gap: 1.4mm;
+      gap: 0.9mm;
       flex: 1;
     }
     .sticker__row {
       display: flex;
       flex-direction: column;
-      gap: 0.3mm;
+      gap: 0.2mm;
     }
     .sticker__label {
       font-size: 5.5pt;
@@ -426,7 +440,7 @@ window.JCDC_Targetica = {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 2mm;
-      padding: 1.5mm 0;
+      padding: 1mm 0;
       border-top: 1px solid #e5e7eb;
       border-bottom: 1px solid #e5e7eb;
     }
@@ -446,12 +460,13 @@ window.JCDC_Targetica = {
       align-items: center;
       justify-content: space-between;
       gap: 3mm;
-      padding-top: 0.5mm;
-      padding-bottom: 0.5mm;
+      padding-top: 0.3mm;
+      padding-bottom: 0;
+      flex-shrink: 0;
     }
     .sticker__qr {
-      width: 10.5mm;
-      height: 10.5mm;
+      width: 10mm;
+      height: 10mm;
       flex-shrink: 0;
       display: flex;
       align-items: center;

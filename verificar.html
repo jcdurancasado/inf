@@ -80,6 +80,9 @@ document.documentElement.setAttribute('data-theme', saved || 'dark');
     .admin-lista__tipo { font-family: var(--font-display); font-size: 0.65rem; font-weight: 700; letter-spacing: 0.05em; padding: 4px 8px; border-radius: 100px; text-align: center; border: 1px solid; }
     .admin-lista__tipo--cot { color: var(--neon-purple); border-color: var(--neon-purple); background: rgba(184,41,221,0.08); }
     .admin-lista__tipo--fac { color: var(--neon-cyan); border-color: var(--neon-cyan); background: rgba(0,240,255,0.08); }
+    .admin-lista__tipo--cert { color: var(--neon-green); border-color: var(--neon-green); background: rgba(0,255,136,0.08); }
+    .admin-lista__tipo--doc { color: var(--neon-yellow); border-color: var(--neon-yellow); background: rgba(255,238,0,0.08); }
+    .admin-lista__tipo--cap { color: var(--neon-orange); border-color: var(--neon-orange); background: rgba(255,107,0,0.08); }
     .admin-lista__num { font-family: var(--font-mono); font-size: 0.82rem; color: var(--text-primary); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .admin-lista__cliente { font-size: 0.85rem; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .admin-lista__monto { font-family: var(--font-mono); font-size: 0.85rem; color: var(--neon-green); font-weight: 600; text-align: right; }
@@ -379,6 +382,9 @@ document.documentElement.setAttribute('data-theme', saved || 'dark');
         <button type="button" class="admin-lista__chip" data-filtro="factura">FACTURAS</button>
         <button type="button" class="admin-lista__chip" data-filtro="pagada">PAGADAS</button>
         <button type="button" class="admin-lista__chip" data-filtro="no-pagada">NO PAGADAS</button>
+        <button type="button" class="admin-lista__chip" data-filtro="certificado">CERTIFICADOS</button>
+        <button type="button" class="admin-lista__chip" data-filtro="documentacion">DOCUMENTACIÓN</button>
+        <button type="button" class="admin-lista__chip" data-filtro="capacitacion">CAPACITACIÓN</button>
       </div>
 
       <div class="admin-lista__contenido" id="adminListaContenido">
@@ -538,6 +544,7 @@ document.documentElement.setAttribute('data-theme', saved || 'dark');
   <script src="js/main.js"></script>
   <script src="js/firma-admin.js"></script>
   <script src="js/targetica.js"></script>
+  <script src="js/plantillas.js"></script>
   <script src="js/verificar.js"></script>
 </body>
 </html>

@@ -290,6 +290,12 @@ window.SOPORTE_CONFIG = {
   // "excludes": no mostrar si el servicio está en esta lista
   // "forReparacionOnly": solo para reparación (o lo contrario)
   // ============================================
+  extrasQueGeneranDocumentos: {
+    docs: 'documentacion',
+    certificate: 'certificado',
+    training: 'capacitacion'
+  },
+
   extrasDef: {
     docs: {
       label: 'Documentación técnica',

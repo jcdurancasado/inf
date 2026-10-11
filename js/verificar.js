@@ -95,6 +95,16 @@
       });
     } catch (e) { /* Ignorar */ }
 
+    // 4. Buscar por cotizacionOrigen (facturas emitidas desde esa cotización)
+    try {
+      var snap4 = await window.db.collection('documentos').where('cotizacionOrigen', '==', q).get();
+      snap4.forEach(function (doc) {
+        if (!encontrados.find(function (r) { return r._id === doc.id; })) {
+          encontrados.push(Object.assign({ _id: doc.id }, doc.data()));
+        }
+      });
+    } catch (e) { /* Ignorar */ }
+
     return encontrados;
   }
 
@@ -125,7 +135,10 @@
   // ============================================================
   // RENDER DE RESULTADOS
   // ============================================================
+  var ultimosRegistros = [];   // ✅ FIX #2: cache del último render para operaciones admin
+
   function render(records, code) {
+    ultimosRegistros = records || [];   // ✅ FIX #2
     result.className = 'verify-result show';
     if (!records.length) {
       result.classList.add('verify-result--error');
@@ -156,6 +169,20 @@
         html += '<div class="verify-row"><span>Factura emitida</span><strong style="color:var(--neon-green);">' + r.facturaVinculada + '</strong></div>';
         html += '<div class="verify-row"><span>Cómo verificarla</span><strong style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);">Pega ese número arriba y pulsa Verificar</strong></div>';
       }
+
+      // ✅ Lista de documentos adicionales anidados (factura)
+      if (r.documentosAdicionales && r.documentosAdicionales.length) {
+        html += '<div style="margin-top:1rem;padding:0.75rem 1rem;background:rgba(184,41,221,0.05);border-left:3px solid var(--neon-purple);border-radius:0 4px 4px 0;">';
+        html += '<div style="font-family:var(--font-display);font-size:0.75rem;color:var(--neon-purple);letter-spacing:0.08em;margin-bottom:0.5rem;"><i class="fa-solid fa-paperclip"></i> DOCUMENTOS ADICIONALES (' + r.documentosAdicionales.length + ')</div>';
+        r.documentosAdicionales.forEach(function (a) {
+          html += '<div style="display:flex;justify-content:space-between;gap:1rem;padding:0.35rem 0;border-bottom:1px dashed rgba(184,41,221,0.2);font-size:0.85rem;">';
+          html += '<span style="color:var(--text-primary);">' + (a.label || a.tipo) + '</span>';
+          html += '<span style="font-family:var(--font-mono);font-size:0.72rem;color:var(--neon-purple);">' + (a.numero || '—') + '</span>';
+          html += '</div>';
+        });
+        html += '<div style="font-family:var(--font-mono);font-size:0.68rem;color:var(--text-muted);margin-top:0.5rem;">Comparten el VC de la factura. Solicítalos al proveedor.</div>';
+        html += '</div>';
+      }
       if (r.comentarios && r.comentarios.length) {
         html += '<div style="margin-top:1rem;padding:0.75rem 1rem;background:rgba(255,238,0,0.05);border-left:3px solid var(--neon-yellow);border-radius:0 4px 4px 0;">';
         html += '<div style="font-family:var(--font-display);font-size:0.75rem;color:var(--neon-yellow);letter-spacing:0.08em;margin-bottom:0.5rem;"><i class="fa-solid fa-comment-dots"></i> MENSAJE DEL PROVEEDOR</div>';
@@ -179,13 +206,20 @@
       if (records.length > 1) html += '<hr style="border:none;border-top:1px dashed var(--border-subtle);margin:0.75rem 0;">';
     });
 
-    // Botón DESCARGAR (solo si viene del correo ?code=)
+    // Botones DESCARGAR (solo si viene del correo ?code=)
     var mostrarAcciones = (records.length === 1) && vieneDeCorreo;
-    if (mostrarAcciones) {
+    if (mostrarAcciones && docActual) {
+      var adicionales = docActual.documentosAdicionales || [];
       html += '<div class="verify-actions">';
       html += '  <button type="button" class="cyber-btn cyber-btn--primary cyber-btn--large" id="verifyDownloadBtn">';
-      html += '    <span>DESCARGAR PDF</span><i class="fa-solid fa-file-pdf"></i>';
+      html += '    <span>DESCARGAR ' + (docActual.tipo === 'factura' ? 'FACTURA' : 'COTIZACIÓN') + '</span><i class="fa-solid fa-file-pdf"></i>';
       html += '  </button>';
+      adicionales.forEach(function (a, i) {
+        var lbl = (a.label || a.tipo).toUpperCase();
+        html += '  <button type="button" class="cyber-btn cyber-btn--primary cyber-btn--large verifyDownloadAdicBtn" data-adic-index="' + i + '">';
+        html += '    <span>DESCARGAR ' + lbl + '</span><i class="fa-solid fa-file-pdf"></i>';
+        html += '  </button>';
+      });
       html += '</div>';
     }
 
@@ -195,6 +229,14 @@
       var dlBtn = document.getElementById('verifyDownloadBtn');
       if (dlBtn) dlBtn.addEventListener('click', function () {
         if (docActual) descargarDocPDF(docActual);
+      });
+      result.querySelectorAll('.verifyDownloadAdicBtn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var idx = parseInt(btn.getAttribute('data-adic-index'), 10);
+          var adic = (docActual.documentosAdicionales || [])[idx];
+          if (!adic) return;
+          descargarAdicionalAnidado(docActual, adic, 'download');
+        });
       });
     }
   }
@@ -266,6 +308,18 @@
     result.innerHTML = '<div style="text-align:center;padding:2rem;"><i class="fa-solid fa-spinner fa-spin" style="font-size:2rem;color:var(--neon-cyan);"></i><p style="font-family:var(--font-mono);color:var(--text-muted);margin-top:1rem;letter-spacing:0.05em;">Verificando documento, por favor espere...</p></div>';
 
     var regs = await buscarRegistro(code);
+
+    // ✅ FIX #3: priorizar factura > cotización > adicionales.
+    // Como los documentos adicionales comparten el mismo VC que su padre,
+    // Firestore puede devolverlos primero. Ordenamos para que docActual
+    // siempre apunte al documento principal (factura o cotización).
+    var _prio = { factura: 0, cotizacion: 1 };
+    regs.sort(function (a, b) {
+      var pa = (_prio[a.tipo] !== undefined) ? _prio[a.tipo] : 2;
+      var pb = (_prio[b.tipo] !== undefined) ? _prio[b.tipo] : 2;
+      return pa - pb;
+    });
+
     docActual = regs.length ? regs[0] : null;
     render(regs, code);
     actualizarBotonesAdmin();
@@ -315,7 +369,26 @@
         okBtn.textContent = 'Verificando...';
         try {
           await window.auth.signInWithEmailAndPassword(email, pass);
+
+          // ✅ Persistir sesión SOLO en esta pestaña
+          try { sessionStorage.setItem('jcdc_admin_verificar', '1'); } catch (e) {}
+
+          // ✅ Actualizar toda la UI manualmente
+          adminUnlocked = true;
+          adminEmail = email;
+          document.body.classList.add('admin-unlocked');
+
+          // Localizar referencias frescas por si acaso
+          var _panel = document.getElementById('adminPanel');
+          var _toggle = document.getElementById('adminToggleBtn');
+          var _toggleLabel = document.getElementById('adminToggleLabel');
+          if (_panel) _panel.classList.add('show');
+          if (_toggle) _toggle.classList.add('is-active');
+          if (_toggleLabel) _toggleLabel.textContent = 'Bloquear';
+          if (_toggle) _toggle.querySelector('i').className = 'fa-solid fa-lock-open';
+
           errEl.textContent = '';
+          if (typeof Toast !== 'undefined') Toast.show('Acceso concedido', 'success', 1800);
           cerrar(true);
         } catch (e) {
           okBtn.disabled = false;
@@ -384,17 +457,22 @@
   async function emitirFactura(estadoFactura) {
     if (!docActual) { alert('Primero busca una cotización.'); return; }
     if (!adminUnlocked) { alert('Solo admin.'); return; }
-    if (docActual.tipo === 'factura') { alert('Este documento ya es una FACTURA.'); return; }
-    if (docActual.facturaVinculada) { alert('Esta cotización ya tiene la factura ' + docActual.facturaVinculada + ' emitida.'); return; }
+    if (docActual.tipo === 'factura') { alert('Ya es FACTURA.'); return; }
+    if (docActual.facturaVinculada) { alert('Ya tiene factura ' + docActual.facturaVinculada); return; }
 
     var esPagada = estadoFactura === 'pagada';
     var etiqueta = esPagada ? 'PAGADA' : 'NO PAGADA';
-    if (!confirm('¿Emitir FACTURA ' + etiqueta + ' a partir de esta cotización?')) return;
+    if (!confirm('¿Emitir FACTURA ' + etiqueta + '?')) return;
 
     var numFactura = generarNumeroFactura();
     var fechaHoy = new Date().toISOString().slice(0, 10);
     var codigoVC = generarCodigoVC(numFactura, fechaHoy, String(docActual.total || 0));
     var fechaTxt = fechaLegible();
+
+    var adicionalesNuevos = [];
+    if (esPagada) {
+      adicionalesNuevos = construirAdicionalesDesdeSnapshot(docActual.snapshot || {}, numFactura, fechaHoy, fechaTxt, codigoVC);
+    }
 
     var factura = {
       tipo: 'factura',
@@ -412,38 +490,34 @@
       historial: [{
         evento: 'emision',
         titulo: 'Factura emitida (' + etiqueta + ')',
-        descripcion: 'Generada a partir de la cotización ' + docActual.numero,
-        fecha: fechaTxt,
-        timestamp: Date.now()
+        descripcion: 'Generada desde ' + docActual.numero,
+        fecha: fechaTxt, timestamp: Date.now()
       }],
       comentarios: [],
-      snapshot: docActual.snapshot || {}
+      snapshot: docActual.snapshot || {},
+      documentosAdicionales: adicionalesNuevos
     };
 
     try {
-      // Crear la factura en Firestore
       await window.db.collection('documentos').doc(codigoVC).set(factura);
     } catch (e) {
-      console.error('Error creando factura:', e);
-      alert('Error creando factura en Firestore.');
-      return;
+      console.error(e); alert('Error en Firestore.'); return;
     }
 
-    // Actualizar la cotización origen
     docActual.facturaVinculada = numFactura;
     docActual.historial = docActual.historial || [];
     docActual.historial.push({
       evento: esPagada ? 'pagada' : 'no-pagada',
       titulo: 'Cotización convertida en FACTURA ' + etiqueta,
-      descripcion: 'Se emitió la factura ' + numFactura + ' (código ' + codigoVC + ').',
-      fecha: fechaTxt,
-      timestamp: Date.now()
+      descripcion: 'Factura ' + numFactura + ' (VC ' + codigoVC + ').'
+        + (adicionalesNuevos.length ? ' Con ' + adicionalesNuevos.length + ' adicional(es).' : ''),
+      fecha: fechaTxt, timestamp: Date.now()
     });
     docActual.comentarios = docActual.comentarios || [];
     docActual.comentarios.push({
-      texto: 'Se emitió la factura ' + numFactura + ' (' + etiqueta + '). Para verificarla, copia el número ' + numFactura + ' y pégalo en el buscador.',
-      fecha: fechaTxt,
-      timestamp: Date.now()
+      texto: 'Se emitió la factura ' + numFactura + ' (' + etiqueta + ').'
+        + (adicionalesNuevos.length ? ' Incluye ' + adicionalesNuevos.length + ' documento(s) adicional(es) anidados.' : ''),
+      fecha: fechaTxt, timestamp: Date.now()
     });
 
     await actualizarDoc(docActual._id, {
@@ -454,9 +528,44 @@
 
     render([docActual], docActual.codigoVC || docActual.numero);
     actualizarBotonesAdmin();
-    alert('✅ Factura emitida como ' + etiqueta + '\n\nNúmero: ' + numFactura + '\nCódigo VC: ' + codigoVC);
+    alert('✅ Factura ' + etiqueta + '\n\nNúmero: ' + numFactura + '\nVC: ' + codigoVC
+      + (adicionalesNuevos.length ? '\n\n✅ ' + adicionalesNuevos.length + ' adicional(es) anidado(s)' : ''));
   }
 
+  // Helper: construye adicionales desde los extras del snapshot
+  function construirAdicionalesDesdeSnapshot(snapshot, numFactura, fechaHoy, fechaTxt, codigoVCpadre) {
+    var extras = snapshot.extras || {};
+    var mapa = (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.extrasQueGeneranDocumentos) || {
+      docs: 'documentacion', certificate: 'certificado', training: 'capacitacion'
+    };
+    var labels = { certificado: 'Certificado de servicio', documentacion: 'Documentación técnica', capacitacion: 'Certificado de capacitación' };
+    var sufijos = { certificado: 'CERT', documentacion: 'DOC', capacitacion: 'CAP' };
+
+    var adicionales = [];
+    Object.keys(mapa).forEach(function (extraKey) {
+      if (!extras[extraKey]) return;
+      var tipo = mapa[extraKey];
+      var numero = (sufijos[tipo] || tipo.toUpperCase()) + '-' + numFactura;
+      adicionales.push({
+        tipo: tipo,
+        numero: numero,
+        label: labels[tipo] || tipo,
+        codigoVCpadre: codigoVCpadre,
+        fecha: fechaTxt,
+        timestamp: Date.now(),
+        snapshot: {
+          tipoDoc: tipo, numero: numero, numeroPadre: numFactura,
+          fechaEmision: snapshot.fechaEmision || fechaHoy,
+          garantia: snapshot.garantia || 0,
+          cliente: snapshot.cliente || {},
+          equipo: snapshot.equipo || '', marca: snapshot.marca || '', modelo: snapshot.modelo || '',
+          descripcion: snapshot.descripcion || '', lines: snapshot.lines || [],
+          totalUSD: snapshot.totalUSD, totalDOP: snapshot.totalDOP, rate: snapshot.rate
+        }
+      });
+    });
+    return adicionales;
+  }
   // ============================================================
   // PDF (SIN CAMBIOS — usa snapshot del registro)
   // ============================================================
@@ -532,7 +641,7 @@
     var dop = isReparacion ? total : Math.round(total * rate);
     var usd = isReparacion ? null : total;
     var date = record.fecha;
-    var totalRow = isReparacion ? ('RD$' + dop.toLocaleString('es-DO')) : ('$' + usd.toLocaleString('en-US'));
+    var totalRow = 'RD$' + dop.toLocaleString('es-DO');
 
     var colorDoc;
     if (isFactura) {
@@ -565,7 +674,8 @@
     var rows = '';
     lines.forEach(function (l) {
       var sub = l.sub ? '<div class="row-sub">' + l.sub + '</div>' : '';
-      var price = isReparacion ? ('RD$' + Number(l.value).toLocaleString('es-DO')) : ('$' + Number(l.value).toLocaleString('en-US'));
+      var lValueDOP = isReparacion ? Number(l.value) : Math.round(Number(l.value) * rate);
+      var price = 'RD$' + lValueDOP.toLocaleString('es-DO');
       rows += '<tr><td>' + l.label + sub + '</td><td class="row-price">' + price + '</td></tr>';
     });
 
@@ -574,7 +684,7 @@
     var garantiaTexto = garantiaDias === 0 ? 'Este servicio <strong>no incluye garantía</strong>.' : 'Garantía de <strong>' + garantiaDias + ' días</strong> sobre la reparación.';
     var notaTexto = isFactura
       ? '<strong>Nota:</strong> Esta factura corresponde al servicio descrito arriba. ' + garantiaTexto + ' Gracias por su preferencia.'
-      : '<strong>Nota:</strong> Cotización generada desde el cotizador web <strong>jcdurancasado.github.io/inf</strong> el ' + date + ' a las ' + hora + '. Válida por ' + (s.diasValidez || 7) + ' días.';
+      : '<strong>Nota:</strong> Cotización generada desde el cotizador web <strong>jcdurancasado.github.io/inf</strong> el ' + date + ' a las ' + hora + '. Válida por ' + (s.diasValidez || docCfg.cotizacionValidezDias || 15) + ' días.';
 
     var observacionesTexto = (s.descripcion && s.descripcion.trim())
       ? s.descripcion
@@ -658,12 +768,12 @@
       '<div class="ii"><span>' + (isFactura ? 'Estado' : 'Válida hasta') + '</span><strong style="color:' + (isFactura ? colorDoc : '#111') + ';">' + (isFactura ? (esPagada ? '✓ PAGADA' : '✗ NO PAGADA') : ((s.fechaVencimiento || '—') + ' (' + (s.diasValidez || 7) + ' días)')) + '</strong></div>' +
       '</div></div>' +
       '<div class="section-title">Detalle del servicio</div>' +
-      '<table><thead><tr><th>Descripción</th><th>' + (isReparacion ? 'Monto (DOP)' : 'Monto (USD)') + '</th></tr></thead><tbody>' +
+      '<table><thead><tr><th>Descripción</th><th>Monto (DOP)</th></tr></thead><tbody>' +
       (rows || '<tr><td colspan="2" style="text-align:center;color:#888;padding:14px;">Sin elementos seleccionados</td></tr>') +
       '</tbody></table>' +
       '<div class="totals"><div class="label">' + (isFactura ? (esPagada ? 'TOTAL PAGADO' : 'TOTAL A PAGAR') : 'TOTAL ESTIMADO') + '</div>' +
       '<div class="amount">' + totalRow + '</div>' +
-      (isReparacion ? '<div class="sub">Pesos dominicanos (DOP)</div>' : '<div class="sub">≈ RD$' + dop.toLocaleString('es-DO') + ' DOP · Tasa 1 USD = ' + rate + ' DOP</div>') +
+      '<div class="sub">Pesos dominicanos (DOP)</div>' +
       '</div>' +
       '<div class="obs"><strong>Observaciones:</strong> ' + observacionesTexto + '</div>' +
       '<div class="note">' + notaTexto + '</div>' +
@@ -845,8 +955,10 @@
             total: doc.total,
             moneda: doc.moneda,
             cliente: doc.cliente,
+            equipo: doc.equipo,
             fecha: doc.fecha,
-            snapshot: doc.snapshot || {}
+            snapshot: doc.snapshot || {},
+            documentosAdicionales: doc.documentosAdicionales || []
           }
         })
       });
@@ -1001,6 +1113,62 @@
   }
 
   // ============================================================
+  // Helper: descargar documento adicional anidado
+  // ============================================================
+  function descargarAdicionalAnidado(parentDoc, adicional, modo) {
+    modo = modo || 'download';
+    if (typeof window.JCDC_Plantillas === 'undefined') {
+      alert('Módulo de plantillas no disponible. Recarga la página.');
+      return;
+    }
+    var snap = adicional.snapshot || {};
+    var rate = snap.rate || (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.rateDop) || 60;
+    var esUSD = (parentDoc.moneda === 'USD');
+
+    // ✅ Convertir líneas a DOP para que nunca se muestre USD
+    var linesDOP = (snap.lines || []).map(function (l) {
+      return {
+        label: l.label,
+        sub: l.sub,
+        value: esUSD ? Math.round(Number(l.value) * rate) : Number(l.value)
+      };
+    });
+
+    // ✅ Total en DOP
+    var totalDOP;
+    if (snap.totalDOP) totalDOP = snap.totalDOP;
+    else if (esUSD && snap.totalUSD) totalDOP = Math.round(snap.totalUSD * rate);
+    else if (esUSD && parentDoc.total) totalDOP = Math.round(parentDoc.total * rate);
+    else totalDOP = parentDoc.total || 0;
+
+    var data = {
+      numero: adicional.numero,
+      tipoDoc: adicional.tipo,
+      estado: '—',
+      fechaEmision: snap.fechaEmision || parentDoc.fecha || new Date().toISOString().slice(0, 10),
+      garantiaDias: snap.garantia || 0,
+      cliente: snap.cliente || {},
+      equipo: snap.equipo || '',
+      marca: snap.marca || '',
+      modelo: snap.modelo || '',
+      descripcion: snap.descripcion || '',
+      servicioLabel: snap.servicioLabel || parentDoc.equipo || '',
+      lines: linesDOP,
+      total: totalDOP,
+      moneda: 'DOP',   // ✅ Forzar DOP
+      rate: rate,
+      codigoVCpadre: parentDoc.codigoVC || parentDoc._id
+    };
+    var def = null;
+    if (window.JCDC_Plantillas.TIPOS) {
+      def = window.JCDC_Plantillas.TIPOS.find(function (t) { return t.id === adicional.tipo; });
+    }
+    if (!def) { alert('Tipo de documento desconocido: ' + adicional.tipo); return; }
+    var docs = [{ tipo: adicional.tipo, def: def, numero: adicional.numero, vc: parentDoc.codigoVC }];
+    window.JCDC_Plantillas.open(data, docs, modo);
+  }
+
+  // ============================================================
   // TARGETICAS · Modal para elegir cantidad
   // ============================================================
   function pedirCantidadTargeticas(numDoc, clienteNombre) {
@@ -1070,12 +1238,21 @@
     const cli = s.cliente || {};
     const prov = (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.proveedor) || {};
 
-    // Reconstruir nombre del equipo legible
-    let equipoLabel = s.equipo || doc.equipo || 'Equipo';
-    const equipoId = s.equipo;
-    if (equipoId && window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.equipos) {
-      const eq = window.SOPORTE_CONFIG.equipos.find(function (e) { return e.id === equipoId; });
-      if (eq) equipoLabel = eq.label;
+    // Detectar si es reparación (moneda DOP o servicioId)
+    var esReparacion = (doc.moneda === 'DOP') || (s.servicioId === 'reparacion');
+    var servicioLabel = s.servicioLabel || (esReparacion ? 'Reparación Técnica' : (doc.equipo || 'Servicio'));
+    var equipoLabel = '';
+
+    if (esReparacion) {
+      var equipoId = s.equipo;
+      var eqNombre = equipoId || '';
+      if (equipoId && window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.equipos) {
+        var eq = window.SOPORTE_CONFIG.equipos.find(function (e) { return e.id === equipoId; });
+        if (eq) eqNombre = eq.label;
+      }
+      equipoLabel = eqNombre;
+      if (s.marca) equipoLabel += ' · ' + s.marca;
+      if (s.modelo) equipoLabel += ' ' + s.modelo;
     }
 
     // Fecha de emisión
@@ -1092,7 +1269,9 @@
       fechaEmision: fechaEmision,
       garantiaDias: s.garantia || 30,
       cliente: { nombre: cli.nombre || doc.cliente || 'Cliente', telefono: cli.telefono || '' },
-      equipo: equipoLabel,
+      servicioLabel: servicioLabel,
+      equipoLabel: equipoLabel,
+      esReparacion: esReparacion,
       marca: s.marca || '',
       modelo: s.modelo || '',
       descripcion: s.descripcion || '',
@@ -1136,37 +1315,45 @@
     btn.addEventListener('click', verificar);
     input.addEventListener('keydown', function (e) { if (e.key === 'Enter') verificar(); });
 
-    // Detectar si ya había sesión Firebase activa
-    window.auth.onAuthStateChanged(function (user) {
-      if (user) {
-        adminUnlocked = true;
-        adminEmail = user.email;
-        document.body.classList.add('admin-unlocked');
-        if (adminPanel) adminPanel.classList.add('show');
-        if (adminToggle) adminToggle.classList.add('is-active');
-        if (adminToggleLabel) adminToggleLabel.textContent = 'Bloquear';
-        if (adminToggle) adminToggle.querySelector('i').className = 'fa-solid fa-lock-open';
-        console.log('[JCDC Auth] Sesión activa:', user.email);
-      } else {
-        adminUnlocked = false;
-        adminEmail = null;
-        document.body.classList.remove('admin-unlocked');
-        if (adminPanel) adminPanel.classList.remove('show');
-        if (adminToggle) adminToggle.classList.remove('is-active');
-        if (adminToggleLabel) adminToggleLabel.textContent = 'Desbloquear';
-        if (adminToggle) adminToggle.querySelector('i').className = 'fa-solid fa-lock';
-      }
-    });
+    // ✅ SIN listener automático — gestionamos manualmente con sessionStorage
+    // sessionStorage se borra al cerrar la pestaña → aislamiento real entre páginas
+    var adminSesionLocal = (function () {
+      try { return sessionStorage.getItem('jcdc_admin_verificar') === '1'; } catch (e) { return false; }
+    })();
+
+    if (adminSesionLocal) {
+      adminUnlocked = true;
+      adminEmail = '(sesión local)';
+      document.body.classList.add('admin-unlocked');
+      if (adminPanel) adminPanel.classList.add('show');
+      if (adminToggle) adminToggle.classList.add('is-active');
+      if (adminToggleLabel) adminToggleLabel.textContent = 'Bloquear';
+      if (adminToggle) adminToggle.querySelector('i').className = 'fa-solid fa-lock-open';
+    }
 
     // Toggle admin
     if (adminToggle) {
       adminToggle.addEventListener('click', async function () {
         if (adminUnlocked) {
-          await window.auth.signOut();
+          // Logout manual
+          try { await window.auth.signOut(); } catch (e) {}
+          try { sessionStorage.removeItem('jcdc_admin_verificar'); } catch (e) {}
+
+          adminUnlocked = false;
+          adminEmail = null;
+          document.body.classList.remove('admin-unlocked');
+          if (adminPanel) adminPanel.classList.remove('show');
+          if (adminToggle) adminToggle.classList.remove('is-active');
+          if (adminToggleLabel) adminToggleLabel.textContent = 'Desbloquear';
+          if (adminToggle) adminToggle.querySelector('i').className = 'fa-solid fa-lock';
+          if (typeof Toast !== 'undefined') Toast.show('Sesión cerrada', 'info', 1800);
           return;
         }
+
+        // Pedir credenciales
         var ok = await pedirPassword();
-        if (!ok) return;
+        // Si pedirPassword tuvo éxito, la UI ya se actualizó dentro
+        // Si no, no hacemos nada (el modal ya mostró el error)
       });
     }
 
@@ -1182,20 +1369,25 @@
       var id = elBtn.getAttribute('data-id');
       var ts = parseInt(elBtn.getAttribute('data-ts'), 10);
 
-      // Aplicar al documento actual
-      if (delC && docActual && docActual.comentarios) {
-        docActual.comentarios = docActual.comentarios.filter(function (c) { return (c.timestamp || 0) !== ts; });
+      // ✅ FIX #2: buscar el registro EXACTO por _id, no usar docActual (que es regs[0]).
+      // Esto evita borrar comentarios del documento equivocado cuando hay múltiples
+      // coincidencias con el mismo VC (factura + sus documentos adicionales).
+      var target = ultimosRegistros.find(function (r) { return r._id === id; });
+      if (!target) { alert('No se encontró el registro.'); return; }
+
+      if (delC && target.comentarios) {
+        target.comentarios = target.comentarios.filter(function (c) { return (c.timestamp || 0) !== ts; });
       }
-      if (delH && docActual && docActual.historial) {
-        docActual.historial = docActual.historial.filter(function (h) { return (h.timestamp || 0) !== ts; });
+      if (delH && target.historial) {
+        target.historial = target.historial.filter(function (h) { return (h.timestamp || 0) !== ts; });
       }
 
       await actualizarDoc(id, {
-        comentarios: docActual.comentarios || [],
-        historial: docActual.historial || []
+        comentarios: target.comentarios || [],
+        historial: target.historial || []
       });
 
-      render([docActual], docActual.codigoVC || docActual.numero);
+      render(ultimosRegistros, target.codigoVC || target.numero);
       actualizarBotonesAdmin();
     });
 
@@ -1298,9 +1490,12 @@
       document.body.style.overflow = '';
     }
 
-    function renderListaAdmin() {
+        function renderListaAdmin() {
       if (!listaContenido) return;
       var q = (listaBuscar.value || '').trim().toLowerCase();
+
+      var filtroEsAdicional = (filtroActual === 'certificado' || filtroActual === 'documentacion' || filtroActual === 'capacitacion');
+
       var filtrados = todosLosDocs.filter(function (d) {
         // Filtro por tipo/estado
         if (filtroActual === 'cotizacion' && d.tipo !== 'cotizacion') return false;
@@ -1308,11 +1503,18 @@
         if (filtroActual === 'pagada' && !(d.tipo === 'factura' && d.estado === 'pagada')) return false;
         if (filtroActual === 'no-pagada' && !(d.tipo === 'factura' && d.estado === 'no-pagada')) return false;
 
+        // Filtros de adicionales: solo mostrar padres con ese hijo anidado
+        if (filtroEsAdicional) {
+          if (!d.documentosAdicionales || !d.documentosAdicionales.length) return false;
+          if (!d.documentosAdicionales.some(function (a) { return a.tipo === filtroActual; })) return false;
+        }
+
         // Filtro por búsqueda
         if (q) {
           var texto = [
             d.numero || '', d.cliente || '', d.codigoVC || '',
-            d.equipo || '', d.facturaVinculada || '', d.cotizacionOrigen || ''
+            d.equipo || '', d.facturaVinculada || '', d.cotizacionOrigen || '',
+            d.documentoPadre || '', d.tipoDocumento || ''
           ].join(' ').toLowerCase();
           if (texto.indexOf(q) === -1) return false;
         }
@@ -1327,8 +1529,16 @@
 
       var html = '';
       filtrados.forEach(function (d) {
-        var tipoClase = d.tipo === 'factura' ? 'admin-lista__tipo--fac' : 'admin-lista__tipo--cot';
-        var tipoTxt = d.tipo === 'factura' ? 'FACT' : 'COT';
+        var tipoMap = {
+          'factura':       { clase: 'admin-lista__tipo--fac',  txt: 'FACT' },
+          'cotizacion':    { clase: 'admin-lista__tipo--cot',  txt: 'COT'  },
+          'certificado':   { clase: 'admin-lista__tipo--cert', txt: 'CERT' },
+          'documentacion': { clase: 'admin-lista__tipo--doc',  txt: 'DOC'  },
+          'capacitacion':  { clase: 'admin-lista__tipo--cap',  txt: 'CAP'  }
+        };
+        var tipoInfo = tipoMap[d.tipo] || { clase: 'admin-lista__tipo--cot', txt: '—' };
+        var tipoClase = tipoInfo.clase;
+        var tipoTxt = tipoInfo.txt;
         var estadoClase = 'admin-lista__estado--na';
         var estadoTxt = '—';
         if (d.tipo === 'factura') {
@@ -1337,14 +1547,32 @@
         }
         var fecha = d.fecha || (d.fechaISO ? d.fechaISO.slice(0, 10) : '—');
         if (fecha.length > 15) fecha = fecha.slice(0, 12) + '...';
-        var moneda = d.moneda || 'DOP';
-        var totalFmt = (moneda === 'DOP' ? 'RD$' : '$') + Number(d.total || 0).toLocaleString(moneda === 'DOP' ? 'es-DO' : 'en-US');
+
+        // Siempre en DOP
+        var dopVal = (d.snapshot && d.snapshot.totalDOP) ? d.snapshot.totalDOP : (d.total || 0);
+        var totalFmt = 'RD$' + Number(dopVal).toLocaleString('es-DO');
+
+        // Detección de hijos para el colapsable
+        var tieneHijos = d.documentosAdicionales && d.documentosAdicionales.length;
+        var hijosVisibles = tieneHijos
+          ? (filtroEsAdicional ? d.documentosAdicionales.filter(function (a) { return a.tipo === filtroActual; }) : d.documentosAdicionales)
+          : [];
+        var autoExpand = filtroEsAdicional;
 
         var code = d.codigoVC || d.numero || '';
         html += '<div class="admin-lista__fila" data-id="' + d._id + '" data-code="' + code + '">';
         html += '  <div class="admin-lista__tipo ' + tipoClase + '">' + tipoTxt + '</div>';
         html += '  <div class="admin-lista__num" title="' + (d.numero || '') + '">' + (d.numero || '—') + '</div>';
-        html += '  <div class="admin-lista__cliente" title="' + (d.cliente || '') + '">' + (d.cliente || '—') + '</div>';
+        var clienteTxt = d.cliente || '—';
+        if (d.documentoPadre) {
+          clienteTxt += ' · de ' + d.documentoPadre;
+        }
+        html += '  <div class="admin-lista__cliente" title="' + (d.cliente || '') + '">';
+        if (hijosVisibles.length) {
+          html += '<button type="button" class="admin-lista__toggle" data-toggle="' + d._id + '" data-expanded="' + (autoExpand ? 'true' : 'false') + '">' + (autoExpand ? '▼' : '▶') + ' ' + hijosVisibles.length + '</button>';
+        }
+        html += '<span class="admin-lista__cliente-text">' + clienteTxt + '</span>';
+        html += '  </div>';
         html += '  <div class="admin-lista__monto">' + totalFmt + '</div>';
         html += '  <div class="admin-lista__fecha">' + fecha + '</div>';
         html += '  <div class="admin-lista__estado ' + estadoClase + '">' + estadoTxt + '</div>';
@@ -1352,7 +1580,6 @@
         html += '    <button type="button" class="admin-lista__accion" data-action="ver" data-id="' + d._id + '" data-code="' + code + '" title="Ver documento"><i class="fa-solid fa-eye"></i></button>';
         html += '    <button type="button" class="admin-lista__accion" data-action="download" data-id="' + d._id + '" data-code="' + code + '" title="Descargar PDF"><i class="fa-solid fa-download"></i></button>';
         html += '    <button type="button" class="admin-lista__accion" data-action="print" data-id="' + d._id + '" data-code="' + code + '" title="Imprimir"><i class="fa-solid fa-print"></i></button>';
-        // Botón targetica: solo en facturas pagadas
         if (d.tipo === 'factura' && d.estado === 'pagada') {
           html += '    <button type="button" class="admin-lista__accion admin-lista__accion--targetica" data-action="targetica" data-id="' + d._id + '" data-code="' + code + '" title="Imprimir targeticas de garantía"><i class="fa-solid fa-tag"></i></button>';
         }
@@ -1360,6 +1587,34 @@
         html += '    <button type="button" class="admin-lista__accion admin-lista__accion--del" data-action="del" data-id="' + d._id + '" data-code="' + code + '" title="Eliminar permanentemente"><i class="fa-solid fa-trash"></i></button>';
         html += '  </div>';
         html += '</div>';
+
+        // Hijos en contenedor colapsable
+        if (hijosVisibles.length) {
+          html += '<div class="admin-lista__children" data-parent="' + d._id + '" data-collapsed="' + (autoExpand ? 'false' : 'true') + '">';
+          hijosVisibles.forEach(function (a) {
+            var tipoMapAdic = {
+              'certificado':   { clase: 'admin-lista__tipo--cert', txt: 'CERT' },
+              'documentacion': { clase: 'admin-lista__tipo--doc',  txt: 'DOC'  },
+              'capacitacion':  { clase: 'admin-lista__tipo--cap',  txt: 'CAP'  }
+            };
+            var tInfo = tipoMapAdic[a.tipo] || { clase: 'admin-lista__tipo--doc', txt: '—' };
+            html += '<div class="admin-lista__fila admin-lista__fila--child">';
+            html += '  <div class="admin-lista__tipo ' + tInfo.clase + '">' + tInfo.txt + '</div>';
+            html += '  <div class="admin-lista__num" title="' + (a.numero || '') + '">' + (a.numero || '—') + '</div>';
+            html += '  <div class="admin-lista__cliente">anidado en ' + (d.numero || '—') + '</div>';
+            html += '  <div class="admin-lista__monto">—</div>';
+            html += '  <div class="admin-lista__fecha">' + (a.fecha || '—').slice(0, 12) + '</div>';
+            html += '  <div class="admin-lista__estado admin-lista__estado--na">—</div>';
+            html += '  <div class="admin-lista__acciones">';
+            html += '    <button type="button" class="admin-lista__accion" data-action="ver-adicional" data-vc="' + (d.codigoVC || d._id) + '" data-tipo="' + a.tipo + '" title="Ver documento"><i class="fa-solid fa-eye"></i></button>';
+            html += '    <button type="button" class="admin-lista__accion" data-action="download-adicional" data-vc="' + (d.codigoVC || d._id) + '" data-tipo="' + a.tipo + '" title="Descargar PDF"><i class="fa-solid fa-download"></i></button>';
+            html += '    <button type="button" class="admin-lista__accion" data-action="print-adicional" data-vc="' + (d.codigoVC || d._id) + '" data-tipo="' + a.tipo + '" title="Imprimir"><i class="fa-solid fa-print"></i></button>';
+            html += '    <button type="button" class="admin-lista__accion admin-lista__accion--email" data-action="email-adicional" data-vc="' + (d.codigoVC || d._id) + '" data-tipo="' + a.tipo + '" title="Enviar por correo al cliente"><i class="fa-solid fa-envelope"></i></button>';
+            html += '  </div>';
+            html += '</div>';
+          });
+          html += '</div>';
+        }
       });
 
       listaContenido.innerHTML = html;
@@ -1391,9 +1646,24 @@
       });
     });
 
-    // Clic en una fila → cerrar y verificar ese documento
+        // Clic en una fila → cerrar y verificar ese documento
     if (listaContenido) {
       listaContenido.addEventListener('click', function (e) {
+        // ✅ Toggle de hijos (colapsable)
+        var toggle = e.target.closest('.admin-lista__toggle');
+        if (toggle) {
+          e.stopPropagation();
+          e.preventDefault();
+          var vcId = toggle.getAttribute('data-toggle');
+          var isExpanded = toggle.getAttribute('data-expanded') === 'true';
+          toggle.setAttribute('data-expanded', isExpanded ? 'false' : 'true');
+          var txt = toggle.textContent.replace(/^[▶▼]\s*/, '');
+          toggle.textContent = (isExpanded ? '▶' : '▼') + ' ' + txt;
+          var children = listaContenido.querySelector('[data-parent="' + vcId + '"]');
+          if (children) children.setAttribute('data-collapsed', isExpanded ? 'true' : 'false');
+          return;
+        }
+
         var accion = e.target.closest('.admin-lista__accion');
         if (accion) {
           e.stopPropagation();
@@ -1417,12 +1687,38 @@
           } else if (tipo === 'targetica') {
             if (!doc) { alert('No se encontró el documento.'); return; }
             imprimirTargeticaDesdeDoc(doc);
+          } else if (tipo === 'download-adicional' || tipo === 'ver-adicional' || tipo === 'print-adicional' || tipo === 'email-adicional') {
+            var vcPadre = accion.getAttribute('data-vc');
+            var tipoAdic = accion.getAttribute('data-tipo');
+            var parentDoc = todosLosDocs.find(function (x) {
+              return (x._id === vcPadre || x.codigoVC === vcPadre);
+            });
+            if (!parentDoc || !parentDoc.documentosAdicionales) {
+              alert('No se encontró el documento padre.');
+              return;
+            }
+            var adic = parentDoc.documentosAdicionales.find(function (a) { return a.tipo === tipoAdic; });
+            if (!adic) { alert('No se encontró el adicional.'); return; }
+
+            if (tipo === 'email-adicional') {
+              solicitarEnviarEmail(parentDoc);
+              return;
+            }
+
+            var modoMap = {
+              'download-adicional': 'download',
+              'ver-adicional': 'view',
+              'print-adicional': 'print'
+            };
+            descargarAdicionalAnidado(parentDoc, adic, modoMap[tipo] || 'view');
+            return;
           } else if (tipo === 'del') {
             if (!doc) { alert('No se encontró el documento.'); return; }
             solicitarEliminar(doc, todosLosDocs, renderListaAdmin);
           }
           return;
         }
+
         var fila = e.target.closest('.admin-lista__fila');
         if (!fila) return;
         var code = fila.getAttribute('data-code');

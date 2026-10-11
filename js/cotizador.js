@@ -25,6 +25,17 @@ const QuoteWizard = {
   diasValidez: 15,
   cantidadTargeticas: 12,
 
+  documento: {
+    tipoDoc: 'cotizacion',
+    estado: 'pagada',
+    cliente: { nombre: '', cedula: '', telefono: '', email: '', direccion: '' },
+    observaciones: '',
+    numero: '',
+    fechaEmision: '',
+    codigoVC: '',
+    timestamp: 0
+  },
+
   // ============================================
   // CONFIGURACIÓN (cargada desde SOPORTE_CONFIG)
   // ============================================
@@ -82,20 +93,15 @@ const QuoteWizard = {
     this._tipoAcceso = null;
     this._expiraEn = null;
 
-    // Detectar sesión admin activa
-    if (window.auth) {
-      const self = this;
-      window.auth.onAuthStateChanged(function (user) {
-        if (user) {
-          self.facturaUnlocked = true;
-          self._activarModoAdmin();
-        } else {
-          self.facturaUnlocked = false;
-          const btn = document.getElementById('adminLogoutFloat');
-          if (btn) btn.remove();
-          self._actualizarBadgeFactura(false);
-        }
-      });
+    // ✅ SIN listener automático — aislamiento por sessionStorage
+    // (se borra al cerrar la pestaña, no comparte entre páginas)
+    const selfInit = this;
+    let cotizadorAdminLocal = false;
+    try { cotizadorAdminLocal = sessionStorage.getItem('jcdc_admin_cotizador') === '1'; } catch (e) {}
+    if (cotizadorAdminLocal) {
+      this.facturaUnlocked = true;
+      this._tipoAcceso = 'admin';
+      setTimeout(function () { selfInit._activarModoAdmin(); }, 200);
     }
 
     if (!wizard) return;
@@ -407,6 +413,20 @@ const QuoteWizard = {
       .pwd-modal__field input.pwd-shake {
         animation: jcdcPwdShake 0.4s ease;
       }
+      .pwd-modal__field--otp { position: relative; }
+      .pwd-modal__field--otp input { padding-right: 48px !important; }
+      .pwd-otp-eye {
+        position: absolute;
+        right: 10px; top: 50%; transform: translateY(-50%);
+        width: 34px; height: 34px;
+        background: transparent; border: none;
+        color: #6a7080; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        border-radius: 50%;
+        transition: all 0.2s;
+        z-index: 3;
+      }
+      .pwd-otp-eye:hover { color: #ff3333; background: rgba(255,51,51,0.1); }
       @keyframes jcdcPwdShake {
         0%, 100% { transform: translateX(0); }
         20%      { transform: translateX(-8px); }
@@ -508,7 +528,8 @@ const QuoteWizard = {
   // FACTURA · Login admin (Firebase Auth)
   // ============================================
   async pedirPasswordFactura() {
-    if (window.auth && window.auth.currentUser) {
+    // Solo reusar sesión si el login fue hecho EN ESTA página
+    if (window.auth && window.auth.currentUser && this._loggedInHere) {
       this.facturaUnlocked = true;
       this._activarModoAdmin();
       return true;
@@ -577,7 +598,9 @@ const QuoteWizard = {
         ok.disabled = true;
         try {
           await window.auth.signInWithEmailAndPassword(email, pass);
+          try { sessionStorage.setItem('jcdc_admin_cotizador', '1'); } catch (e) {}
           self.facturaUnlocked = true;
+          self._tipoAcceso = 'admin';
           if (typeof Toast !== 'undefined') Toast.show('Acceso concedido', 'success', 1800);
           self._activarModoAdmin();
           cerrar(true);
@@ -787,6 +810,7 @@ const QuoteWizard = {
             });
             const d = await r.json();
             if (d.ok && d.admin) {
+              try { sessionStorage.setItem('jcdc_admin_cotizador', '1'); } catch (e) {}
               self.cotizacionUnlocked = true;
               self.facturaUnlocked = true;
               self._tipoAcceso = 'admin';
@@ -1016,18 +1040,25 @@ const QuoteWizard = {
     const viejo = document.getElementById('adminLogoutFloat');
     if (viejo) viejo.remove();
 
-    var docType = document.querySelector('.rep-doc-type');
-    if (!docType || !docType.parentNode) return;
-
     document.querySelectorAll('.admin-logout-float').forEach(function (el) {
       if (el.parentNode) el.parentNode.removeChild(el);
     });
 
+    // Actualizar badge FACTURA (solo si existe el bloque)
     this._actualizarBadgeFactura(true);
 
     // Mostrar bloque de validez si existe
     const validezWrap = document.getElementById('repValidezWrap');
     if (validezWrap) validezWrap.style.display = 'block';
+
+    // ✅ MOSTRAR el badge flotante "MODO ADMIN" para todos los servicios
+    this._mostrarBadgeAdmin();
+
+    // Recalcular el bloque de documentos en Paso 4 (por si estaba oculto)
+    if (this.currentStep === 4) {
+      this._actualizarBloqueDocumentos();
+      this._actualizarBloqueTargetica(this.service === 'reparacion');
+    }
 
     this._reiniciarTimeoutAdmin();
 
@@ -1063,6 +1094,16 @@ const QuoteWizard = {
     this.reparacion = null;
     this.garantiaSeleccionada = 30;
     this.diasValidez = (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.documentos && window.SOPORTE_CONFIG.documentos.cotizacionValidezDias) || 15;
+    this.documento = {
+      tipoDoc: 'cotizacion',
+      estado: 'pagada',
+      cliente: { nombre: '', cedula: '', telefono: '', email: '', direccion: '' },
+      observaciones: '',
+      numero: '',
+      fechaEmision: '',
+      codigoVC: '',
+      timestamp: 0
+    };
 
     document.querySelectorAll('[data-service]').forEach(function (o) {
       o.classList.remove('checked');
@@ -1086,6 +1127,7 @@ const QuoteWizard = {
   _cerrarSesionAdmin() {
     if (this._adminTimeout) clearTimeout(this._adminTimeout);
     if (this._timerBadge) { clearInterval(this._timerBadge); this._timerBadge = null; }
+    try { sessionStorage.removeItem('jcdc_admin_cotizador'); } catch (e) {}
     if (window.auth) {
       window.auth.signOut().catch(function (e) { console.warn(e); });
     }
@@ -1202,14 +1244,25 @@ const QuoteWizard = {
     } else {
       this.els.next.classList.remove('hidden');
     }
+
+    // Cambiar texto del botón según el paso
+    const labelSpan = this.els.next.querySelector('span');
+    if (labelSpan) {
+      if (this.currentStep === 3) {
+        labelSpan.textContent = 'GENERAR';
+      } else {
+        labelSpan.textContent = 'SIGUIENTE';
+      }
+    }
   },
 
-  next() {
+  async next() {
     if (this.currentStep >= this.maxStep) return;
     if (this.currentStep === 1 && !this.service) {
       if (typeof Toast !== 'undefined') Toast.show('Selecciona un servicio', 'info', 1800);
       return;
     }
+
     if (this.currentStep === 1 && this.service) {
       if (this.service === 'reparacion') {
         this.renderReparacionFields();
@@ -1217,6 +1270,14 @@ const QuoteWizard = {
         this.renderFields();
       }
     }
+
+    // Al salir del paso 3 → confirmación + generación
+    if (this.currentStep === 3) {
+      const confirmado = await this._confirmarGeneracion();
+      if (!confirmado) return;   // Se queda en el paso 3
+      await this._generarTodo();
+    }
+
     this.currentStep++;
     if (this.currentStep === 4) this.renderSummary();
     this.renderStepIndicator();
@@ -1264,11 +1325,20 @@ const QuoteWizard = {
       html += '</div>';
     }.bind(this));
 
+    // Tipo de documento (Cotización | Factura)
+    html += this._renderDocTypeBlock();
+
+    // Datos del cliente
+    html += this._renderClienteBlock();
+
     // Bloque de Garantía (todos los servicios)
     html += this._renderGarantiaBlock();
 
     // Bloque de Validez (solo admin)
     html += this._renderValidezBlock();
+
+    // Observaciones
+    html += this._renderObservacionesBlock();
 
     this.els.fields.innerHTML = html;
 
@@ -1304,6 +1374,187 @@ const QuoteWizard = {
 
     this._attachGarantiaHandlers();
     this._attachValidezHandlers();
+  },
+
+  // ============================================
+  // Helper · Generar número único (COT-YYYYMMDD-NNN / FAC-YYYYMMDD-NNN)
+  // Cachea el número en this.documento — NO se regenera en cada llamada
+  // ============================================
+  _generarNumeroDocumento() {
+    const doc = this.documento;
+    const prefijo = (doc.tipoDoc === 'factura') ? 'FAC' : 'COT';
+
+    // Si ya hay un número con el prefijo correcto, reutilizarlo
+    if (doc.numero && doc.numero.indexOf(prefijo + '-') === 0) {
+      return doc.numero;
+    }
+
+    const now = new Date();
+    const ymd = now.getFullYear()
+      + String(now.getMonth() + 1).padStart(2, '0')
+      + String(now.getDate()).padStart(2, '0');
+
+    let contador = 1;
+    try {
+      const counters = JSON.parse(localStorage.getItem('jcdc_doc_counter') || '{}');
+      contador = (counters[ymd] || 0) + 1;
+      counters[ymd] = contador;
+      localStorage.setItem('jcdc_doc_counter', JSON.stringify(counters));
+    } catch (e) {
+      contador = Math.floor(Math.random() * 900) + 100;
+    }
+
+    doc.numero = prefijo + '-' + ymd + '-' + String(contador).padStart(3, '0');
+    doc.fechaEmision = now.toISOString().slice(0, 10);
+    doc.timestamp = now.getTime();
+    return doc.numero;
+  },
+
+  // ============================================
+  // HTML · Bloque Tipo de Documento
+  // ============================================
+  _renderDocTypeBlock() {
+    const self = this;
+    const doc = this.documento;
+    const esAdmin = (this._tipoAcceso === 'admin' || this.facturaUnlocked);
+    const esCot = doc.tipoDoc === 'cotizacion';
+    const esFac = doc.tipoDoc === 'factura';
+
+    let html = '<div class="rep-doc-type" id="repDocType">';
+
+    html += '<button type="button" class="rep-doc-btn' + (esCot ? ' active' : '') + '" data-tipodoc="cotizacion">';
+    html += '  <i class="fa-solid fa-file-invoice"></i> COTIZACIÓN';
+    html += '  <small>Documento informativo · válido ' + this.diasValidez + ' días</small>';
+    html += '</button>';
+
+    html += '<button type="button" class="rep-doc-btn' + (esFac ? ' active' : '') + (esAdmin ? ' rep-doc-btn--admin' : ' rep-doc-btn--locked') + '" data-tipodoc="factura">';
+    html += '  <i class="fa-solid fa-file-invoice-dollar"></i> FACTURA ';
+    if (esAdmin) {
+      html += '  <span class="rep-lock-badge rep-lock-badge--admin"><i class="fa-solid fa-user-shield"></i> ADMIN</span>';
+      html += '  <small>Acceso autorizado · puedes facturar</small>';
+    } else {
+      html += '  <span class="rep-lock-badge"><i class="fa-solid fa-lock"></i> PRIVADO</span>';
+      html += '  <small>Requiere contraseña · solo personal autorizado</small>';
+    }
+    html += '</button>';
+    html += '</div>';
+
+    html += '<div class="rep-estado" id="repEstadoWrap" style="display:' + (esFac ? 'block' : 'none') + ';">';
+    html += '  <label class="rep-estado__label">Estado de la factura:</label>';
+    html += '  <div class="rep-estado__opts">';
+    html += '    <button type="button" class="rep-estado-btn' + (doc.estado === 'pagada' ? ' active' : '') + '" data-estado="pagada"><i class="fa-solid fa-circle-check"></i> PAGADA</button>';
+    html += '    <button type="button" class="rep-estado-btn' + (doc.estado === 'no-pagada' ? ' active' : '') + '" data-estado="no-pagada"><i class="fa-solid fa-circle-xmark"></i> NO PAGADA</button>';
+    html += '  </div>';
+    html += '</div>';
+
+    setTimeout(function () {
+      document.querySelectorAll('#repDocType .rep-doc-btn').forEach(function (btn) {
+        btn.addEventListener('click', async function () {
+          const tipo = btn.dataset.tipodoc;
+          if (tipo === 'cotizacion') {
+            if (!self.cotizacionUnlocked) {
+              const ok = await self.pedirCodigoOTP();
+              if (!ok) return;
+            }
+          }
+          if (tipo === 'factura') {
+            if (self._tipoAcceso === 'admin' || self.facturaUnlocked) {
+              // ya autorizado
+            } else if (self._tipoAcceso === 'client') {
+              if (typeof Toast !== 'undefined') Toast.show('Factura solo para administrador', 'info', 2500);
+              return;
+            } else if (window.auth && window.auth.currentUser) {
+              self.facturaUnlocked = true;
+              self._tipoAcceso = 'admin';
+            } else {
+              const ok = await self.pedirPasswordFactura();
+              if (!ok) return;
+              self._tipoAcceso = 'admin';
+            }
+          }
+          document.querySelectorAll('#repDocType .rep-doc-btn').forEach(function (b) {
+            b.classList.remove('active');
+            if (b.dataset.tipodoc === 'factura' && !self.facturaUnlocked) {
+              b.classList.add('rep-doc-btn--locked');
+              b.classList.remove('rep-doc-btn--admin');
+            }
+          });
+          btn.classList.add('active');
+          if (self.documento.tipoDoc !== tipo) {
+            self.documento.numero = '';
+            self.documento.codigoVC = '';
+            self.documento.fechaEmision = '';
+          }
+          self.documento.tipoDoc = tipo;
+          const estadoWrap = document.getElementById('repEstadoWrap');
+          if (estadoWrap) estadoWrap.style.display = (tipo === 'factura') ? 'block' : 'none';
+          const validezWrap = document.getElementById('repValidezWrap');
+          if (validezWrap) {
+            const esAdm = (self._tipoAcceso === 'admin' || self.facturaUnlocked);
+            validezWrap.style.display = (tipo === 'cotizacion' && esAdm) ? 'block' : 'none';
+          }
+        });
+      });
+      document.querySelectorAll('#repEstadoWrap .rep-estado-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          document.querySelectorAll('#repEstadoWrap .rep-estado-btn').forEach(function (b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          self.documento.estado = btn.dataset.estado;
+        });
+      });
+    }, 0);
+
+    return html;
+  },
+
+  // ============================================
+  // HTML · Bloque Datos del Cliente
+  // ============================================
+  _renderClienteBlock() {
+    const cli = this.documento.cliente;
+    let html = '<div class="rep-block">';
+    html += '  <h4 class="rep-block__title"><i class="fa-solid fa-user"></i> Datos del cliente</h4>';
+    html += '  <div class="rep-grid-2">';
+    html += '    <div class="tool-field"><label for="genClienteNombre">Nombre completo *</label>';
+    html += '      <input type="text" id="genClienteNombre" class="tool-input" placeholder="Ej: Juan Pérez" value="' + (cli.nombre || '') + '"></div>';
+    html += '    <div class="tool-field"><label for="genClienteCedula">Cédula / RNC</label>';
+    html += '      <input type="text" id="genClienteCedula" class="tool-input" placeholder="000-0000000-0" value="' + (cli.cedula || '') + '"></div>';
+    html += '    <div class="tool-field"><label for="genClienteTelefono">Teléfono</label>';
+    html += '      <input type="tel" id="genClienteTelefono" class="tool-input" placeholder="809-000-0000" value="' + (cli.telefono || '') + '"></div>';
+    html += '    <div class="tool-field"><label for="genClienteEmail">Email</label>';
+    html += '      <input type="email" id="genClienteEmail" class="tool-input" placeholder="cliente@email.com" value="' + (cli.email || '') + '"></div>';
+    html += '  </div>';
+    html += '  <div class="tool-field" style="margin-top:var(--space-sm);"><label for="genClienteDireccion">Dirección</label>';
+    html += '    <input type="text" id="genClienteDireccion" class="tool-input" placeholder="Dirección" value="' + (cli.direccion || '') + '"></div>';
+    html += '</div>';
+
+    const self = this;
+    setTimeout(function () {
+      const map = { genClienteNombre: 'nombre', genClienteCedula: 'cedula', genClienteTelefono: 'telefono', genClienteEmail: 'email', genClienteDireccion: 'direccion' };
+      Object.keys(map).forEach(function (id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('input', function (e) { self.documento.cliente[map[id]] = e.target.value; });
+      });
+    }, 0);
+
+    return html;
+  },
+
+  // ============================================
+  // HTML · Bloque Observaciones
+  // ============================================
+  _renderObservacionesBlock() {
+    const self = this;
+    let html = '<div class="rep-block">';
+    html += '  <h4 class="rep-block__title"><i class="fa-solid fa-comment"></i> Observaciones</h4>';
+    html += '  <textarea id="genObservaciones" class="tool-input" rows="3" placeholder="Detalles, condiciones, notas...">' + (this.documento.observaciones || '') + '</textarea>';
+    html += '</div>';
+    setTimeout(function () {
+      const el = document.getElementById('genObservaciones');
+      if (el) el.addEventListener('input', function (e) { self.documento.observaciones = e.target.value; });
+    }, 0);
+    return html;
   },
 
   // ============================================
@@ -1878,6 +2129,34 @@ const QuoteWizard = {
   },
 
   // ============================================
+  // Helper · Encabezado cliente reutilizable
+  // ============================================
+  _buildClienteHeaderHTML(esFactura, numero, cliente, fechaEmision, fechaVencimiento, diasValidez, equipo, marca, modelo) {
+    let html = '';
+    html += '<div class="quote-summary__client' + (esFactura ? ' quote-summary__client--factura' : '') + '">';
+    html += '  <div class="quote-summary__client-head">';
+    html += '    <i class="fa-solid fa-' + (esFactura ? 'file-invoice-dollar' : 'file-invoice') + '"></i>';
+    html += '    <strong>' + (esFactura ? 'FACTURA' : 'COTIZACIÓN') + '</strong>';
+    if (numero && numero !== '—') html += '    <span>' + numero + '</span>';
+    html += '  </div>';
+    html += '  <div class="quote-summary__client-row"><span>Cliente:</span><strong>' + (cliente.nombre || '—') + '</strong></div>';
+    if (cliente.cedula) html += '  <div class="quote-summary__client-row"><span>Cédula/RNC:</span><strong>' + cliente.cedula + '</strong></div>';
+    if (cliente.telefono) html += '  <div class="quote-summary__client-row"><span>Teléfono:</span><strong>' + cliente.telefono + '</strong></div>';
+    if (cliente.email) html += '  <div class="quote-summary__client-row"><span>Email:</span><strong>' + cliente.email + '</strong></div>';
+    if (equipo) {
+      const eqList = (window.SOPORTE_CONFIG.equipos || []);
+      const eqObj = eqList.find(function (e) { return e.id === equipo; });
+      html += '  <div class="quote-summary__client-row"><span>Equipo:</span><strong>' + (eqObj ? eqObj.label : equipo) + (marca ? ' ' + marca : '') + (modelo ? ' ' + modelo : '') + '</strong></div>';
+    }
+    if (fechaEmision) html += '  <div class="quote-summary__client-row"><span>Emisión:</span><strong>' + fechaEmision + '</strong></div>';
+    if (!esFactura && fechaVencimiento) {
+      html += '  <div class="quote-summary__client-row"><span>Válida hasta:</span><strong>' + fechaVencimiento + ' (' + diasValidez + ' días)</strong></div>';
+    }
+    html += '</div>';
+    return html;
+  },
+
+  // ============================================
   // RENDER SUMMARY
   // ============================================
   renderSummary() {
@@ -1893,26 +2172,17 @@ const QuoteWizard = {
     if (isReparacion && this.reparacion) {
       const r = this.reparacion;
       const esFactura = r.tipoDoc === 'factura';
-
-      html += '<div class="quote-summary__client' + (esFactura ? ' quote-summary__client--factura' : '') + '">';
-      html += '  <div class="quote-summary__client-head">';
-      html += '    <i class="fa-solid fa-' + (esFactura ? 'file-invoice-dollar' : 'file-invoice') + '"></i>';
-      html += '    <strong>' + (esFactura ? 'FACTURA' : 'COTIZACIÓN') + '</strong>';
-      html += '    <span>' + r.numero + '</span>';
-      html += '  </div>';
-      html += '  <div class="quote-summary__client-row"><span>Cliente:</span><strong>' + (r.cliente.nombre || '—') + '</strong></div>';
-      if (r.cliente.cedula) html += '  <div class="quote-summary__client-row"><span>Cédula/RNC:</span><strong>' + r.cliente.cedula + '</strong></div>';
-      if (r.cliente.telefono) html += '  <div class="quote-summary__client-row"><span>Teléfono:</span><strong>' + r.cliente.telefono + '</strong></div>';
-      if (r.cliente.email) html += '  <div class="quote-summary__client-row"><span>Email:</span><strong>' + r.cliente.email + '</strong></div>';
-      if (r.equipo) {
-        const eq = window.SOPORTE_CONFIG.equipos.find(function (e) { return e.id === r.equipo; });
-        html += '  <div class="quote-summary__client-row"><span>Equipo:</span><strong>' + (eq ? eq.label : r.equipo) + (r.marca ? ' ' + r.marca : '') + (r.modelo ? ' ' + r.modelo : '') + '</strong></div>';
-      }
-      html += '  <div class="quote-summary__client-row"><span>Emisión:</span><strong>' + r.fechaEmision + '</strong></div>';
-      if (!esFactura) {
-        html += '  <div class="quote-summary__client-row"><span>Válida hasta:</span><strong>' + r.fechaVencimiento + ' (' + r.diasValidez + ' días)</strong></div>';
-      }
-      html += '</div>';
+      html += this._buildClienteHeaderHTML(
+        esFactura, r.numero, r.cliente, r.fechaEmision,
+        r.fechaVencimiento, r.diasValidez, r.equipo, r.marca, r.modelo
+      );
+    } else {
+      const doc = this.documento;
+      const esFactura = doc.tipoDoc === 'factura';
+      const fechaEmision = new Date().toISOString().slice(0, 10);
+      html += this._buildClienteHeaderHTML(
+        esFactura, '—', doc.cliente, fechaEmision, '', this.diasValidez, '', '', ''
+      );
     }
 
     if (!lines.length) {
@@ -1939,15 +2209,305 @@ const QuoteWizard = {
     } else {
       html += '<div class="quote-summary__totals">';
       html += '  <div class="quote-summary__totals-label">TOTAL ESTIMADO</div>';
-      html += '  <div class="quote-summary__total-usd">$' + usd.toLocaleString('en-US') + ' USD</div>';
-      html += '  <div class="quote-summary__total-dop">≈ RD$' + Math.round(dop).toLocaleString('es-DO') + ' DOP</div>';
+      html += '  <div class="quote-summary__total-usd">RD$' + Math.round(dop).toLocaleString('es-DO') + '</div>';
+      html += '  <div class="quote-summary__total-dop">Pesos dominicanos (DOP)</div>';
       html += '</div>';
     }
 
     this.els.summary.innerHTML = html;
 
+    // Gestionar el botón documentos adicionales
+    this._actualizarBloqueDocumentos();
+
     // Gestionar el botón targetica DENTRO del contenedor de acciones
     this._actualizarBloqueTargetica(isReparacion);
+  },
+
+  // ============================================
+  // CONFIRMACIÓN antes de generar (paso 3 → 4)
+  // ============================================
+  async _confirmarGeneracion() {
+    const isReparacion = this.service === 'reparacion';
+    const rep = isReparacion ? this.reparacion : null;
+    const tipoDoc = rep ? rep.tipoDoc : this.documento.tipoDoc;
+    const estado = rep ? rep.estado : this.documento.estado;
+
+    let tipoLabel = 'COTIZACIÓN';
+    if (tipoDoc === 'factura') {
+      tipoLabel = estado === 'pagada' ? 'FACTURA PAGADA' : 'FACTURA NO PAGADA';
+    }
+
+    // Solo ofrecer adicionales si es FACTURA PAGADA
+    const esFacturaPagada = (tipoDoc === 'factura' && estado === 'pagada');
+    const disponibles = (esFacturaPagada && typeof window.JCDC_Plantillas !== 'undefined' && window.JCDC_Plantillas.disponibles)
+      ? window.JCDC_Plantillas.disponibles(this.extras)
+      : [];
+
+    let msg = 'Se generará la <strong>' + tipoLabel + '</strong>.';
+    if (disponibles.length) {
+      msg += '<br><br>También se generará' + (disponibles.length === 1 ? '' : 'n') + ' <strong>' + disponibles.length + ' documento' + (disponibles.length === 1 ? '' : 's') + ' adicional' + (disponibles.length === 1 ? '' : 'es') + '</strong>.';
+    }
+    msg += '<br><br>Todo quedará guardado en el sistema con su <strong>código de verificación</strong>.<br><br>¿Deseas continuar?';
+
+    return this._confirmar(msg, {
+      titulo: 'Confirmar generación',
+      tipo: 'info',
+      okLabel: 'Sí, generar',
+      cancelLabel: 'Atrás',
+      icono: 'fa-file-circle-check'
+    });
+  },
+
+  // ============================================
+  // GENERAR TODO (guardar + abrir docs)
+  // ============================================
+  async _generarTodo() {
+    const isReparacion = this.service === 'reparacion';
+    const rep = isReparacion ? this.reparacion : null;
+    const tipoDoc = rep ? rep.tipoDoc : this.documento.tipoDoc;
+    const estado  = rep ? rep.estado  : this.documento.estado;
+    const esFacturaPagada = (tipoDoc === 'factura' && estado === 'pagada');
+
+    // Guardar doc principal
+    try { this.registrarDocumento(); } catch (e) { console.error('[JCDC]', e); }
+
+    // Reglas: cotización NO genera adicionales; factura NO pagada tampoco
+    if (tipoDoc === 'cotizacion') {
+      console.log('[JCDC] Cotización: sin adicionales.');
+      return;
+    }
+    if (!esFacturaPagada) {
+      console.log('[JCDC] Factura no pagada: sin adicionales.');
+      return;
+    }
+
+    const disponibles = (typeof window.JCDC_Plantillas !== 'undefined' && window.JCDC_Plantillas.disponibles)
+      ? window.JCDC_Plantillas.disponibles(this.extras)
+      : [];
+    if (!disponibles.length) return;
+
+    const tipos = disponibles.map(function (d) { return d.id; });
+    const data = this._buildDocsData();
+    if (!data) return;
+
+    const docs = window.JCDC_Plantillas.compute(data, tipos);
+    if (!docs || !docs.length) return;
+
+    this._registrarDocumentosGenerados(docs, data);
+    window.JCDC_Plantillas.open(data, docs);
+  },
+
+  // ============================================
+  // Construir datos para plantillas
+  // ============================================
+  _buildDocsData() {
+    const isReparacion = this.service === 'reparacion';
+    const calc = this.calculate();
+    const total = calc.total;
+    const lines = calc.lines;
+
+    const rep = isReparacion ? this.reparacion : null;
+    const doc = this.documento;
+    const cfgServ = this.services[this.service] || {};
+    const cli = rep ? rep.cliente : doc.cliente;
+    const eqList = (window.SOPORTE_CONFIG.equipos || []);
+    const equipo = rep ? (eqList.find(function (e) { return e.id === rep.equipo; }) || {}) : {};
+
+    // ✅ Usar el número ya cacheado (coincide con el del documento padre)
+    const numeroBase = rep ? rep.numero : (this.documento.numero || this._generarNumeroDocumento());
+
+    const fechaBaseVC = rep ? rep.fechaEmision : (this.documento.fechaEmision || new Date().toISOString().slice(0, 10));
+    const codigoVCpadre = this.generarCodigoVerificacion(numeroBase, fechaBaseVC, total.toString());
+
+    return {
+      numero: numeroBase,
+      tipoDoc: rep ? rep.tipoDoc : doc.tipoDoc,
+      estado: rep ? rep.estado : doc.estado,
+      fechaEmision: fechaBaseVC,
+      garantiaDias: rep ? (rep.garantia || 0) : this.garantiaSeleccionada,
+      cliente: {
+        nombre: cli.nombre || '',
+        cedula: cli.cedula || '',
+        telefono: cli.telefono || '',
+        email: cli.email || '',
+        direccion: cli.direccion || ''
+      },
+      equipo: equipo.label || (rep ? rep.equipo : '') || '',
+      marca: rep ? rep.marca : '',
+      modelo: rep ? rep.modelo : '',
+      descripcion: rep ? rep.descripcion : doc.observaciones,
+      servicioLabel: cfgServ.label || '',
+      lines: lines,
+      total: total,
+      moneda: isReparacion ? 'DOP' : 'USD',
+      rate: this.RATE_DOP,
+      codigoVCpadre: codigoVCpadre
+    };
+  },
+
+  // ============================================
+  // BLOQUE DOCUMENTOS ADICIONALES en Paso 4
+  // ============================================
+  _actualizarBloqueDocumentos() {
+    // Ya no hay botón manual — los adicionales se generan automáticamente al emitir factura pagada
+    const actionsContainer = document.querySelector('.quote-cta__actions');
+    if (!actionsContainer) return;
+    const prev = actionsContainer.querySelector('.rep-documentos-wrap');
+    if (prev) prev.remove();
+  },
+
+  // ============================================
+  // MODAL DE DOCUMENTOS ADICIONALES
+  // ============================================
+  abrirModalDocumentos(disponibles) {
+    const self = this;
+
+    return new Promise(function (resolve) {
+      const overlay = document.createElement('div');
+      overlay.className = 'jcdc-docs-overlay';
+
+      let itemsHtml = '';
+      disponibles.forEach(function (d) {
+        itemsHtml +=
+          '<label class="jcdc-docs-item checked" data-doc-type="' + d.id + '">' +
+          '  <input type="checkbox" checked value="' + d.id + '">' +
+          '  <span class="jcdc-docs-check"><i class="fa-solid fa-check"></i></span>' +
+          '  <span class="jcdc-docs-item-icon"><i class="fa-solid ' + d.icon + '"></i></span>' +
+          '  <span class="jcdc-docs-item-body">' +
+          '    <span class="jcdc-docs-item-name">' + d.label + '</span>' +
+          '    <span class="jcdc-docs-item-desc">' + (d.descripcion || 'Con su propio código VC') + '</span>' +
+          '  </span>' +
+          '</label>';
+      });
+
+      overlay.innerHTML =
+        '<div class="jcdc-docs-modal" role="dialog" aria-modal="true">' +
+        '  <div class="jcdc-docs-icon"><i class="fa-solid fa-file-circle-plus"></i></div>' +
+        '  <h3 class="jcdc-docs-title">Documentos adicionales</h3>' +
+        '  <p class="jcdc-docs-sub">Selecciona los documentos que quieres generar.<br>Cada uno llevará su propio código de verificación VC.</p>' +
+        '  <div class="jcdc-docs-list">' + itemsHtml + '</div>' +
+        '  <p class="jcdc-docs-note">Los documentos se abrirán en una nueva pestaña.<br>Se imprimirán uno por página.</p>' +
+        '  <div class="jcdc-docs-actions">' +
+        '    <button type="button" class="jcdc-docs-btn jcdc-docs-btn--ghost" data-action="cancel">Cancelar</button>' +
+        '    <button type="button" class="jcdc-docs-btn jcdc-docs-btn--primary" data-action="generate">' +
+        '      <i class="fa-solid fa-print"></i> Generar e imprimir' +
+        '    </button>' +
+        '  </div>' +
+        '</div>';
+      document.body.appendChild(overlay);
+      document.body.classList.add('jcdc-modal-open');
+
+      // Toggle de checkboxes
+      overlay.querySelectorAll('.jcdc-docs-item').forEach(function (item) {
+        const input = item.querySelector('input');
+        item.addEventListener('click', function (e) {
+          e.preventDefault();
+          input.checked = !input.checked;
+          item.classList.toggle('checked', input.checked);
+        });
+      });
+
+      function cerrar(v) {
+        document.body.classList.remove('jcdc-modal-open');
+        overlay.classList.add('closing');
+        setTimeout(function () { overlay.remove(); }, 200);
+        resolve(v);
+      }
+
+      overlay.querySelector('[data-action="cancel"]').addEventListener('click', function () { cerrar(null); });
+
+      overlay.querySelector('[data-action="generate"]').addEventListener('click', function () {
+        const seleccionados = [];
+        overlay.querySelectorAll('.jcdc-docs-item.checked input:checked').forEach(function (inp) {
+          seleccionados.push(inp.value);
+        });
+        if (!seleccionados.length) {
+          if (typeof Toast !== 'undefined') Toast.show('Selecciona al menos un documento', 'info', 2200);
+          return;
+        }
+        cerrar(seleccionados);
+      });
+
+      overlay.addEventListener('click', function (e) { if (e.target === overlay) cerrar(null); });
+      document.addEventListener('keydown', function esc(e) {
+        if (e.key === 'Escape') { document.removeEventListener('keydown', esc); cerrar(null); }
+      });
+    }).then(function (seleccionados) {
+      if (!seleccionados) return;
+      self.imprimirDocumentosSeleccionados(seleccionados);
+    });
+  },
+
+  // ============================================
+  // GENERAR DOCUMENTOS (guardar antes de abrir)
+  // ============================================
+  async imprimirDocumentosSeleccionados(tipos) {
+    if (typeof window.JCDC_Plantillas === 'undefined') {
+      if (typeof Toast !== 'undefined') Toast.show('Módulo plantillas.js no cargado', 'error', 2500);
+      return;
+    }
+
+    const data = this._buildDocsData();
+    if (!data) return;
+
+    const docs = window.JCDC_Plantillas.compute(data, tipos);
+    if (!docs.length) return;
+
+    this.registrarDocumento();
+    this._registrarDocumentosGenerados(docs, data);
+    window.JCDC_Plantillas.open(data, docs);
+  },
+
+  // ============================================
+  // GUARDAR DOCUMENTOS GENERADOS en Firestore
+  // ============================================
+  _registrarDocumentosGenerados(generados, data) {
+    if (data.tipoDoc !== 'factura' || data.estado !== 'pagada') {
+      console.log('[JCDC] Guard: solo se anidan adicionales en FACTURA PAGADA. Ignorado.');
+      return;
+    }
+    const db = window.db;
+    if (!db) {
+      if (typeof Toast !== 'undefined') Toast.show('Error: sin base de datos', 'error', 3000);
+      return;
+    }
+    const fechaTxt = new Date().toLocaleDateString('es-DO', { day: '2-digit', month: 'long', year: 'numeric' });
+    const labels = { certificado: 'Certificado de servicio', documentacion: 'Documentación técnica', capacitacion: 'Certificado de capacitación' };
+    const vcPadre = data.codigoVCpadre || '';
+    if (!vcPadre) return;
+
+    const adicionales = generados.map(function (g) {
+      return {
+        tipo: g.tipo,
+        numero: g.numero,
+        label: labels[g.tipo] || g.tipo,
+        codigoVCpadre: vcPadre,
+        fecha: fechaTxt,
+        timestamp: Date.now(),
+        snapshot: {
+          tipoDoc: g.tipo,
+          numero: g.numero,
+          numeroPadre: data.numero,
+          fechaEmision: data.fechaEmision,
+          garantia: data.garantiaDias,
+          cliente: data.cliente,
+          equipo: data.equipo,
+          marca: data.marca,
+          modelo: data.modelo,
+          descripcion: data.descripcion,
+          lines: data.lines,
+          rate: data.rate
+        }
+      };
+    });
+
+    db.collection('documentos').doc(vcPadre).set({
+      documentosAdicionales: adicionales
+    }, { merge: true })
+      .then(function () { console.log('[Firestore] Adicionales anidados en', vcPadre); })
+      .catch(function (err) { console.error('[Firestore]', err); });
+
+    if (typeof Toast !== 'undefined') Toast.show(adicionales.length + ' doc anidado(s)', 'success', 2500);
   },
 
   // ============================================
@@ -2027,6 +2587,16 @@ const QuoteWizard = {
     this.reparacion = null;
     this.garantiaSeleccionada = 30;
     this.diasValidez = (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.documentos && window.SOPORTE_CONFIG.documentos.cotizacionValidezDias) || 15;
+    this.documento = {
+      tipoDoc: 'cotizacion',
+      estado: 'pagada',
+      cliente: { nombre: '', cedula: '', telefono: '', email: '', direccion: '' },
+      observaciones: '',
+      numero: '',
+      fechaEmision: '',
+      codigoVC: '',
+      timestamp: 0
+    };
 
     document.querySelectorAll('[data-service]').forEach(function (o) {
       o.classList.remove('checked');
@@ -2059,9 +2629,11 @@ const QuoteWizard = {
     const date = new Date().toLocaleDateString('es-DO', { day: '2-digit', month: 'long', year: 'numeric' });
 
     const esFactura = isReparacion && this.reparacion && this.reparacion.tipoDoc === 'factura';
-    const codigoVC = isReparacion && this.reparacion
-      ? this.generarCodigoVerificacion(this.reparacion.numero, this.reparacion.fechaEmision, total.toString())
-      : '';
+    const numDocTxt = isReparacion && this.reparacion ? this.reparacion.numero : this._generarNumeroDocumento();
+    const fechaBaseVC = isReparacion && this.reparacion
+      ? this.reparacion.fechaEmision
+      : (this.documento.fechaEmision || new Date().toISOString().slice(0, 10));
+    const codigoVC = this.generarCodigoVerificacion(numDocTxt, fechaBaseVC, total.toString());
 
     let txt = '';
     txt += '═══════════════════════════════════════\n';
@@ -2077,6 +2649,11 @@ const QuoteWizard = {
       if (r.cliente.nombre) txt += 'Cliente: ' + r.cliente.nombre + '\n';
       if (r.equipo) txt += 'Equipo: ' + r.equipo + (r.marca ? ' ' + r.marca : '') + (r.modelo ? ' ' + r.modelo : '') + '\n';
       if (!esFactura) txt += 'Válida hasta: ' + r.fechaVencimiento + '\n';
+      if (codigoVC) txt += 'Verificación: ' + codigoVC + '\n';
+    } else {
+      const doc = this.documento;
+      txt += 'Documento: ' + numDocTxt + '\n';
+      if (doc.cliente.nombre) txt += 'Cliente: ' + doc.cliente.nombre + '\n';
       if (codigoVC) txt += 'Verificación: ' + codigoVC + '\n';
     }
     txt += '\n── DETALLE ────────────────────────────\n';
@@ -2199,17 +2776,20 @@ const QuoteWizard = {
     const date  = new Date().toLocaleDateString('es-DO', { day: '2-digit', month: 'long', year: 'numeric' });
 
     const rep       = isReparacion ? this.reparacion : null;
-    const isFactura = rep && rep.tipoDoc === 'factura';
-    const estado    = (rep && rep.estado) ? rep.estado : 'pagada';
+    const isFactura = rep ? (rep.tipoDoc === 'factura') : (this.documento.tipoDoc === 'factura');
+    const estado    = rep ? (rep.estado || 'pagada') : (this.documento.estado || 'pagada');
     const esPagada  = estado === 'pagada';
-    const numDoc    = rep ? rep.numero : ('JCDC-' + Date.now().toString(36).toUpperCase());
+    const numDoc    = rep ? rep.numero : this._generarNumeroDocumento();
 
-    const codigoVC = isReparacion && rep
-      ? this.generarCodigoVerificacion(rep.numero, rep.fechaEmision, total.toString())
-      : '';
+    // ✅ Siempre generar el código VC (para cualquier servicio)
+    const fechaBaseVC = rep ? rep.fechaEmision : (this.documento.fechaEmision || new Date().toISOString().slice(0, 10));
+    const codigoFinal = this.generarCodigoVerificacion(numDoc, fechaBaseVC, total.toString());
 
-    // Si es factura, generamos código VC aunque sea reparación
-    const codigoFinal = codigoVC || '';
+    // ✅ Cachear VC y fecha
+    if (!rep) {
+      this.documento.codigoVC = codigoFinal;
+      this.documento.fechaEmision = fechaBaseVC;
+    }
 
     try {
       const registro = JSON.parse(localStorage.getItem('jcdc_registro_docs') || '[]');
@@ -2239,7 +2819,7 @@ const QuoteWizard = {
         fechaISO: new Date().toISOString(),
         total: total,
         moneda: isReparacion ? 'DOP' : 'USD',
-        cliente: rep ? (rep.cliente.nombre || '—') : '—',
+        cliente: rep ? (rep.cliente.nombre || '—') : (this.documento.cliente.nombre || '—'),
         equipo: rep ? (rep.equipo || '—') : (cfgServicio.label || '—'),
         codigoVC: codigoFinal,
         timestamp: Date.now(),
@@ -2252,8 +2832,8 @@ const QuoteWizard = {
           fechaVencimiento: rep ? rep.fechaVencimiento : '',
           diasValidez: rep ? rep.diasValidez : this.diasValidez,
           garantia: rep ? (rep.garantia || this.garantiaSeleccionada) : this.garantiaSeleccionada,
-          cliente: rep ? JSON.parse(JSON.stringify(rep.cliente || {})) : {},
-          equipo: rep ? rep.equipo : '',
+          cliente: rep ? JSON.parse(JSON.stringify(rep.cliente || {})) : JSON.parse(JSON.stringify(this.documento.cliente || {})),
+          equipo: rep ? rep.equipo : ((this.services[this.service] || {}).label || ''),
           marca: rep ? rep.marca : '',
           modelo: rep ? rep.modelo : '',
           descripcion: rep ? rep.descripcion : '',
@@ -2261,7 +2841,10 @@ const QuoteWizard = {
           lines: lines,
           totalUSD: usd,
           totalDOP: dop,
-          rate: this.RATE_DOP
+          rate: this.RATE_DOP,
+          extras: JSON.parse(JSON.stringify(this.extras || {})),
+          servicioId: this.service,
+          servicioLabel: (this.services[this.service] || {}).label || ''
         }
       };
 
@@ -2292,7 +2875,7 @@ const QuoteWizard = {
             snapshot: nuevoDoc.snapshot
           };
 
-          db.collection('documentos').doc(codigoFinal).set(docParaNube)
+          db.collection('documentos').doc(codigoFinal).set(docParaNube, { merge: true })
             .then(function () { console.log('[Firestore] ✓', codigoFinal); })
             .catch(function (err) { console.error('[Firestore] ✗', err); });
         }
@@ -2363,7 +2946,7 @@ const QuoteWizard = {
     const isFactura = rep && rep.tipoDoc === 'factura';
     const estado = (rep && rep.estado) ? rep.estado : 'pagada';
     const esPagada = estado === 'pagada';
-    const numDoc = rep ? rep.numero : ('JCDC-' + Date.now().toString(36).toUpperCase());
+    const numDoc = rep ? rep.numero : this._generarNumeroDocumento();
     const tituloDoc = isFactura ? 'FACTURA' : 'COTIZACIÓN';
     const rate = this.RATE_DOP;
 
@@ -2374,9 +2957,9 @@ const QuoteWizard = {
       colorDoc = docCfg.colorSelloCotizacion || '#0369a1';
     }
 
-    const codigoVC = isReparacion && rep
-      ? this.generarCodigoVerificacion(rep.numero, rep.fechaEmision, total.toString())
-      : '';
+    // ✅ Calcular VC para TODOS los servicios (no solo reparación)
+    const fechaBaseVC = rep ? rep.fechaEmision : (this.documento.fechaEmision || new Date().toISOString().slice(0, 10));
+    const codigoVC = this.generarCodigoVerificacion(numDoc, fechaBaseVC, total.toString());
 
     try {
       if (window.goatcounter && window.goatcounter.count) {
@@ -2390,16 +2973,18 @@ const QuoteWizard = {
 
     this.registrarDocumento();
 
+    // ✅ Cliente visible para TODOS los servicios (no solo reparación)
     let clienteBlock = '';
-    if (rep && rep.cliente && (rep.cliente.nombre || rep.cliente.cedula || rep.cliente.telefono || rep.cliente.email || rep.cliente.direccion)) {
+    const cliData = rep ? rep.cliente : this.documento.cliente;
+    if (cliData && (cliData.nombre || cliData.cedula || cliData.telefono || cliData.email || cliData.direccion)) {
       clienteBlock += '<div class="info-block">';
       clienteBlock += '  <div class="info-block__title">DATOS DEL CLIENTE</div>';
       clienteBlock += '  <div class="info-block__grid">';
-      clienteBlock += '    <div class="ii"><span>Cliente</span><strong>' + (rep.cliente.nombre || '—') + '</strong></div>';
-      clienteBlock += '    <div class="ii"><span>Cédula / RNC</span><strong>' + (rep.cliente.cedula || '—') + '</strong></div>';
-      clienteBlock += '    <div class="ii"><span>Teléfono</span><strong>' + (rep.cliente.telefono || '—') + '</strong></div>';
-      clienteBlock += '    <div class="ii"><span>Email</span><strong>' + (rep.cliente.email || '—') + '</strong></div>';
-      if (rep.cliente.direccion) clienteBlock += '    <div class="ii ii--full"><span>Dirección</span><strong>' + rep.cliente.direccion + '</strong></div>';
+      clienteBlock += '    <div class="ii"><span>Cliente</span><strong>' + (cliData.nombre || '—') + '</strong></div>';
+      clienteBlock += '    <div class="ii"><span>Cédula / RNC</span><strong>' + (cliData.cedula || '—') + '</strong></div>';
+      clienteBlock += '    <div class="ii"><span>Teléfono</span><strong>' + (cliData.telefono || '—') + '</strong></div>';
+      clienteBlock += '    <div class="ii"><span>Email</span><strong>' + (cliData.email || '—') + '</strong></div>';
+      if (cliData.direccion) clienteBlock += '    <div class="ii ii--full"><span>Dirección</span><strong>' + cliData.direccion + '</strong></div>';
       clienteBlock += '  </div>';
       clienteBlock += '</div>';
     }
@@ -2414,19 +2999,33 @@ const QuoteWizard = {
       equipoBlock += '    <div class="ii ii--full"><span>Equipo</span><strong>' + eqLabel + (rep.marca ? ' · ' + rep.marca : '') + (rep.modelo ? ' ' + rep.modelo : '') + '</strong></div>';
       equipoBlock += '  </div>';
       equipoBlock += '</div>';
+    } else if (!isReparacion) {
+      // ✅ Servicios normales: mostrar el nombre del servicio como "Equipo/Servicio"
+      const cfgServ = this.services[this.service] || {};
+      if (cfgServ.label) {
+        equipoBlock += '<div class="info-block">';
+        equipoBlock += '  <div class="info-block__title">EQUIPO / SERVICIO</div>';
+        equipoBlock += '  <div class="info-block__grid">';
+        equipoBlock += '    <div class="ii ii--full"><span>Servicio</span><strong>' + cfgServ.label + '</strong></div>';
+        equipoBlock += '  </div>';
+        equipoBlock += '</div>';
+      }
     }
 
     let rows = '';
     lines.forEach(function (l) {
       const sub = l.sub ? '<div class="row-sub">' + l.sub + '</div>' : '';
-      const price = isReparacion ? ('RD$' + l.value.toLocaleString('es-DO')) : ('$' + l.value.toLocaleString('en-US'));
+      // ✅ Todo en DOP (convierte USD→DOP para servicios normales)
+      const lValueDOP = isReparacion ? l.value : Math.round(l.value * rate);
+      const price = 'RD$' + lValueDOP.toLocaleString('es-DO');
       rows += '<tr>';
       rows += '  <td>' + l.label + sub + '</td>';
       rows += '  <td class="row-price">' + price + '</td>';
       rows += '</tr>';
     });
 
-    const totalRow = isReparacion ? ('RD$' + dop.toLocaleString('es-DO')) : ('$' + usd.toLocaleString('en-US'));
+    // ✅ Total primario siempre en DOP (más familiar para cliente dominicano)
+    const totalRow = 'RD$' + dop.toLocaleString('es-DO');
 
     const hora = new Date().toLocaleTimeString('es-DO', { hour: '2-digit', minute: '2-digit' });
     const garantiaDias = (rep && typeof rep.garantia === 'number') ? rep.garantia : this.garantiaSeleccionada;
@@ -2437,8 +3036,10 @@ const QuoteWizard = {
       ? '<strong>Nota:</strong> Esta factura corresponde al servicio descrito arriba. ' + garantiaTexto + ' Gracias por su preferencia.'
       : '<strong>Nota:</strong> Cotización generada desde el cotizador web <strong>jcdurancasado.github.io/inf</strong> el ' + date + ' a las ' + hora + '. Válida por ' + (rep ? rep.diasValidez : this.diasValidez) + ' días.';
 
-    const observacionesTexto = (rep && rep.descripcion && rep.descripcion.trim())
-      ? rep.descripcion
+    // ✅ Observaciones: leer de reparación O de documento según el caso
+    const obsReal = rep ? rep.descripcion : this.documento.observaciones;
+    const observacionesTexto = (obsReal && obsReal.trim())
+      ? obsReal
       : '<span class="obs-empty">Sin observaciones registradas</span>';
 
     const watermarkHTML = (!isFactura && docCfg.mostrarWatermark !== false)
@@ -2578,22 +3179,31 @@ const QuoteWizard = {
   ${clienteBlock}
   ${equipoBlock}
 
-  ${rep && rep.fechaEmision ? `
+  ${(() => {
+    const fechaEmision = rep ? rep.fechaEmision : this.documento.fechaEmision;
+    if (!fechaEmision) return '';
+    const diasVal = rep ? rep.diasValidez : this.diasValidez;
+    const venc = rep ? rep.fechaVencimiento : (() => {
+      const d = new Date(fechaEmision);
+      d.setDate(d.getDate() + diasVal);
+      return d.toISOString().slice(0, 10);
+    })();
+    return `
     <div class="info-block">
       <div class="info-block__title">INFORMACIÓN DEL DOCUMENTO</div>
       <div class="info-block__grid">
-        <div class="ii"><span>Fecha de emisión</span><strong>${rep.fechaEmision}</strong></div>
-        <div class="ii"><span>${isFactura ? 'Estado' : 'Válida hasta'}</span><strong style="color:${isFactura ? colorDoc : '#111'};">${isFactura ? (esPagada ? '✓ PAGADA' : '✗ NO PAGADA') : rep.fechaVencimiento + ' (' + rep.diasValidez + ' días)'}</strong></div>
+        <div class="ii"><span>Fecha de emisión</span><strong>${fechaEmision}</strong></div>
+        <div class="ii"><span>${isFactura ? 'Estado' : 'Válida hasta'}</span><strong style="color:${isFactura ? colorDoc : '#111'};">${isFactura ? (esPagada ? '✓ PAGADA' : '✗ NO PAGADA') : venc + ' (' + diasVal + ' días)'}</strong></div>
       </div>
-    </div>
-  ` : ''}
+    </div>`;
+  })()}
 
   <div class="section-title">Detalle del servicio</div>
   <table>
     <thead>
       <tr>
         <th>Descripción</th>
-        <th>${isReparacion ? 'Monto (DOP)' : 'Monto (USD)'}</th>
+        <th>Monto (DOP)</th>
       </tr>
     </thead>
     <tbody>${rows || '<tr><td colspan="2" style="text-align:center;color:#888;padding:14px;">Sin elementos seleccionados</td></tr>'}</tbody>
@@ -2602,8 +3212,7 @@ const QuoteWizard = {
   <div class="totals">
     <div class="label">${isFactura ? (esPagada ? 'TOTAL PAGADO' : 'TOTAL A PAGAR') : 'TOTAL ESTIMADO'}</div>
     <div class="amount">${totalRow}</div>
-    ${!isReparacion && dop ? '<div class="sub">≈ RD$' + dop.toLocaleString('es-DO') + ' DOP · Tasa 1 USD = ' + rate + ' DOP</div>' : ''}
-    ${isReparacion ? '<div class="sub">Pesos dominicanos (DOP)</div>' : ''}
+    <div class="sub">Pesos dominicanos (DOP)</div>
   </div>
 
   <div class="obs"><strong>Observaciones:</strong> ${observacionesTexto}</div>

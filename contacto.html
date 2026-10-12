@@ -284,10 +284,13 @@
       max-width: 1150px;
       margin: var(--space-2xl) auto 0;
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: var(--space-md);
     }
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
+      .contacto-ctas { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
       .contacto-ctas { grid-template-columns: 1fr; }
     }
     .contacto-cta {
@@ -584,6 +587,11 @@
             <i class="fa-solid fa-certificate"></i>
             <strong>Ver credenciales</strong>
             <span>Badges verificados Cisco en Credly</span>
+          </a>
+          <a href="https://eu.credential.net/profile/jcdurancasado" target="_blank" rel="me noopener" class="contacto-cta">
+            <i class="fa-solid fa-award"></i>
+            <strong>Credenciales verificadas</strong>
+            <span>Perfil oficial en Credential.net</span>
           </a>
           <a href="cotizador.html" class="contacto-cta">
             <i class="fa-solid fa-calculator"></i>

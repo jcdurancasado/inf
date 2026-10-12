@@ -123,6 +123,371 @@ window.SOPORTE_CONFIG = {
   ],
 
   // ============================================
+  // CATÁLOGO DE ACCESORIOS Y REPUESTOS (precios en RD$)
+  // Estructura: categorías → familias → variantes
+  // Editable: agrega/quita familias, variantes o cambia precios
+  // ============================================
+  catalogoAccesorios: [
+    {
+      cat: 'cables',
+      label: 'Cables',
+      icon: 'fa-plug',
+      families: [
+        {
+          id: 'hdmi',
+          label: 'Cable HDMI',
+          variants: [
+            { id: 'hdmi_1m',  label: '1m',   precio: 350 },
+            { id: 'hdmi_2m',  label: '2m',   precio: 450 },
+            { id: 'hdmi_3m',  label: '3m',   precio: 550 },
+            { id: 'hdmi_5m',  label: '5m',   precio: 750 },
+            { id: 'hdmi_10m', label: '10m',  precio: 1300 }
+          ]
+        },
+        {
+          id: 'vga',
+          label: 'Cable VGA',
+          variants: [
+            { id: 'vga_15m', label: '1.5m', precio: 300 },
+            { id: 'vga_3m',  label: '3m',   precio: 450 },
+            { id: 'vga_5m',  label: '5m',   precio: 650 },
+            { id: 'vga_10m', label: '10m',  precio: 1100 }
+          ]
+        },
+        {
+          id: 'displayport',
+          label: 'Cable DisplayPort',
+          variants: [
+            { id: 'dp_15m', label: '1.5m', precio: 450 },
+            { id: 'dp_3m',  label: '3m',   precio: 650 }
+          ]
+        },
+        {
+          id: 'dvi',
+          label: 'Cable DVI',
+          variants: [
+            { id: 'dvi_15m', label: '1.5m', precio: 400 },
+            { id: 'dvi_3m',  label: '3m',   precio: 550 }
+          ]
+        },
+        {
+          id: 'usbc_hdmi',
+          label: 'Cable USB-C a HDMI',
+          variants: [
+            { id: 'usbc_hdmi_15', label: '1.5m', precio: 750 },
+            { id: 'usbc_hdmi_3',  label: '3m',   precio: 950 }
+          ]
+        },
+        {
+          id: 'usb_impresora',
+          label: 'Cable USB-A a USB-B (impresora)',
+          variants: [
+            { id: 'usb_ab_15', label: '1.5m', precio: 250 },
+            { id: 'usb_ab_3',  label: '3m',   precio: 350 },
+            { id: 'usb_ab_5',  label: '5m',   precio: 450 }
+          ]
+        },
+        {
+          id: 'rj45_cat5e',
+          label: 'Cable de red Cat5e',
+          variants: [
+            { id: 'c5_1m',  label: '1m',  precio: 120 },
+            { id: 'c5_3m',  label: '3m',  precio: 180 },
+            { id: 'c5_5m',  label: '5m',  precio: 250 },
+            { id: 'c5_10m', label: '10m', precio: 400 },
+            { id: 'c5_20m', label: '20m', precio: 650 }
+          ]
+        },
+        {
+          id: 'rj45_cat6',
+          label: 'Cable de red Cat6',
+          variants: [
+            { id: 'c6_1m',  label: '1m',  precio: 180 },
+            { id: 'c6_3m',  label: '3m',  precio: 280 },
+            { id: 'c6_5m',  label: '5m',  precio: 400 },
+            { id: 'c6_10m', label: '10m', precio: 650 },
+            { id: 'c6_20m', label: '20m', precio: 900 }
+          ]
+        },
+        {
+          id: 'rj45_cat6a',
+          label: 'Cable de red Cat6A',
+          variants: [
+            { id: 'c6a_1m',  label: '1m',  precio: 250 },
+            { id: 'c6a_3m',  label: '3m',  precio: 400 },
+            { id: 'c6a_5m',  label: '5m',  precio: 550 },
+            { id: 'c6a_10m', label: '10m', precio: 850 }
+          ]
+        },
+        {
+          id: 'corriente',
+          label: 'Cable de corriente',
+          variants: [
+            { id: 'power_univ',   label: 'Universal (PC/impresora)',  precio: 200 },
+            { id: 'power_laptop', label: 'Para laptop (con cargador)', precio: 850 },
+            { id: 'power_ext',    label: 'Extensión 3 tomas 1m',      precio: 350 }
+          ]
+        },
+        {
+          id: 'audio',
+          label: 'Cable de audio',
+          variants: [
+            { id: 'audio_35_1m', label: '3.5mm 1m', precio: 150 },
+            { id: 'audio_35_3m', label: '3.5mm 3m', precio: 250 },
+            { id: 'audio_35_5m', label: '3.5mm 5m', precio: 350 },
+            { id: 'rca_15',      label: 'RCA 1.5m',  precio: 200 }
+          ]
+        },
+        {
+          id: 'otro_cable',
+          label: 'Otro cable',
+          variants: [
+            { id: 'sata_power', label: 'Poder SATA',    precio: 150 },
+            { id: 'molex',      label: 'Poder Molex',   precio: 150 },
+            { id: 'usb_ext',    label: 'Extensión USB 1.5m', precio: 200 }
+          ]
+        }
+      ]
+    },
+    {
+      cat: 'perifericos',
+      label: 'Periféricos',
+      icon: 'fa-mouse',
+      families: [
+        {
+          id: 'mouse',
+          label: 'Mouse',
+          variants: [
+            { id: 'mouse_usb', label: 'USB básico',       precio: 250 },
+            { id: 'mouse_opt', label: 'Óptico USB',       precio: 350 },
+            { id: 'mouse_wl',  label: 'Inalámbrico',      precio: 550 },
+            { id: 'mouse_gam', label: 'Gamer RGB',        precio: 1200 }
+          ]
+        },
+        {
+          id: 'teclado',
+          label: 'Teclado',
+          variants: [
+            { id: 'teclado_usb', label: 'USB básico',  precio: 450 },
+            { id: 'teclado_wl',  label: 'Inalámbrico', precio: 850 },
+            { id: 'teclado_mec', label: 'Mecánico',    precio: 1800 },
+            { id: 'teclado_gam', label: 'Gamer RGB',   precio: 2500 }
+          ]
+        },
+        {
+          id: 'combo',
+          label: 'Combo mouse + teclado',
+          variants: [
+            { id: 'combo_usb', label: 'USB',         precio: 650 },
+            { id: 'combo_wl',  label: 'Inalámbrico', precio: 1100 }
+          ]
+        },
+        {
+          id: 'mousepad',
+          label: 'Mousepad',
+          variants: [
+            { id: 'mousepad',    label: 'Estándar',    precio: 200 },
+            { id: 'mousepad_xl', label: 'XL gamer',    precio: 450 }
+          ]
+        },
+        {
+          id: 'webcam',
+          label: 'Webcam',
+          variants: [
+            { id: 'webcam_720',  label: '720p',  precio: 850 },
+            { id: 'webcam_1080', label: '1080p', precio: 1500 },
+            { id: 'webcam_4k',   label: '4K',    precio: 3500 }
+          ]
+        },
+        {
+          id: 'parlantes',
+          label: 'Parlantes',
+          variants: [
+            { id: 'parl_20', label: '2.0 USB',           precio: 650 },
+            { id: 'parl_21', label: '2.1 con subwoofer', precio: 1800 }
+          ]
+        },
+        {
+          id: 'headset',
+          label: 'Diadema / Headset',
+          variants: [
+            { id: 'head_bas',  label: 'Básico',         precio: 550 },
+            { id: 'head_mic',  label: 'Con micrófono',  precio: 850 },
+            { id: 'head_gam',  label: 'Gamer',          precio: 1800 }
+          ]
+        },
+        {
+          id: 'microfono',
+          label: 'Micrófono',
+          variants: [
+            { id: 'mic_bas', label: 'Básico',           precio: 450 },
+            { id: 'mic_usb', label: 'Condensador USB',  precio: 1500 }
+          ]
+        }
+      ]
+    },
+    {
+      cat: 'almacenamiento',
+      label: 'Almacenamiento',
+      icon: 'fa-hdd',
+      families: [
+        {
+          id: 'pendrive',
+          label: 'Pendrive USB',
+          variants: [
+            { id: 'usb_16',  label: '16GB',  precio: 400 },
+            { id: 'usb_32',  label: '32GB',  precio: 650 },
+            { id: 'usb_64',  label: '64GB',  precio: 1000 },
+            { id: 'usb_128', label: '128GB', precio: 1800 },
+            { id: 'usb_256', label: '256GB', precio: 3200 }
+          ]
+        },
+        {
+          id: 'sd',
+          label: 'Tarjeta SD',
+          variants: [
+            { id: 'sd_32',  label: '32GB',  precio: 700 },
+            { id: 'sd_64',  label: '64GB',  precio: 1200 },
+            { id: 'sd_128', label: '128GB', precio: 2200 }
+          ]
+        },
+        {
+          id: 'microsd',
+          label: 'Tarjeta MicroSD',
+          variants: [
+            { id: 'micro_32',  label: '32GB',  precio: 650 },
+            { id: 'micro_64',  label: '64GB',  precio: 1100 },
+            { id: 'micro_128', label: '128GB', precio: 2000 }
+          ]
+        },
+        {
+          id: 'hdd_ext',
+          label: 'Disco duro externo',
+          variants: [
+            { id: 'hdd_500', label: '500GB', precio: 2500 },
+            { id: 'hdd_1tb', label: '1TB',   precio: 3500 },
+            { id: 'hdd_2tb', label: '2TB',   precio: 5500 }
+          ]
+        },
+        {
+          id: 'ssd_ext',
+          label: 'SSD externo',
+          variants: [
+            { id: 'ssd_500', label: '500GB', precio: 4500 },
+            { id: 'ssd_1tb', label: '1TB',   precio: 7500 }
+          ]
+        },
+        {
+          id: 'lector',
+          label: 'Lector de tarjetas',
+          variants: [
+            { id: 'lector_sd',  label: 'SD/MicroSD',   precio: 350 },
+            { id: 'lector_multi', label: 'Multiformato', precio: 550 }
+          ]
+        }
+      ]
+    },
+    {
+      cat: 'adaptadores',
+      label: 'Adaptadores y Hubs',
+      icon: 'fa-usb',
+      families: [
+        {
+          id: 'adap_video',
+          label: 'Adaptador de video',
+          variants: [
+            { id: 'dvi_vga',      label: 'DVI a VGA',        precio: 400 },
+            { id: 'hdmi_vga',     label: 'HDMI a VGA',       precio: 550 },
+            { id: 'usbc_hdmi_ad', label: 'USB-C a HDMI',     precio: 750 },
+            { id: 'usbc_vga',     label: 'USB-C a VGA',      precio: 650 }
+          ]
+        },
+        {
+          id: 'adap_usb',
+          label: 'Adaptador USB',
+          variants: [
+            { id: 'usbc_usba', label: 'USB-C a USB-A',        precio: 350 },
+            { id: 'usbc_35',   label: 'USB-C a 3.5mm audio',  precio: 350 },
+            { id: 'usb_serial',label: 'USB a serial RS232',   precio: 850 }
+          ]
+        },
+        {
+          id: 'hub',
+          label: 'Hub USB',
+          variants: [
+            { id: 'hub_usb4',  label: '4 puertos',              precio: 550 },
+            { id: 'hub_usb7',  label: '7 puertos con corriente',precio: 1500 },
+            { id: 'hub_usbc7', label: 'USB-C 7-en-1',           precio: 2200 }
+          ]
+        },
+        {
+          id: 'adap_otros',
+          label: 'Otros adaptadores',
+          variants: [
+            { id: 'sata_usb', label: 'SATA a USB',      precio: 650 },
+            { id: 'rj45_usb', label: 'USB a Ethernet',  precio: 700 }
+          ]
+        }
+      ]
+    },
+    {
+      cat: 'repuestos',
+      label: 'Repuestos y Consumibles',
+      icon: 'fa-box',
+      families: [
+        {
+          id: 'toner',
+          label: 'Tóner',
+          variants: [
+            { id: 'toner_hp85',  label: 'HP 85A',  precio: 1800 },
+            { id: 'toner_hp105', label: 'HP 105A', precio: 1500 },
+            { id: 'toner_hp107', label: 'HP 107A', precio: 2200 },
+            { id: 'toner_hp26',  label: 'HP 26A',  precio: 1500 },
+            { id: 'toner_canon125', label: 'Canon 125', precio: 1500 },
+            { id: 'toner_canon137', label: 'Canon 137', precio: 1800 }
+          ]
+        },
+        {
+          id: 'cartucho',
+          label: 'Cartucho de tinta',
+          variants: [
+            { id: 'cart_epson_neg', label: 'Epson 664 negro',   precio: 550 },
+            { id: 'cart_epson_col', label: 'Epson 664 color',   precio: 650 },
+            { id: 'cart_epson_544', label: 'Epson 544 negro',   precio: 850 }
+          ]
+        },
+        {
+          id: 'ventilador',
+          label: 'Ventilador case',
+          variants: [
+            { id: 'ven_80',  label: '80mm',  precio: 350 },
+            { id: 'ven_120', label: '120mm', precio: 450 },
+            { id: 'ven_140', label: '140mm', precio: 650 }
+          ]
+        },
+        {
+          id: 'fuente',
+          label: 'Fuente de poder',
+          variants: [
+            { id: 'fuente_500', label: '500W', precio: 2200 },
+            { id: 'fuente_600', label: '600W', precio: 2800 }
+          ]
+        },
+        {
+          id: 'consumibles',
+          label: 'Consumibles',
+          variants: [
+            { id: 'pasta_termica', label: 'Pasta térmica',              precio: 250 },
+            { id: 'rollo_80',      label: 'Rollo papel térmico 80mm',   precio: 150 },
+            { id: 'rollo_57',      label: 'Rollo papel térmico 57mm',   precio: 120 },
+            { id: 'etiqueta_term', label: 'Etiqueta térmica',           precio: 350 }
+          ]
+        }
+      ]
+    }
+  ],
+
+  // ============================================
   // SERVICIOS DEL COTIZADOR (13 servicios)
   // Genera el Paso 1 y define campos por servicio
   // ============================================
@@ -280,6 +645,15 @@ window.SOPORTE_CONFIG = {
       categoryLabel: 'Soporte',
       icon: 'fa-toolbox',
       desc: 'Impresoras, PC, redes',
+      base: 0,
+      custom: true
+    },
+    accesorios: {
+      label: 'Accesorios y Repuestos',
+      category: 'soporte',
+      categoryLabel: 'Soporte',
+      icon: 'fa-plug',
+      desc: 'Cables, periféricos y piezas',
       base: 0,
       custom: true
     }

@@ -36,6 +36,10 @@ const QuoteWizard = {
     timestamp: 0
   },
 
+  // Estado para el servicio de accesorios
+  accesorios: {},
+  accesoriosCatActiva: 'all',
+
   // ============================================
   // CONFIGURACIÓN (cargada desde SOPORTE_CONFIG)
   // ============================================
@@ -1104,6 +1108,8 @@ const QuoteWizard = {
       codigoVC: '',
       timestamp: 0
     };
+    this.accesorios = {};
+    this.accesoriosCatActiva = 'all';
 
     document.querySelectorAll('[data-service]').forEach(function (o) {
       o.classList.remove('checked');
@@ -1266,6 +1272,8 @@ const QuoteWizard = {
     if (this.currentStep === 1 && this.service) {
       if (this.service === 'reparacion') {
         this.renderReparacionFields();
+      } else if (this.service === 'accesorios') {
+        this.renderAccesoriosFields();
       } else {
         this.renderFields();
       }
@@ -1631,6 +1639,215 @@ const QuoteWizard = {
         if (smallCot) smallCot.textContent = 'Documento informativo · válido ' + dias + ' días';
       });
     });
+  },
+
+  // ============================================
+  // RENDER · Accesorios y Repuestos
+  // ============================================
+  renderAccesoriosFields() {
+    const cfg = window.SOPORTE_CONFIG;
+    if (!cfg || !cfg.catalogoAccesorios) {
+      this.els.fields.innerHTML = '<p style="text-align:center;color:var(--neon-red);">Error: falta el catálogo de accesorios.</p>';
+      return;
+    }
+
+    this.els.scopeTitle.textContent = 'Selecciona los accesorios o repuestos';
+
+    const self = this;
+    const catActiva = this.accesoriosCatActiva || 'all';
+
+    let html = '';
+
+    html += '<div class="rep-block">';
+    html += '  <h4 class="rep-block__title"><i class="fa-solid fa-plug"></i> Productos disponibles</h4>';
+    html += '  <p class="rep-block__hint">Elige el tamaño/variante con el desplegable y ajusta la cantidad con + / −. Solo se suman los que tengan cantidad mayor a 0.</p>';
+    html += '</div>';
+
+    html += '<div class="acc-filters" id="accFilters">';
+    html += '<button type="button" class="acc-filter' + (catActiva === 'all' ? ' active' : '') + '" data-cat="all"><i class="fa-solid fa-layer-group"></i> Todos</button>';
+    cfg.catalogoAccesorios.forEach(function (cat) {
+      html += '<button type="button" class="acc-filter' + (catActiva === cat.cat ? ' active' : '') + '" data-cat="' + cat.cat + '"><i class="fa-solid ' + (cat.icon || 'fa-box') + '"></i> ' + cat.label + '</button>';
+    });
+    html += '</div>';
+
+    // Inicializar variantes seleccionadas
+    self.accesoriosVariantes = self.accesoriosVariantes || {};
+    cfg.catalogoAccesorios.forEach(function (cat) {
+      cat.families.forEach(function (fam) {
+        if (!self.accesoriosVariantes[fam.id]) {
+          self.accesoriosVariantes[fam.id] = fam.variants[0].id;
+        }
+      });
+    });
+
+    html += '<div class="acc-grid" id="accGrid">';
+    cfg.catalogoAccesorios.forEach(function (cat) {
+      cat.families.forEach(function (fam) {
+        const selId = self.accesoriosVariantes[fam.id];
+        const sel = fam.variants.find(function (v) { return v.id === selId; }) || fam.variants[0];
+        const qty = parseInt(self.accesorios[sel.id], 10) || 0;
+
+        html += '<div class="acc-item' + (qty > 0 ? ' acc-item--on' : '') + '" data-cat="' + cat.cat + '" data-family="' + fam.id + '">';
+        html += '  <div class="acc-item__head">';
+        html += '    <span class="acc-item__name">' + fam.label + '</span>';
+        html += '    <div class="acc-item__meta">';
+        html += '      <span class="acc-item__price" data-acc-price="' + fam.id + '">RD$' + sel.precio.toLocaleString('es-DO') + '</span>';
+        html += '      <span class="acc-qty" data-acc-qty="' + fam.id + '">' + qty + '</span>';
+        html += '    </div>';
+        html += '  </div>';
+        html += '  <div class="acc-item__row">';
+        html += '    <button type="button" class="acc-btn" data-acc-minus="' + fam.id + '">−</button>';
+        html += '    <select class="acc-variant" data-acc-variant="' + fam.id + '">';
+        fam.variants.forEach(function (v) {
+          const isSel = (v.id === sel.id) ? ' selected' : '';
+          html += '<option value="' + v.id + '" data-precio="' + v.precio + '"' + isSel + '>' + v.label + ' — RD$' + v.precio.toLocaleString('es-DO') + '</option>';
+        });
+        html += '    </select>';
+        html += '    <button type="button" class="acc-btn" data-acc-plus="' + fam.id + '">+</button>';
+        html += '  </div>';
+        html += '</div>';
+      });
+    });
+    html += '</div>';
+
+    // Cliente / Tipo doc / Garantía / Validez / Obs
+    html += this._renderClienteBlock();
+    html += this._renderDocTypeBlock();
+    html += this._renderGarantiaBlock();
+    html += this._renderValidezBlock();
+    html += this._renderObservacionesBlock();
+
+    // Total en vivo
+    html += '<div class="rep-total" id="accTotal">';
+    html += '  <span class="rep-total__label">TOTAL ESTIMADO:</span>';
+    html += '  <span class="rep-total__value" id="accTotalValue">RD$0</span>';
+    html += '</div>';
+
+    this.els.fields.innerHTML = html;
+
+    // Filtros de categoría
+    if (catActiva !== 'all') {
+      document.querySelectorAll('.acc-item').forEach(function (el) {
+        if (el.dataset.cat !== catActiva) el.style.display = 'none';
+      });
+    }
+
+    document.querySelectorAll('.acc-filter').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const cat = btn.dataset.cat;
+        self.accesoriosCatActiva = cat;
+        document.querySelectorAll('.acc-filter').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        document.querySelectorAll('.acc-item').forEach(function (el) {
+          el.style.display = (cat === 'all' || el.dataset.cat === cat) ? '' : 'none';
+        });
+      });
+    });
+
+    // Helper para refrescar visual
+    function refreshFamily(famId) {
+      const item = document.querySelector('.acc-item[data-family="' + famId + '"]');
+      if (!item) return;
+      const selId = self.accesoriosVariantes[famId];
+      const qty = parseInt(self.accesorios[selId], 10) || 0;
+      const qtyEl = item.querySelector('[data-acc-qty]');
+      if (qtyEl) qtyEl.textContent = qty;
+      item.classList.toggle('acc-item--on', qty > 0);
+      self._updateAccTotal();
+    }
+
+    // Cambio de variante
+    document.querySelectorAll('[data-acc-variant]').forEach(function (sel) {
+      sel.addEventListener('change', function () {
+        const famId = sel.dataset.accVariant;
+        const opt = sel.options[sel.selectedIndex];
+        self.accesoriosVariantes[famId] = opt.value;
+        const precioEl = document.querySelector('[data-acc-price="' + famId + '"]');
+        if (precioEl) precioEl.textContent = 'RD$' + parseInt(opt.dataset.precio, 10).toLocaleString('es-DO');
+        refreshFamily(famId);
+      });
+    });
+
+    // Botones + / −
+    document.querySelectorAll('[data-acc-plus]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const famId = btn.dataset.accPlus;
+        const selId = self.accesoriosVariantes[famId];
+        self.accesorios[selId] = (parseInt(self.accesorios[selId], 10) || 0) + 1;
+        refreshFamily(famId);
+      });
+    });
+
+    document.querySelectorAll('[data-acc-minus]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const famId = btn.dataset.accMinus;
+        const selId = self.accesoriosVariantes[famId];
+        const cur = parseInt(self.accesorios[selId], 10) || 0;
+        if (cur <= 1) {
+          delete self.accesorios[selId];
+        } else {
+          self.accesorios[selId] = cur - 1;
+        }
+        refreshFamily(famId);
+      });
+    });
+
+    this._attachGarantiaHandlers();
+    this._attachValidezHandlers();
+
+    if (this.facturaUnlocked || this._tipoAcceso === 'admin') {
+      this._actualizarBadgeFactura(true);
+      const vw = document.getElementById('repValidezWrap');
+      if (vw) vw.style.display = 'block';
+    }
+
+    this._updateAccTotal();
+  },
+
+  // Encuentra una familia por ID en el catálogo
+  _findFamilyById(famId) {
+    const cfg = window.SOPORTE_CONFIG;
+    if (!cfg || !cfg.catalogoAccesorios) return null;
+    let found = null;
+    cfg.catalogoAccesorios.forEach(function (cat) {
+      cat.families.forEach(function (fam) {
+        if (fam.id === famId) found = fam;
+      });
+    });
+    return found;
+  },
+
+  // Devuelve la variante seleccionada actual (o null)
+  _getSelectedVariant(famId) {
+    const fam = this._findFamilyById(famId);
+    if (!fam) return null;
+    const selId = (this.accesoriosVariantes || {})[famId];
+    if (!selId) return null;
+    return fam.variants.find(function (v) { return v.id === selId; }) || null;
+  },
+
+  // Actualiza el total en vivo de accesorios
+  _updateAccTotal() {
+    const total = this._calcularAccesoriosTotal();
+    const el = document.getElementById('accTotalValue');
+    if (el) el.textContent = 'RD$' + total.toLocaleString('es-DO');
+  },
+
+  // Suma productos seleccionados × precio
+  _calcularAccesoriosTotal() {
+    const cfg = window.SOPORTE_CONFIG;
+    if (!cfg || !cfg.catalogoAccesorios) return 0;
+    let total = 0;
+    const self = this;
+    cfg.catalogoAccesorios.forEach(function (cat) {
+      cat.families.forEach(function (fam) {
+        fam.variants.forEach(function (v) {
+          const qty = parseInt(self.accesorios[v.id], 10) || 0;
+          if (qty > 0) total += qty * v.precio;
+        });
+      });
+    });
+    return total;
   },
 
   // ============================================
@@ -2016,6 +2233,63 @@ const QuoteWizard = {
   calculate() {
     const self = this;
 
+    // ------------------ ACCESORIOS ------------------
+    if (this.service === 'accesorios') {
+      const cfg = window.SOPORTE_CONFIG;
+      const lines = [];
+      let total = 0;
+
+      (cfg.catalogoAccesorios || []).forEach(function (cat) {
+        cat.families.forEach(function (fam) {
+          fam.variants.forEach(function (v) {
+            const qty = parseInt(self.accesorios[v.id], 10) || 0;
+            if (qty > 0) {
+              const subtotal = qty * v.precio;
+              lines.push({
+                label: fam.label + ' — ' + v.label,
+                sub: qty + ' × RD$' + v.precio.toLocaleString('es-DO'),
+                value: subtotal
+              });
+              total += subtotal;
+            }
+          });
+        });
+      });
+
+      // Extras (aplican igual)
+      let extrasTotal = 0;
+      let urgentPct = 0;
+      Object.keys(this.extrasDef).forEach(function (key) {
+        if (!self.extras[key]) return;
+        const ex = self.extrasDef[key];
+        if (ex.percentage) {
+          urgentPct = ex.percentage;
+        } else {
+          const exDop = Math.round(ex.price * self.RATE_DOP);
+          extrasTotal += exDop;
+          lines.push({ label: ex.label, sub: '$' + ex.price + ' USD', value: exDop });
+        }
+      });
+      total += extrasTotal;
+
+      // Garantía
+      const tramo = self.garantiaTramos.find(function (t) { return t.dias === self.garantiaSeleccionada; });
+      if (tramo && tramo.pct > 0) {
+        const gAmount = Math.round(total * tramo.pct);
+        lines.push({ label: 'Garantía ' + tramo.label, sub: '+' + Math.round(tramo.pct * 100) + '%', value: gAmount });
+        total += gAmount;
+      }
+
+      // Urgente
+      if (urgentPct > 0) {
+        const urgAmount = Math.round(total * urgentPct);
+        lines.push({ label: 'Entrega urgente', sub: '+' + (urgentPct * 100) + '%', value: urgAmount });
+        total += urgAmount;
+      }
+
+      return { lines: lines, total: total };
+    }
+
     // ------------------ REPARACIÓN ------------------
     if (this.service === 'reparacion') {
       const calc = this.calcularReparacion();
@@ -2164,8 +2438,10 @@ const QuoteWizard = {
     const lines = calc.lines;
     const total = calc.total;
     const isReparacion = this.service === 'reparacion';
-    const dop = isReparacion ? total : total * this.RATE_DOP;
-    const usd = isReparacion ? null : total;
+    const isAccesorios = this.service === 'accesorios';
+    const esDOP = isReparacion || isAccesorios;
+    const dop = esDOP ? total : total * this.RATE_DOP;
+    const usd = esDOP ? null : total;
 
     let html = '';
 
@@ -2191,7 +2467,7 @@ const QuoteWizard = {
 
     lines.forEach(function (l) {
       const sub = l.sub ? '<small>' + l.sub + '</small>' : '';
-      const price = isReparacion
+      const price = esDOP
         ? 'RD$' + l.value.toLocaleString('es-DO')
         : '$' + l.value.toLocaleString('en-US');
       html += '<div class="quote-summary__row">';
@@ -2200,7 +2476,7 @@ const QuoteWizard = {
       html += '</div>';
     });
 
-    if (isReparacion) {
+    if (esDOP) {
       html += '<div class="quote-summary__totals">';
       html += '  <div class="quote-summary__totals-label">TOTAL</div>';
       html += '  <div class="quote-summary__total-usd">RD$' + Math.round(dop).toLocaleString('es-DO') + '</div>';
@@ -2306,6 +2582,8 @@ const QuoteWizard = {
     const total = calc.total;
     const lines = calc.lines;
 
+    const isAccesorios = this.service === 'accesorios';
+    const esDOP = isReparacion || isAccesorios;
     const rep = isReparacion ? this.reparacion : null;
     const doc = this.documento;
     const cfgServ = this.services[this.service] || {};
@@ -2339,7 +2617,7 @@ const QuoteWizard = {
       servicioLabel: cfgServ.label || '',
       lines: lines,
       total: total,
-      moneda: isReparacion ? 'DOP' : 'USD',
+      moneda: (isReparacion || isAccesorios) ? 'DOP' : 'USD',
       rate: this.RATE_DOP,
       codigoVCpadre: codigoVCpadre
     };
@@ -2597,6 +2875,8 @@ const QuoteWizard = {
       codigoVC: '',
       timestamp: 0
     };
+    this.accesorios = {};
+    this.accesoriosCatActiva = 'all';
 
     document.querySelectorAll('[data-service]').forEach(function (o) {
       o.classList.remove('checked');
@@ -2625,7 +2905,9 @@ const QuoteWizard = {
     const lines = calc.lines;
     const total = calc.total;
     const isReparacion = this.service === 'reparacion';
-    const dop = isReparacion ? total : Math.round(total * this.RATE_DOP);
+    const isAccesorios = this.service === 'accesorios';
+    const esDOP = isReparacion || isAccesorios;
+    const dop = esDOP ? total : Math.round(total * this.RATE_DOP);
     const date = new Date().toLocaleDateString('es-DO', { day: '2-digit', month: 'long', year: 'numeric' });
 
     const esFactura = isReparacion && this.reparacion && this.reparacion.tipoDoc === 'factura';
@@ -2661,7 +2943,7 @@ const QuoteWizard = {
     lines.forEach(function (l) {
       const sub = l.sub ? ' (' + l.sub + ')' : '';
       txt += '• ' + l.label + sub + '\n';
-      txt += '  ' + (isReparacion ? 'RD$' + l.value.toLocaleString('es-DO') : '$' + l.value.toLocaleString('en-US')) + '\n';
+      txt += '  ' + (esDOP ? 'RD$' + l.value.toLocaleString('es-DO') : '$' + l.value.toLocaleString('en-US')) + '\n';
     });
 
     txt += '\n── TOTALES ────────────────────────────\n';
@@ -2768,11 +3050,13 @@ const QuoteWizard = {
     if (!this.service) return '';
 
     const isReparacion = this.service === 'reparacion';
+    const isAccesorios = this.service === 'accesorios';
+    const esDOP = isReparacion || isAccesorios;
     const calc  = this.calculate();
     const lines = calc.lines;
     const total = calc.total;
-    const dop   = isReparacion ? total : Math.round(total * this.RATE_DOP);
-    const usd   = isReparacion ? null : total;
+    const dop   = esDOP ? total : Math.round(total * this.RATE_DOP);
+    const usd   = esDOP ? null : total;
     const date  = new Date().toLocaleDateString('es-DO', { day: '2-digit', month: 'long', year: 'numeric' });
 
     const rep       = isReparacion ? this.reparacion : null;
@@ -2818,7 +3102,7 @@ const QuoteWizard = {
         fecha: date,
         fechaISO: new Date().toISOString(),
         total: total,
-        moneda: isReparacion ? 'DOP' : 'USD',
+        moneda: esDOP ? 'DOP' : 'USD',
         cliente: rep ? (rep.cliente.nombre || '—') : (this.documento.cliente.nombre || '—'),
         equipo: rep ? (rep.equipo || '—') : (cfgServicio.label || '—'),
         codigoVC: codigoFinal,
@@ -2897,7 +3181,7 @@ const QuoteWizard = {
             codigoVC: codigoFinal,
             cliente: rep ? (rep.cliente.nombre || 'Sin nombre') : 'Sin nombre',
             total: total,
-            moneda: isReparacion ? 'DOP' : 'USD',
+            moneda: esDOP ? 'DOP' : 'USD',
             fecha: date
           };
 
@@ -2933,11 +3217,13 @@ const QuoteWizard = {
     }
 
     const isReparacion = this.service === 'reparacion';
+    const isAccesorios = this.service === 'accesorios';
+    const esDOP = isReparacion || isAccesorios;
     const calc = this.calculate();
     const lines = calc.lines;
     const total = calc.total;
-    const dop = isReparacion ? total : Math.round(total * this.RATE_DOP);
-    const usd = isReparacion ? null : total;
+    const dop = esDOP ? total : Math.round(total * this.RATE_DOP);
+    const usd = esDOP ? null : total;
     const date = new Date().toLocaleDateString('es-DO', { day: '2-digit', month: 'long', year: 'numeric' });
 
     const prov = (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.proveedor) || {};
@@ -3015,8 +3301,8 @@ const QuoteWizard = {
     let rows = '';
     lines.forEach(function (l) {
       const sub = l.sub ? '<div class="row-sub">' + l.sub + '</div>' : '';
-      // ✅ Todo en DOP (convierte USD→DOP para servicios normales)
-      const lValueDOP = isReparacion ? l.value : Math.round(l.value * rate);
+      // ✅ DOP para reparación y accesorios; conversión para el resto
+      const lValueDOP = esDOP ? l.value : Math.round(l.value * rate);
       const price = 'RD$' + lValueDOP.toLocaleString('es-DO');
       rows += '<tr>';
       rows += '  <td>' + l.label + sub + '</td>';

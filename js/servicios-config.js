@@ -492,6 +492,37 @@ window.SOPORTE_CONFIG = {
   // Genera el Paso 1 y define campos por servicio
   // ============================================
   serviciosCotizador: {
+    // ==================== SOPORTE & REPARACIÓN ====================
+    reparacion: {
+      label: 'Reparación Técnica',
+      category: 'soporte',
+      categoryLabel: 'Soporte',
+      icon: 'fa-toolbox',
+      desc: 'Impresoras, PC, redes',
+      base: 0,
+      custom: true
+    },
+    accesorios: {
+      label: 'Accesorios y Repuestos',
+      category: 'soporte',
+      categoryLabel: 'Soporte',
+      icon: 'fa-plug',
+      desc: 'Cables, periféricos y piezas',
+      base: 0,
+      custom: true
+    },
+    support: {
+      label: 'Soporte Mensual',
+      category: 'soporte',
+      categoryLabel: 'Soporte',
+      icon: 'fa-screwdriver-wrench',
+      desc: 'Mantenimiento y asistencia',
+      base: 200,
+      fields: [
+        { id: 'users', label: 'Usuarios', min: 1, max: 500, step: 5, default: 20, unit: 3, unitLabel: '$3 por usuario/mes' }
+      ]
+    },
+
     // ==================== REDES ====================
     red: {
       label: 'Red Empresarial',
@@ -627,36 +658,6 @@ window.SOPORTE_CONFIG = {
       ]
     },
 
-    // ==================== SOPORTE & REPARACIÓN ====================
-    support: {
-      label: 'Soporte Mensual',
-      category: 'soporte',
-      categoryLabel: 'Soporte',
-      icon: 'fa-screwdriver-wrench',
-      desc: 'Mantenimiento y asistencia',
-      base: 200,
-      fields: [
-        { id: 'users', label: 'Usuarios', min: 1, max: 500, step: 5, default: 20, unit: 3, unitLabel: '$3 por usuario/mes' }
-      ]
-    },
-    reparacion: {
-      label: 'Reparación Técnica',
-      category: 'soporte',
-      categoryLabel: 'Soporte',
-      icon: 'fa-toolbox',
-      desc: 'Impresoras, PC, redes',
-      base: 0,
-      custom: true
-    },
-    accesorios: {
-      label: 'Accesorios y Repuestos',
-      category: 'soporte',
-      categoryLabel: 'Soporte',
-      icon: 'fa-plug',
-      desc: 'Cables, periféricos y piezas',
-      base: 0,
-      custom: true
-    }
   },
 
   // ============================================

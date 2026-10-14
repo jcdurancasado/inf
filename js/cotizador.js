@@ -45,11 +45,11 @@ const QuoteWizard = {
   // ============================================
   services: {},
   categories: {
+    soporte:   { label: 'SOPORTE & REPARACIÓN',  icon: 'fa-screwdriver-wrench' },
     redes:     { label: 'REDES',                 icon: 'fa-network-wired' },
     seguridad: { label: 'SEGURIDAD',             icon: 'fa-shield-halved' },
     formacion: { label: 'FORMACIÓN',             icon: 'fa-chalkboard-user' },
-    cloud:     { label: 'CLOUD & CCTV',          icon: 'fa-cloud' },
-    soporte:   { label: 'SOPORTE & REPARACIÓN',  icon: 'fa-screwdriver-wrench' }
+    cloud:     { label: 'CLOUD & CCTV',          icon: 'fa-cloud' }
   },
   extrasDef: {},
 

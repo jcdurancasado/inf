@@ -13319,147 +13319,8 @@ body.jcdc-modal-open input {
   background: #7c3aed;
   color: #ffffff;
 }
-
 /* ============================================
-   ACCESORIOS · Cotizador
-============================================ */
-.acc-filters {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-bottom: var(--space-lg);
-}
-.acc-filter {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.5rem 1rem;
-  background: var(--bg-panel);
-  border: 1.5px solid var(--border-subtle);
-  border-radius: 100px;
-  font-family: var(--font-display);
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: var(--transition);
-  text-transform: uppercase;
-}
-.acc-filter:hover { border-color: var(--neon-cyan); color: var(--neon-cyan); }
-.acc-filter.active {
-  background: rgba(0, 240, 255, 0.1);
-  border-color: var(--neon-cyan);
-  color: var(--neon-cyan);
-  box-shadow: 0 0 15px rgba(0, 240, 255, 0.25);
-}
-.acc-filter i { font-size: 0.75rem; opacity: 0.85; }
-
-.acc-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem;
-  margin-bottom: var(--space-lg);
-}
-@media (max-width: 640px) {
-  .acc-grid { grid-template-columns: 1fr; gap: 0.5rem; }
-}
-
-.acc-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding: 0.85rem 1rem;
-  background: var(--bg-primary);
-  border: 1.5px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  transition: var(--transition);
-}
-.acc-item--on {
-  border-color: var(--neon-green);
-  background: rgba(0, 255, 136, 0.04);
-  box-shadow: 0 0 0 1px var(--neon-green);
-}
-.acc-item__info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  min-width: 0;
-  flex: 1;
-}
-.acc-item__name {
-  font-family: var(--font-body);
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-  line-height: 1.25;
-  word-break: break-word;
-}
-.acc-item--on .acc-item__name { color: var(--text-primary); font-weight: 600; }
-.acc-item__price {
-  font-family: var(--font-display);
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--neon-green);
-}
-.acc-item__ctrl {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  flex-shrink: 0;
-}
-.acc-btn {
-  width: 34px;
-  height: 34px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg-panel);
-  border: 1.5px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  color: var(--neon-cyan);
-  font-family: var(--font-display);
-  font-size: 1.1rem;
-  font-weight: 800;
-  cursor: pointer;
-  transition: var(--transition);
-  padding: 0;
-  line-height: 1;
-  user-select: none;
-}
-.acc-btn:hover {
-  background: rgba(0, 240, 255, 0.1);
-  border-color: var(--neon-cyan);
-  box-shadow: 0 0 12px rgba(0, 240, 255, 0.35);
-}
-.acc-btn:active { transform: scale(0.92); }
-.acc-qty {
-  min-width: 34px;
-  text-align: center;
-  font-family: var(--font-display);
-  font-size: 1rem;
-  font-weight: 800;
-  color: var(--text-primary);
-}
-.acc-item--on .acc-qty { color: var(--neon-green); }
-
-[data-theme="light"] .acc-filter,
-[data-theme="light"] .acc-btn {
-  background: #ffffff;
-  border-color: rgba(0, 136, 204, 0.2);
-}
-[data-theme="light"] .acc-item {
-  background: #f8fafc;
-  border-color: rgba(0, 136, 204, 0.15);
-}
-[data-theme="light"] .acc-item--on {
-  background: rgba(5, 150, 105, 0.05);
-  border-color: #059669;
-}
-
-/* ============================================
-   ACCESORIOS · Familias con variante desplegable
+   ACCESORIOS · Cotizador (Versión Final)
 ============================================ */
 .acc-filters {
   display: flex;
@@ -13520,7 +13381,7 @@ body.jcdc-modal-open input {
   box-shadow: 0 0 0 1px var(--neon-green);
 }
 
-/* Fila superior: nombre grande + precio + cantidad */
+/* Fila superior: nombre + precio + cantidad */
 .acc-item__head {
   display: flex;
   align-items: center;
@@ -13529,27 +13390,31 @@ body.jcdc-modal-open input {
 }
 .acc-item__name {
   font-family: var(--font-display);
-  font-size: 0.95rem;
-  font-weight: 700;
+  font-size: 1.05rem;
+  font-weight: 800;
   color: var(--text-primary);
   line-height: 1.2;
   word-break: break-word;
   flex: 1;
   min-width: 0;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 10px rgba(0,240,255,0.1);
 }
 .acc-item__meta {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
+  gap: 0.8rem;
   flex-shrink: 0;
 }
 .acc-item__price {
-  font-family: var(--font-display);
-  font-size: 0.78rem;
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
   font-weight: 700;
   color: var(--neon-green);
   white-space: nowrap;
+  background: rgba(0,255,136,0.1);
+  padding: 2px 8px;
+  border-radius: 4px;
 }
 .acc-qty {
   min-width: 30px;
@@ -13599,17 +13464,26 @@ body.jcdc-modal-open input {
   line-height: 1;
   user-select: none;
 }
-.acc-btn:hover {
+
+/* ✅ ESTO HACE QUE SE VEAN GRISES SI NO HAY SELECCIÓN */
+.acc-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.acc-btn:hover:not(:disabled) {
   background: rgba(0, 240, 255, 0.1);
   border-color: var(--neon-cyan);
   box-shadow: 0 0 12px rgba(0, 240, 255, 0.35);
 }
-.acc-btn:active { transform: scale(0.92); }
+.acc-btn:active:not(:disabled) { transform: scale(0.92); }
+
 .acc-item--on .acc-btn {
   border-color: rgba(0, 255, 136, 0.5);
   color: var(--neon-green);
 }
-.acc-item--on .acc-btn:hover {
+.acc-item--on .acc-btn:hover:not(:disabled) {
   background: rgba(0, 255, 136, 0.1);
   border-color: var(--neon-green);
   box-shadow: 0 0 12px rgba(0, 255, 136, 0.35);

@@ -21,6 +21,53 @@
   var adminUnlocked = false;  // ¿admin logueado?
   var adminEmail = null;      // email del admin logueado
   var vieneDeCorreo = false;  // ¿llegó con ?code= desde el correo?
+    // ============================================================
+  // SISTEMA DE ALERTAS Y CONFIRMACIONES PERSONALIZADAS
+  // ============================================================
+  function customAlert(mensaje, titulo = 'AVISO', tipo = 'info') {
+    return new Promise((resolve) => {
+      const overlay = document.createElement('div');
+      overlay.className = 'jcdc-confirm-overlay';
+      overlay.innerHTML = `
+        <div class="jcdc-confirm jcdc-confirm--${tipo}" role="dialog" aria-modal="true">
+          <div class="jcdc-confirm__icon"><i class="fa-solid ${tipo === 'danger' ? 'fa-triangle-exclamation' : tipo === 'warning' ? 'fa-circle-exclamation' : 'fa-circle-info'}"></i></div>
+          <h3 class="jcdc-confirm__title">${titulo}</h3>
+          <p class="jcdc-confirm__msg">${mensaje}</p>
+          <div class="jcdc-confirm__actions">
+            <button type="button" class="jcdc-confirm__btn jcdc-confirm__btn--ok" style="width:100%;">Entendido</button>
+          </div>
+        </div>`;
+      document.body.appendChild(overlay);
+      overlay.querySelector('.jcdc-confirm__btn--ok').addEventListener('click', () => {
+        overlay.classList.add('closing');
+        setTimeout(() => { overlay.remove(); resolve(); }, 200);
+      });
+    });
+  }
+
+  function customConfirm(mensaje, titulo = '¿CONFIRMAR ACCIÓN?', tipo = 'warning') {
+    return new Promise((resolve) => {
+      const overlay = document.createElement('div');
+      overlay.className = 'jcdc-confirm-overlay';
+      overlay.innerHTML = `
+        <div class="jcdc-confirm jcdc-confirm--${tipo}" role="dialog" aria-modal="true">
+          <div class="jcdc-confirm__icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+          <h3 class="jcdc-confirm__title">${titulo}</h3>
+          <p class="jcdc-confirm__msg">${mensaje}</p>
+          <div class="jcdc-confirm__actions">
+            <button type="button" class="jcdc-confirm__btn jcdc-confirm__btn--cancel" data-res="0">Cancelar</button>
+            <button type="button" class="jcdc-confirm__btn jcdc-confirm__btn--ok" data-res="1">Aceptar</button>
+          </div>
+        </div>`;
+      document.body.appendChild(overlay);
+      const cerrar = (res) => {
+        overlay.classList.add('closing');
+        setTimeout(() => { overlay.remove(); resolve(res); }, 200);
+      };
+      overlay.querySelector('[data-res="0"]').addEventListener('click', () => cerrar(false));
+      overlay.querySelector('[data-res="1"]').addEventListener('click', () => cerrar(true));
+    });
+  }
 
   // ============================================================
   // HELPERS
@@ -427,8 +474,8 @@
   // ACTUALIZAR DOCUMENTO ACTUAL (helper)
   // ============================================================
   async function actualizarDocActual(callback) {
-    if (!docActual) { alert('Primero busca un documento.'); return false; }
-    if (!adminUnlocked) { alert('Solo admin.'); return false; }
+    if (!docActual) { customAlert('Primero busca un documento.', 'AVISO', 'warning'); return false; }
+    if (!adminUnlocked) { customAlert('Acceso solo para administradores.', 'ACCESO DENEGADO', 'danger'); return false; }
 
     // Aplicar cambio al objeto local
     callback(docActual);
@@ -446,7 +493,7 @@
       render([docActual], docActual.codigoVC || docActual.numero);
       actualizarBotonesAdmin();
     } else {
-      alert('Error guardando en Firestore. Revisa la consola.');
+      customAlert('Error guardando en Firestore. Revisa la consola.', 'ERROR', 'danger');
     }
     return ok;
   }
@@ -455,14 +502,15 @@
   // EMITIR FACTURA (crea nueva factura a partir de cotización)
   // ============================================================
   async function emitirFactura(estadoFactura) {
-    if (!docActual) { alert('Primero busca una cotización.'); return; }
-    if (!adminUnlocked) { alert('Solo admin.'); return; }
-    if (docActual.tipo === 'factura') { alert('Ya es FACTURA.'); return; }
-    if (docActual.facturaVinculada) { alert('Ya tiene factura ' + docActual.facturaVinculada); return; }
+    if (!docActual) { customAlert('Primero busca una cotización.', 'AVISO', 'warning'); return; }
+    if (!adminUnlocked) { customAlert('Acceso solo para administradores.', 'ACCESO DENEGADO', 'danger'); return; }
+    if (docActual.tipo === 'factura') { customAlert('Este documento ya es una FACTURA.', 'AVISO', 'info'); return; }
+    if (docActual.facturaVinculada) { customAlert('Ya tiene la factura ' + docActual.facturaVinculada, 'AVISO', 'info'); return; }
 
     var esPagada = estadoFactura === 'pagada';
     var etiqueta = esPagada ? 'PAGADA' : 'NO PAGADA';
-    if (!confirm('¿Emitir FACTURA ' + etiqueta + '?')) return;
+    const confirmarFactura = await customConfirm('¿Emitir FACTURA ' + etiqueta + '?', 'CONFIRMAR EMISIÓN', 'info');
+    if (!confirmarFactura) return;
 
     var numFactura = generarNumeroFactura();
     var fechaHoy = new Date().toISOString().slice(0, 10);
@@ -501,7 +549,7 @@
     try {
       await window.db.collection('documentos').doc(codigoVC).set(factura);
     } catch (e) {
-      console.error(e); alert('Error en Firestore.'); return;
+      console.error(e); customAlert('Error en Firestore. Revisa la consola.', 'ERROR', 'danger'); return;
     }
 
     docActual.facturaVinculada = numFactura;
@@ -528,8 +576,8 @@
 
     render([docActual], docActual.codigoVC || docActual.numero);
     actualizarBotonesAdmin();
-    alert('✅ Factura ' + etiqueta + '\n\nNúmero: ' + numFactura + '\nVC: ' + codigoVC
-      + (adicionalesNuevos.length ? '\n\n✅ ' + adicionalesNuevos.length + ' adicional(es) anidado(s)' : ''));
+    customAlert('Factura ' + etiqueta + '<br><br>Número: ' + numFactura + '<br>VC: ' + codigoVC
+      + (adicionalesNuevos.length ? '<br><br>✅ ' + adicionalesNuevos.length + ' adicional(es) anidado(s)' : ''), 'FACTURA EMITIDA', 'success');
   }
 
   // Helper: construye adicionales desde los extras del snapshot
@@ -1118,7 +1166,7 @@
   function descargarAdicionalAnidado(parentDoc, adicional, modo) {
     modo = modo || 'download';
     if (typeof window.JCDC_Plantillas === 'undefined') {
-      alert('Módulo de plantillas no disponible. Recarga la página.');
+      customAlert('Módulo de plantillas no disponible. Recarga la página.', 'ERROR', 'danger');
       return;
     }
     var snap = adicional.snapshot || {};
@@ -1163,7 +1211,7 @@
     if (window.JCDC_Plantillas.TIPOS) {
       def = window.JCDC_Plantillas.TIPOS.find(function (t) { return t.id === adicional.tipo; });
     }
-    if (!def) { alert('Tipo de documento desconocido: ' + adicional.tipo); return; }
+    if (!def) { customAlert('Tipo de documento desconocido: ' + adicional.tipo, 'ERROR', 'danger'); return; }
     var docs = [{ tipo: adicional.tipo, def: def, numero: adicional.numero, vc: parentDoc.codigoVC }];
     window.JCDC_Plantillas.open(data, docs, modo);
   }
@@ -1363,8 +1411,9 @@
       var delH = e.target.closest('.verify-hist-del');
       var elBtn = delC || delH;
       if (!elBtn) return;
-      if (!adminUnlocked) { alert('Acceso solo para administrador.'); return; }
-      if (!confirm('¿Eliminar este registro?')) return;
+      if (!adminUnlocked) { customAlert('Acceso solo para administrador.', 'ACCESO DENEGADO', 'danger'); return; }
+      const confirmarEliminar = await customConfirm('¿Eliminar este registro permanentemente?', '¿ELIMINAR REGISTRO?', 'danger');
+      if (!confirmarEliminar) return;
 
       var id = elBtn.getAttribute('data-id');
       var ts = parseInt(elBtn.getAttribute('data-ts'), 10);
@@ -1373,7 +1422,7 @@
       // Esto evita borrar comentarios del documento equivocado cuando hay múltiples
       // coincidencias con el mismo VC (factura + sus documentos adicionales).
       var target = ultimosRegistros.find(function (r) { return r._id === id; });
-      if (!target) { alert('No se encontró el registro.'); return; }
+      if (!target) { customAlert('No se encontró el registro.', 'ERROR', 'danger'); return; }
 
       if (delC && target.comentarios) {
         target.comentarios = target.comentarios.filter(function (c) { return (c.timestamp || 0) !== ts; });
@@ -1424,7 +1473,7 @@
     // Publicar comentario
     if (btnComentario) btnComentario.addEventListener('click', async function () {
       var texto = txtComentario.value.trim();
-      if (!texto) { alert('Escribe un comentario.'); return; }
+      if (!texto) { customAlert('Escribe un comentario antes de publicar.', 'AVISO', 'warning'); return; }
       var ok = await actualizarDocActual(function (doc) {
         doc.comentarios = doc.comentarios || [];
         doc.comentarios.push({ texto: texto, fecha: fechaActualHora(), timestamp: Date.now() });
@@ -1434,7 +1483,7 @@
 
     // Descargar PDF
     if (btnPDF) btnPDF.addEventListener('click', async function () {
-      if (!docActual) { alert('Primero busca un documento.'); return; }
+      if (!docActual) { customAlert('Primero busca un documento.', 'AVISO', 'warning'); return; }
       var target = docActual;
       if (docActual.facturaVinculada) {
         // Cargar la factura vinculada desde Firestore
@@ -1465,7 +1514,7 @@
     var todosLosDocs = [];
 
     async function abrirRegistro() {
-      if (!adminUnlocked) { alert('Acceso solo para administrador.'); return; }
+      if (!adminUnlocked) { customAlert('Acceso solo para administrador.', 'ACCESO DENEGADO', 'danger'); return; }
       if (!overlay) return;
       overlay.classList.add('show');
       document.body.style.overflow = 'hidden';
@@ -1638,6 +1687,9 @@
     }
 
     document.querySelectorAll('.admin-lista__chip').forEach(function (chip) {
+      // Ignorar el botón de cargar firma
+      if (chip.id === 'adminListaCargarFirma') return;
+
       chip.addEventListener('click', function () {
         document.querySelectorAll('.admin-lista__chip').forEach(function (c) { c.classList.remove('active'); });
         chip.classList.add('active');
@@ -1645,6 +1697,19 @@
         renderListaAdmin();
       });
     });
+
+    // ✅ Botón Cargar Firma en el modal
+    var btnCargarFirmaModal = document.getElementById('adminListaCargarFirma');
+    if (btnCargarFirmaModal) {
+      btnCargarFirmaModal.addEventListener('click', function() {
+        var globalBtn = document.getElementById('jcdcFirmaBtn');
+        if (globalBtn) {
+          globalBtn.click();
+        } else {
+          customAlert('El módulo de firma no está cargado en esta página.', 'ERROR', 'danger');
+        }
+      });
+    }
 
         // Clic en una fila → cerrar y verificar ese documento
     if (listaContenido) {
@@ -1673,19 +1738,19 @@
           var doc = todosLosDocs.find(function (x) { return x._id === id; });
 
           if (tipo === 'ver') {
-            if (!doc) { alert('No se encontró el documento.'); return; }
+            if (!doc) { customAlert('No se encontró el documento.', 'ERROR', 'danger'); return; }
             abrirDocPestana(doc, 'view');
           } else if (tipo === 'download') {
-            if (!doc) { alert('No se encontró el documento.'); return; }
+            if (!doc) { customAlert('No se encontró el documento.', 'ERROR', 'danger'); return; }
             descargarDocPDF(doc);
           } else if (tipo === 'print') {
-            if (!doc) { alert('No se encontró el documento.'); return; }
+            if (!doc) { customAlert('No se encontró el documento.', 'ERROR', 'danger'); return; }
             abrirDocPestana(doc, 'print');
           } else if (tipo === 'email') {
-            if (!doc) { alert('No se encontró el documento.'); return; }
+            if (!doc) { customAlert('No se encontró el documento.', 'ERROR', 'danger'); return; }
             solicitarEnviarEmail(doc);
           } else if (tipo === 'targetica') {
-            if (!doc) { alert('No se encontró el documento.'); return; }
+              if (!doc) { customAlert('No se encontró el documento.', 'ERROR', 'danger'); return; }
             imprimirTargeticaDesdeDoc(doc);
           } else if (tipo === 'download-adicional' || tipo === 'ver-adicional' || tipo === 'print-adicional' || tipo === 'email-adicional') {
             var vcPadre = accion.getAttribute('data-vc');
@@ -1694,7 +1759,7 @@
               return (x._id === vcPadre || x.codigoVC === vcPadre);
             });
             if (!parentDoc || !parentDoc.documentosAdicionales) {
-              alert('No se encontró el documento padre.');
+              customAlert('No se encontró el documento padre.', 'ERROR', 'danger');
               return;
             }
             var adic = parentDoc.documentosAdicionales.find(function (a) { return a.tipo === tipoAdic; });
@@ -1713,7 +1778,7 @@
             descargarAdicionalAnidado(parentDoc, adic, modoMap[tipo] || 'view');
             return;
           } else if (tipo === 'del') {
-            if (!doc) { alert('No se encontró el documento.'); return; }
+            if (!doc) { customAlert('No se encontró el documento.', 'ERROR', 'danger'); return; }
             solicitarEliminar(doc, todosLosDocs, renderListaAdmin);
           }
           return;

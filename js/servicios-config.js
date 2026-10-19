@@ -31,11 +31,11 @@ window.SOPORTE_CONFIG = {
   garantiaTramos: [
     { dias: 0,   label: 'Sin garantía', pct: 0    },
     { dias: 15,  label: '15 días',      pct: 0.03 },
-    { dias: 30,  label: '30 días',      pct: 0.06 },
-    { dias: 60,  label: '60 días',      pct: 0.10 },
-    { dias: 90,  label: '90 días',      pct: 0.15 },
-    { dias: 180, label: '6 meses',      pct: 0.22 },
-    { dias: 365, label: '1 año',        pct: 0.35 }
+    { dias: 30,  label: '30 días',      pct: 0.05 }, // 5%
+    { dias: 60,  label: '60 días',      pct: 0.08 }, // 8%
+    { dias: 90,  label: '90 días',      pct: 0.12 }, // 12%
+    { dias: 180, label: '6 meses',      pct: 0.18 }, // 18%
+    { dias: 365, label: '1 año',        pct: 0.28 }  // 28%
   ],
 
   // ============================================

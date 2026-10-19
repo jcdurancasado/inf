@@ -401,7 +401,13 @@ document.documentElement.setAttribute('data-theme', saved || 'dark');
     <div class="admin-lista">
       <div class="admin-lista__head">
         <h3 class="admin-lista__title"><i class="fa-solid fa-list"></i> REGISTRO COMPLETO DE DOCUMENTOS</h3>
-        <button type="button" class="admin-lista__close" id="adminListaCerrar" aria-label="Cerrar">✕</button>
+        <!-- ✅ BOTÓN MOVIDO AQUÍ A LA DERECHA -->
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <button type="button" class="admin-lista__chip" id="adminListaCargarFirma" style="background: rgba(184,41,221,0.1); border-color: var(--neon-purple); color: var(--neon-purple); margin: 0; padding: 8px 16px;">
+            <i class="fa-solid fa-signature"></i> Cargar Firma
+          </button>
+          <button type="button" class="admin-lista__close" id="adminListaCerrar" aria-label="Cerrar">✕</button>
+        </div>
       </div>
 
       <div class="admin-lista__filtros">

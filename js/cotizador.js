@@ -21,7 +21,7 @@ const QuoteWizard = {
   cotizacionUnlocked: false,
 
   // Estado nuevo: garantía y validez para TODOS los servicios
-  garantiaSeleccionada: 30,
+  garantiaSeleccionada: 0,
   diasValidez: 15,
   cantidadTargeticas: 12,
 
@@ -96,15 +96,16 @@ const QuoteWizard = {
     this.cotizacionUnlocked = false;
     this._tipoAcceso = null;
     this._expiraEn = null;
+    this._loggedInHere = false;
 
     // ✅ SIN listener automático — aislamiento por sessionStorage
-    // (se borra al cerrar la pestaña, no comparte entre páginas)
     const selfInit = this;
     let cotizadorAdminLocal = false;
     try { cotizadorAdminLocal = sessionStorage.getItem('jcdc_admin_cotizador') === '1'; } catch (e) {}
     if (cotizadorAdminLocal) {
       this.facturaUnlocked = true;
       this._tipoAcceso = 'admin';
+      this._loggedInHere = true;
       setTimeout(function () { selfInit._activarModoAdmin(); }, 200);
     }
 
@@ -152,6 +153,9 @@ const QuoteWizard = {
     if (dlBtn) dlBtn.addEventListener('click', function () { self.downloadPDF(); });
     if (emBtn) emBtn.addEventListener('click', function () { self.sendEmail(); });
 
+    const signedBtn = document.getElementById('quoteRequestSigned');
+    if (signedBtn) signedBtn.addEventListener('click', function () { self.requestSigned(); });
+
     this.renderStepIndicator();
     this.updateNextBtn();
   },
@@ -160,7 +164,6 @@ const QuoteWizard = {
   // RENDER · Servicios del Paso 1 (13 por categoría)
   // ============================================
   renderServicesHost() {
-    // Contenedor de servicios (con fallback al viejo)
     let host = (this.els && this.els.servicesHost) || document.querySelector('.quote-options--services');
     if (host && !this.els.servicesHost) {
       this.els.servicesHost = host;
@@ -171,19 +174,13 @@ const QuoteWizard = {
       return;
     }
 
-    // Vaciar cualquier servicio hardcoded del HTML viejo
     host.innerHTML = '';
-
-    // Contenedor de filtros (chips)
     const filtersHost = document.getElementById('quoteServicesFilters');
 
     const self = this;
     const cats = this.categories;
     const svcs = this.services;
 
-    // ============================================
-    // 1. FILTROS TIPO CHIPS
-    // ============================================
     if (filtersHost) {
       let chipsHtml = '';
       chipsHtml += '<button type="button" class="quote-services-filters__chip active" data-filter="all">';
@@ -196,7 +193,6 @@ const QuoteWizard = {
       });
       filtersHost.innerHTML = chipsHtml;
 
-      // Handler de filtrado
       filtersHost.querySelectorAll('.quote-services-filters__chip').forEach(function (chip) {
         chip.addEventListener('click', function () {
           filtersHost.querySelectorAll('.quote-services-filters__chip').forEach(function (c) {
@@ -214,9 +210,6 @@ const QuoteWizard = {
       });
     }
 
-    // ============================================
-    // 2. SERVICIOS (sin etiquetas de categoría)
-    // ============================================
     let html = '';
     Object.keys(cats).forEach(function (catId) {
       Object.keys(svcs).forEach(function (id) {
@@ -233,17 +226,10 @@ const QuoteWizard = {
 
     host.innerHTML = html;
 
-    // ============================================
-    // 3. HANDLERS DE SELECCIÓN
-    // ============================================
     host.querySelectorAll('[data-service]').forEach(function (opt) {
       opt.addEventListener('click', async function () {
         const servicioId = opt.dataset.service;
-
-        if (!self.cotizacionUnlocked && !self.facturaUnlocked) {
-          const ok = await self.pedirCodigoOTP();
-          if (!ok) return;
-        }
+        self.cotizacionUnlocked = true;
 
         host.querySelectorAll('[data-service]').forEach(function (o) { o.classList.remove('checked'); });
         opt.classList.add('checked');
@@ -257,9 +243,6 @@ const QuoteWizard = {
     });
   },
 
-  // ============================================
-  // FILTRO · Extras no aplicables al servicio
-  // ============================================
   _aplicarFiltrosExtras(serviceId) {
     if (!this.extrasDef) return;
     document.querySelectorAll('[data-extra]').forEach(function (opt) {
@@ -281,9 +264,6 @@ const QuoteWizard = {
     });
   },
 
-  // ============================================
-  // SEGURIDAD · Hash y contraseña
-  // ============================================
   async sha256Hex(str) {
     const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
     return [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2, '0')).join('');
@@ -298,9 +278,6 @@ const QuoteWizard = {
     return input === (sec.facturaPassword || '');
   },
 
-  // ============================================
-  // Estilos del modal (auto-contenido)
-  // ============================================
   _inyectarEstilosModal() {
     if (document.getElementById('jcdc-pwd-modal-styles')) return;
     const style = document.createElement('style');
@@ -528,11 +505,7 @@ const QuoteWizard = {
     document.head.appendChild(style);
   },
 
-  // ============================================
-  // FACTURA · Login admin (Firebase Auth)
-  // ============================================
   async pedirPasswordFactura() {
-    // Solo reusar sesión si el login fue hecho EN ESTA página
     if (window.auth && window.auth.currentUser && this._loggedInHere) {
       this.facturaUnlocked = true;
       this._activarModoAdmin();
@@ -603,6 +576,7 @@ const QuoteWizard = {
         try {
           await window.auth.signInWithEmailAndPassword(email, pass);
           try { sessionStorage.setItem('jcdc_admin_cotizador', '1'); } catch (e) {}
+          self._loggedInHere = true;
           self.facturaUnlocked = true;
           self._tipoAcceso = 'admin';
           if (typeof Toast !== 'undefined') Toast.show('Acceso concedido', 'success', 1800);
@@ -640,9 +614,6 @@ const QuoteWizard = {
     });
   },
 
-  // ============================================
-  // OTP · Código temporal para COTIZACIÓN
-  // ============================================
   async pedirCodigoOTP() {
     if (this.cotizacionUnlocked) return true;
 
@@ -739,7 +710,6 @@ const QuoteWizard = {
         error.textContent = '';
         error.style.color = '#ff3333';
 
-        // Hora en RD
         var horaRD = parseInt(
           new Intl.DateTimeFormat('en-US', {
             timeZone: 'America/Santo_Domingo',
@@ -806,7 +776,6 @@ const QuoteWizard = {
 
         try {
           if (!esOTP) {
-            // Clave admin
             const r = await fetch(apiBase + '/api/validar-admin-key', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -815,6 +784,7 @@ const QuoteWizard = {
             const d = await r.json();
             if (d.ok && d.admin) {
               try { sessionStorage.setItem('jcdc_admin_cotizador', '1'); } catch (e) {}
+              self._loggedInHere = true;
               self.cotizacionUnlocked = true;
               self.facturaUnlocked = true;
               self._tipoAcceso = 'admin';
@@ -833,7 +803,6 @@ const QuoteWizard = {
               setTimeout(function () { input.classList.remove('pwd-shake'); }, 400);
             }
           } else {
-            // OTP
             const r = await fetch(apiBase + '/api/validar-codigo', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -895,9 +864,6 @@ const QuoteWizard = {
     });
   },
 
-  // ============================================
-  // CONFIRMACIÓN personalizada
-  // ============================================
   _confirmar(mensaje, opciones) {
     opciones = opciones || {};
     const titulo = opciones.titulo || '¿Confirmar acción?';
@@ -941,9 +907,6 @@ const QuoteWizard = {
     });
   },
 
-  // ============================================
-  // BADGES de estado
-  // ============================================
   _mostrarBadgeAdmin() {
     const self = this;
     const previo = document.getElementById('jcdcStatusBadge');
@@ -1035,9 +998,6 @@ const QuoteWizard = {
     if (typeof Toast !== 'undefined') Toast.show('Acceso temporal finalizado', 'info', 2500);
   },
 
-  // ============================================
-  // ADMIN SESSION
-  // ============================================
   _activarModoAdmin() {
     const self = this;
 
@@ -1048,17 +1008,13 @@ const QuoteWizard = {
       if (el.parentNode) el.parentNode.removeChild(el);
     });
 
-    // Actualizar badge FACTURA (solo si existe el bloque)
     this._actualizarBadgeFactura(true);
 
-    // Mostrar bloque de validez si existe
     const validezWrap = document.getElementById('repValidezWrap');
     if (validezWrap) validezWrap.style.display = 'block';
 
-    // ✅ MOSTRAR el badge flotante "MODO ADMIN" para todos los servicios
     this._mostrarBadgeAdmin();
 
-    // Recalcular el bloque de documentos en Paso 4 (por si estaba oculto)
     if (this.currentStep === 4) {
       this._actualizarBloqueDocumentos();
       this._actualizarBloqueTargetica(this.service === 'reparacion');
@@ -1096,7 +1052,7 @@ const QuoteWizard = {
     this.values = {};
     this.extras = {};
     this.reparacion = null;
-    this.garantiaSeleccionada = 30;
+    this.garantiaSeleccionada = 0;
     this.diasValidez = (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.documentos && window.SOPORTE_CONFIG.documentos.cotizacionValidezDias) || 15;
     this.documento = {
       tipoDoc: 'cotizacion',
@@ -1109,6 +1065,7 @@ const QuoteWizard = {
       timestamp: 0
     };
     this.accesorios = {};
+    this.accesoriosVariantes = {};
     this.accesoriosCatActiva = 'all';
 
     document.querySelectorAll('[data-service]').forEach(function (o) {
@@ -1134,6 +1091,7 @@ const QuoteWizard = {
     if (this._adminTimeout) clearTimeout(this._adminTimeout);
     if (this._timerBadge) { clearInterval(this._timerBadge); this._timerBadge = null; }
     try { sessionStorage.removeItem('jcdc_admin_cotizador'); } catch (e) {}
+    this._loggedInHere = false;
     if (window.auth) {
       window.auth.signOut().catch(function (e) { console.warn(e); });
     }
@@ -1160,9 +1118,6 @@ const QuoteWizard = {
     if (typeof Toast !== 'undefined') Toast.show('Sesión cerrada', 'info', 1800);
   },
 
-  // ============================================
-  // BADGE FACTURA (refactor sin cloneNode)
-  // ============================================
   _actualizarBadgeFactura(esAdmin) {
     const btnFactura = document.querySelector('.rep-doc-btn[data-tipodoc="factura"]');
     if (!btnFactura) return;
@@ -1213,9 +1168,6 @@ const QuoteWizard = {
     }
   },
 
-  // ============================================
-  // HELPERS
-  // ============================================
   loadDefaults() {
     this.values = {};
     const cfg = this.services[this.service];
@@ -1251,7 +1203,6 @@ const QuoteWizard = {
       this.els.next.classList.remove('hidden');
     }
 
-    // Cambiar texto del botón según el paso
     const labelSpan = this.els.next.querySelector('span');
     if (labelSpan) {
       if (this.currentStep === 3) {
@@ -1279,10 +1230,17 @@ const QuoteWizard = {
       }
     }
 
-    // Al salir del paso 3 → confirmación + generación
+    // ✅ OBLIGAR A SELECCIONAR EQUIPO EN REPARACIÓN
+    if (this.currentStep === 2 && this.service === 'reparacion') {
+      if (!this.reparacion || !this.reparacion.equipo) {
+        if (typeof Toast !== 'undefined') Toast.show('Debes seleccionar un tipo de equipo antes de avanzar', 'warning', 2500);
+        return;
+      }
+    }
+
     if (this.currentStep === 3) {
       const confirmado = await this._confirmarGeneracion();
-      if (!confirmado) return;   // Se queda en el paso 3
+      if (!confirmado) return;
       await this._generarTodo();
     }
 
@@ -1308,15 +1266,15 @@ const QuoteWizard = {
     window.scrollTo({ top: top, behavior: 'smooth' });
   },
 
-  // ============================================
-  // RENDER · Campos normales + Garantía + Validez
-  // ============================================
   renderFields() {
     const cfg = this.services[this.service];
     if (!cfg) return;
     this.els.scopeTitle.textContent = 'Alcance · ' + cfg.label;
 
     let html = '';
+
+    html += this._renderDocTypeBlock();
+
     cfg.fields.forEach(function (f) {
       const val = this.values[f.id];
       html += '<div class="quote-field" data-field="' + f.id + '">';
@@ -1333,19 +1291,9 @@ const QuoteWizard = {
       html += '</div>';
     }.bind(this));
 
-    // Tipo de documento (Cotización | Factura)
-    html += this._renderDocTypeBlock();
-
-    // Datos del cliente
     html += this._renderClienteBlock();
-
-    // Bloque de Garantía (todos los servicios)
     html += this._renderGarantiaBlock();
-
-    // Bloque de Validez (solo admin)
     html += this._renderValidezBlock();
-
-    // Observaciones
     html += this._renderObservacionesBlock();
 
     this.els.fields.innerHTML = html;
@@ -1360,7 +1308,6 @@ const QuoteWizard = {
       });
     });
 
-    // Botones +/− de ajuste fino (siempre de 1 en 1)
     this.els.fields.querySelectorAll('[data-step-btn]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         const id = btn.dataset.stepBtn;
@@ -1384,15 +1331,10 @@ const QuoteWizard = {
     this._attachValidezHandlers();
   },
 
-  // ============================================
-  // Helper · Generar número único (COT-YYYYMMDD-NNN / FAC-YYYYMMDD-NNN)
-  // Cachea el número en this.documento — NO se regenera en cada llamada
-  // ============================================
   _generarNumeroDocumento() {
     const doc = this.documento;
     const prefijo = (doc.tipoDoc === 'factura') ? 'FAC' : 'COT';
 
-    // Si ya hay un número con el prefijo correcto, reutilizarlo
     if (doc.numero && doc.numero.indexOf(prefijo + '-') === 0) {
       return doc.numero;
     }
@@ -1418,9 +1360,6 @@ const QuoteWizard = {
     return doc.numero;
   },
 
-  // ============================================
-  // HTML · Bloque Tipo de Documento
-  // ============================================
   _renderDocTypeBlock() {
     const self = this;
     const doc = this.documento;
@@ -1460,10 +1399,7 @@ const QuoteWizard = {
         btn.addEventListener('click', async function () {
           const tipo = btn.dataset.tipodoc;
           if (tipo === 'cotizacion') {
-            if (!self.cotizacionUnlocked) {
-              const ok = await self.pedirCodigoOTP();
-              if (!ok) return;
-            }
+            self.cotizacionUnlocked = true;
           }
           if (tipo === 'factura') {
             if (self._tipoAcceso === 'admin' || self.facturaUnlocked) {
@@ -1471,9 +1407,6 @@ const QuoteWizard = {
             } else if (self._tipoAcceso === 'client') {
               if (typeof Toast !== 'undefined') Toast.show('Factura solo para administrador', 'info', 2500);
               return;
-            } else if (window.auth && window.auth.currentUser) {
-              self.facturaUnlocked = true;
-              self._tipoAcceso = 'admin';
             } else {
               const ok = await self.pedirPasswordFactura();
               if (!ok) return;
@@ -1515,9 +1448,6 @@ const QuoteWizard = {
     return html;
   },
 
-  // ============================================
-  // HTML · Bloque Datos del Cliente
-  // ============================================
   _renderClienteBlock() {
     const cli = this.documento.cliente;
     let html = '<div class="rep-block">';
@@ -1549,9 +1479,6 @@ const QuoteWizard = {
     return html;
   },
 
-  // ============================================
-  // HTML · Bloque Observaciones
-  // ============================================
   _renderObservacionesBlock() {
     const self = this;
     let html = '<div class="rep-block">';
@@ -1565,9 +1492,6 @@ const QuoteWizard = {
     return html;
   },
 
-  // ============================================
-  // HTML · Bloque de Garantía (reutilizable)
-  // ============================================
   _renderGarantiaBlock() {
     const tramos = this.garantiaTramos;
     let html = '';
@@ -1588,9 +1512,6 @@ const QuoteWizard = {
     return html;
   },
 
-  // ============================================
-  // HTML · Bloque de Validez (solo admin)
-  // ============================================
   _renderValidezBlock() {
     const cfg = window.SOPORTE_CONFIG || {};
     const opts = (cfg.documentos && cfg.documentos.cotizacionValidezOpciones) || [15, 30, 45, 60];
@@ -1618,6 +1539,10 @@ const QuoteWizard = {
         btn.classList.add('active');
         self.garantiaSeleccionada = parseInt(btn.dataset.garantia, 10);
         if (self.reparacion) self.reparacion.garantia = self.garantiaSeleccionada;
+
+        // ✅ ACTUALIZAR EL TOTAL VISUAL EN TIEMPO REAL
+        if (self.service === 'reparacion') self.updateRepTotal();
+        if (self.service === 'accesorios') self._updateAccTotal();
       });
     });
   },
@@ -1658,6 +1583,9 @@ const QuoteWizard = {
 
     let html = '';
 
+    // ✅ TIPO DE DOCUMENTO PRIMERO
+    html += this._renderDocTypeBlock();
+
     html += '<div class="rep-block">';
     html += '  <h4 class="rep-block__title"><i class="fa-solid fa-plug"></i> Productos disponibles</h4>';
     html += '  <p class="rep-block__hint">Elige el tamaño/variante con el desplegable y ajusta la cantidad con + / −. Solo se suman los que tengan cantidad mayor a 0.</p>';
@@ -1670,12 +1598,11 @@ const QuoteWizard = {
     });
     html += '</div>';
 
-    // Inicializar variantes seleccionadas
     self.accesoriosVariantes = self.accesoriosVariantes || {};
     cfg.catalogoAccesorios.forEach(function (cat) {
       cat.families.forEach(function (fam) {
-        if (!self.accesoriosVariantes[fam.id]) {
-          self.accesoriosVariantes[fam.id] = fam.variants[0].id;
+        if (self.accesoriosVariantes[fam.id] === undefined) {
+          self.accesoriosVariantes[fam.id] = '';
         }
       });
     });
@@ -1684,40 +1611,38 @@ const QuoteWizard = {
     cfg.catalogoAccesorios.forEach(function (cat) {
       cat.families.forEach(function (fam) {
         const selId = self.accesoriosVariantes[fam.id];
-        const sel = fam.variants.find(function (v) { return v.id === selId; }) || fam.variants[0];
-        const qty = parseInt(self.accesorios[sel.id], 10) || 0;
+        const sel = selId ? fam.variants.find(function (v) { return v.id === selId; }) : null;
+        const qty = sel ? (parseInt(self.accesorios[sel.id], 10) || 0) : 0;
 
         html += '<div class="acc-item' + (qty > 0 ? ' acc-item--on' : '') + '" data-cat="' + cat.cat + '" data-family="' + fam.id + '">';
         html += '  <div class="acc-item__head">';
         html += '    <span class="acc-item__name">' + fam.label + '</span>';
         html += '    <div class="acc-item__meta">';
-        html += '      <span class="acc-item__price" data-acc-price="' + fam.id + '">RD$' + sel.precio.toLocaleString('es-DO') + '</span>';
+        html += '      <span class="acc-item__price" data-acc-price="' + fam.id + '">' + (sel ? 'RD$' + sel.precio.toLocaleString('es-DO') : 'RD$0') + '</span>';
         html += '      <span class="acc-qty" data-acc-qty="' + fam.id + '">' + qty + '</span>';
         html += '    </div>';
         html += '  </div>';
         html += '  <div class="acc-item__row">';
-        html += '    <button type="button" class="acc-btn" data-acc-minus="' + fam.id + '">−</button>';
+        html += '    <button type="button" class="acc-btn" data-acc-minus="' + fam.id + '"' + (sel && qty > 0 ? '' : ' disabled') + '>−</button>';
         html += '    <select class="acc-variant" data-acc-variant="' + fam.id + '">';
+        html += '      <option value=""' + (!sel ? ' selected' : '') + '>— Seleccionar —</option>';
         fam.variants.forEach(function (v) {
-          const isSel = (v.id === sel.id) ? ' selected' : '';
+          const isSel = (sel && v.id === sel.id) ? ' selected' : '';
           html += '<option value="' + v.id + '" data-precio="' + v.precio + '"' + isSel + '>' + v.label + ' — RD$' + v.precio.toLocaleString('es-DO') + '</option>';
         });
         html += '    </select>';
-        html += '    <button type="button" class="acc-btn" data-acc-plus="' + fam.id + '">+</button>';
+        html += '    <button type="button" class="acc-btn" data-acc-plus="' + fam.id + '"' + (sel ? '' : ' disabled') + '>+</button>';
         html += '  </div>';
         html += '</div>';
       });
     });
     html += '</div>';
 
-    // Cliente / Tipo doc / Garantía / Validez / Obs
     html += this._renderClienteBlock();
-    html += this._renderDocTypeBlock();
     html += this._renderGarantiaBlock();
     html += this._renderValidezBlock();
     html += this._renderObservacionesBlock();
 
-    // Total en vivo
     html += '<div class="rep-total" id="accTotal">';
     html += '  <span class="rep-total__label">TOTAL ESTIMADO:</span>';
     html += '  <span class="rep-total__value" id="accTotalValue">RD$0</span>';
@@ -1725,7 +1650,6 @@ const QuoteWizard = {
 
     this.els.fields.innerHTML = html;
 
-    // Filtros de categoría
     if (catActiva !== 'all') {
       document.querySelectorAll('.acc-item').forEach(function (el) {
         if (el.dataset.cat !== catActiva) el.style.display = 'none';
@@ -1744,35 +1668,56 @@ const QuoteWizard = {
       });
     });
 
-    // Helper para refrescar visual
     function refreshFamily(famId) {
       const item = document.querySelector('.acc-item[data-family="' + famId + '"]');
       if (!item) return;
       const selId = self.accesoriosVariantes[famId];
-      const qty = parseInt(self.accesorios[selId], 10) || 0;
+      let qty = 0;
+      if (selId) qty = parseInt(self.accesorios[selId], 10) || 0;
+
       const qtyEl = item.querySelector('[data-acc-qty]');
       if (qtyEl) qtyEl.textContent = qty;
+
+      const plusBtn = item.querySelector('[data-acc-plus]');
+      if (plusBtn) plusBtn.disabled = !selId;
+
+      const minusBtn = item.querySelector('[data-acc-minus]');
+      if (minusBtn) minusBtn.disabled = !selId || qty <= 0;
+
       item.classList.toggle('acc-item--on', qty > 0);
       self._updateAccTotal();
     }
 
-    // Cambio de variante
     document.querySelectorAll('[data-acc-variant]').forEach(function (sel) {
       sel.addEventListener('change', function () {
         const famId = sel.dataset.accVariant;
         const opt = sel.options[sel.selectedIndex];
-        self.accesoriosVariantes[famId] = opt.value;
+        const prevVal = self.accesoriosVariantes[famId];
+        
+        self.accesoriosVariantes[famId] = opt.value || '';
+        
         const precioEl = document.querySelector('[data-acc-price="' + famId + '"]');
-        if (precioEl) precioEl.textContent = 'RD$' + parseInt(opt.dataset.precio, 10).toLocaleString('es-DO');
+        if (precioEl) {
+          precioEl.textContent = opt.value ? 'RD$' + parseInt(opt.dataset.precio, 10).toLocaleString('es-DO') : 'RD$0';
+        }
+
+        // ✅ AUTO-INCREMENTAR AL SELECCIONAR
+        if (opt.value) {
+          const qty = parseInt(self.accesorios[opt.value], 10) || 0;
+          if (qty === 0) self.accesorios[opt.value] = 1;
+        } else {
+          if (prevVal) delete self.accesorios[prevVal];
+        }
+
         refreshFamily(famId);
       });
     });
 
-    // Botones + / −
     document.querySelectorAll('[data-acc-plus]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         const famId = btn.dataset.accPlus;
         const selId = self.accesoriosVariantes[famId];
+        if (!selId) return;
         self.accesorios[selId] = (parseInt(self.accesorios[selId], 10) || 0) + 1;
         refreshFamily(famId);
       });
@@ -1782,6 +1727,7 @@ const QuoteWizard = {
       btn.addEventListener('click', function () {
         const famId = btn.dataset.accMinus;
         const selId = self.accesoriosVariantes[famId];
+        if (!selId) return;
         const cur = parseInt(self.accesorios[selId], 10) || 0;
         if (cur <= 1) {
           delete self.accesorios[selId];
@@ -1804,7 +1750,6 @@ const QuoteWizard = {
     this._updateAccTotal();
   },
 
-  // Encuentra una familia por ID en el catálogo
   _findFamilyById(famId) {
     const cfg = window.SOPORTE_CONFIG;
     if (!cfg || !cfg.catalogoAccesorios) return null;
@@ -1817,37 +1762,36 @@ const QuoteWizard = {
     return found;
   },
 
-  // Devuelve la variante seleccionada actual (o null)
-  _getSelectedVariant(famId) {
-    const fam = this._findFamilyById(famId);
-    if (!fam) return null;
-    const selId = (this.accesoriosVariantes || {})[famId];
-    if (!selId) return null;
-    return fam.variants.find(function (v) { return v.id === selId; }) || null;
-  },
-
-  // Actualiza el total en vivo de accesorios
   _updateAccTotal() {
-    const total = this._calcularAccesoriosTotal();
-    const el = document.getElementById('accTotalValue');
-    if (el) el.textContent = 'RD$' + total.toLocaleString('es-DO');
-  },
-
-  // Suma productos seleccionados × precio
-  _calcularAccesoriosTotal() {
-    const cfg = window.SOPORTE_CONFIG;
-    if (!cfg || !cfg.catalogoAccesorios) return 0;
-    let total = 0;
     const self = this;
+    const cfg = window.SOPORTE_CONFIG;
+    if (!cfg || !cfg.catalogoAccesorios) return;
+    
+    const preciosMap = {};
     cfg.catalogoAccesorios.forEach(function (cat) {
       cat.families.forEach(function (fam) {
         fam.variants.forEach(function (v) {
-          const qty = parseInt(self.accesorios[v.id], 10) || 0;
-          if (qty > 0) total += qty * v.precio;
+          preciosMap[v.id] = Number(v.precio) || 0;
         });
       });
     });
-    return total;
+
+    let baseTotal = 0;
+    const acc = self.accesorios || {};
+    Object.keys(acc).forEach(function (id) {
+      const qty = parseInt(acc[id], 10) || 0;
+      if (qty > 0) baseTotal += qty * (preciosMap[id] || 0);
+    });
+
+    const tramo = self.garantiaTramos.find(function(t) { return t.dias === self.garantiaSeleccionada; });
+    let garantiaAmount = 0;
+    if (tramo && tramo.pct > 0) {
+      garantiaAmount = Math.round(baseTotal * tramo.pct);
+    }
+
+    const total = baseTotal + garantiaAmount;
+    const el = document.getElementById('accTotalValue');
+    if (el) el.textContent = 'RD$' + total.toLocaleString('es-DO');
   },
 
   // ============================================
@@ -1874,7 +1818,7 @@ const QuoteWizard = {
       counters[hoy] = contador;
       localStorage.setItem('jcdc_doc_counter', JSON.stringify(counters));
     } catch (e) {
-      contador = Math.floor(Math.random() * 900 + 100);
+      contador = Math.floor(Math.random() * 900) + 100;
     }
     const numDoc = 'COT-' + hoy + '-' + String(contador).padStart(3, '0');
     const diasValidez = this.diasValidez || ((cfg.documentos && cfg.documentos.cotizacionValidezDias) || 15);
@@ -1970,7 +1914,7 @@ const QuoteWizard = {
     html += '<div class="rep-block">';
     html += '  <h4 class="rep-block__title"><i class="fa-solid fa-screwdriver-wrench"></i> Trabajos realizados</h4>';
     html += '  <p class="rep-block__hint">Marca todo lo que se hizo o se va a hacer. Precios preestablecidos.</p>';
-    html += '  <div class="rep-problems" id="repProblems">';
+    html += '  <div class="rep-problems" id="repProblems" style="display:none;">';
     cfg.problemas.forEach(function (p) {
       html += '<label class="rep-problem" data-cat="' + p.cat + '" data-problema="' + p.id + '">';
       html += '  <input type="checkbox" value="' + p.id + '" data-precio="' + p.precio + '">';
@@ -1981,10 +1925,7 @@ const QuoteWizard = {
     html += '  </div>';
     html += '</div>';
 
-    // Garantía (con %)
     html += this._renderGarantiaBlock();
-
-    // Validez (solo admin)
     html += this._renderValidezBlock();
 
     // Observaciones
@@ -1993,7 +1934,6 @@ const QuoteWizard = {
     html += '  <textarea id="repDesc" class="tool-input" rows="3" placeholder="Ej: Impresora Epson L3250 regaba tinta, se desarmó, lavó y armó completa..."></textarea>';
     html += '</div>';
 
-    // Total en vivo
     html += '<div class="rep-total" id="repTotal">';
     html += '  <span class="rep-total__label">TOTAL ESTIMADO:</span>';
     html += '  <span class="rep-total__value" id="repTotalValue">RD$0</span>';
@@ -2001,14 +1941,12 @@ const QuoteWizard = {
 
     this.els.fields.innerHTML = html;
 
-    // Si ya está admin
     if (self.facturaUnlocked || self._tipoAcceso === 'admin') {
       self._actualizarBadgeFactura(true);
       const vw = document.getElementById('repValidezWrap');
       if (vw) vw.style.display = 'block';
     }
 
-    // Eventos tipo doc
     document.querySelectorAll('.rep-doc-btn').forEach(function (btn) {
       btn.addEventListener('click', async function () {
         const tipo = btn.dataset.tipodoc;
@@ -2026,9 +1964,6 @@ const QuoteWizard = {
           } else if (self._tipoAcceso === 'client') {
             if (typeof Toast !== 'undefined') Toast.show('Factura solo disponible para administrador', 'info', 2500);
             return;
-          } else if (window.auth && window.auth.currentUser) {
-            self.facturaUnlocked = true;
-            self._tipoAcceso = 'admin';
           } else {
             const ok = await self.pedirPasswordFactura();
             if (!ok) return;
@@ -2039,12 +1974,10 @@ const QuoteWizard = {
         document.querySelectorAll('.rep-doc-btn').forEach(function (b) { b.classList.remove('active'); });
         btn.classList.add('active');
 
-        // Regenerar número según tipo de documento
         if (self.reparacion.tipoDoc !== tipo) {
           const prefijoActual = (self.reparacion.numero || '').slice(0, 3);
           const prefijoNuevo = (tipo === 'factura') ? 'FAC' : 'COT';
           if (prefijoActual !== prefijoNuevo) {
-            // Cambiar el prefijo conservando la parte de fecha y contador
             const partes = (self.reparacion.numero || '').split('-');
             if (partes.length >= 2) {
               self.reparacion.numero = prefijoNuevo + '-' + partes.slice(1).join('-');
@@ -2064,7 +1997,6 @@ const QuoteWizard = {
         const estadoWrap = document.getElementById('repEstadoWrap');
         if (estadoWrap) estadoWrap.style.display = (tipo === 'factura') ? 'block' : 'none';
 
-        // Validez visible solo en cotización y admin
         const validezWrap = document.getElementById('repValidezWrap');
         if (validezWrap) {
           const esAdmin = (self._tipoAcceso === 'admin' || self.facturaUnlocked);
@@ -2073,7 +2005,6 @@ const QuoteWizard = {
       });
     });
 
-    // Estado pagada/no pagada
     document.querySelectorAll('.rep-estado-btn').forEach(function (btn) {
       btn.addEventListener('click', function () {
         document.querySelectorAll('.rep-estado-btn').forEach(function (b) { b.classList.remove('active'); });
@@ -2082,7 +2013,6 @@ const QuoteWizard = {
       });
     });
 
-    // Cliente
     const clientFieldMap = {
       Cliente:   'nombre',
       Cedula:    'cedula',
@@ -2098,7 +2028,6 @@ const QuoteWizard = {
       });
     });
 
-    // Equipo
     document.querySelectorAll('.rep-pill[data-equipo]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         document.querySelectorAll('.rep-pill').forEach(function (b) { b.classList.remove('active'); });
@@ -2106,6 +2035,10 @@ const QuoteWizard = {
         self.reparacion.equipo = btn.dataset.equipo;
         self.loadMarcasByEquipo(btn.dataset.equipo);
         self.filterProblemsByEquipo(btn.dataset.equipo);
+        
+        const problemsContainer = document.getElementById('repProblems');
+        if (problemsContainer) problemsContainer.style.display = 'grid';
+
         self.updateRepTotal();
       });
     });
@@ -2130,11 +2063,9 @@ const QuoteWizard = {
     const descEl = document.getElementById('repDesc');
     if (descEl) descEl.addEventListener('input', function (e) { self.reparacion.descripcion = e.target.value; });
 
-    // Attach garantía + validez
     this._attachGarantiaHandlers();
     this._attachValidezHandlers();
 
-    // Si admin activo, reaplicar
     if (self.facturaUnlocked && window.auth && window.auth.currentUser) {
       self._activarModoAdmin();
     }
@@ -2172,20 +2103,35 @@ const QuoteWizard = {
   },
 
   updateRepTotal() {
-    let total = 0;
-    document.querySelectorAll('.rep-problem input:checked').forEach(function (input) {
+    const self = this;
+    let baseTotal = 0;
+    // ✅ Buscar todos los checkboxes seleccionados
+    const checkboxes = document.querySelectorAll('.rep-problem input[type="checkbox"]:checked');
+    
+    checkboxes.forEach(function (input) {
       const lbl = input.closest('.rep-problem');
+      // Si el elemento está oculto por el filtro de equipo, no sumarlo
       if (lbl && lbl.style.display === 'none') return;
-      total += parseInt(input.dataset.precio, 10) || 0;
+      
+      const precio = parseInt(input.getAttribute('data-precio'), 10);
+      if (!isNaN(precio)) {
+        baseTotal += precio;
+      }
     });
+
+    // ✅ Calcular porcentaje de garantía
+    const tramo = self.garantiaTramos.find(function(t) { return parseInt(t.dias) === parseInt(self.garantiaSeleccionada); });
+    let garantiaAmount = 0;
+    if (tramo && tramo.pct > 0) {
+      garantiaAmount = Math.round(baseTotal * tramo.pct);
+    }
+
+    const total = baseTotal + garantiaAmount;
     const el = document.getElementById('repTotalValue');
     if (el) el.textContent = 'RD$' + total.toLocaleString('es-DO');
     return total;
   },
 
-  // ============================================
-  // TARGETICA
-  // ============================================
   imprimirTargetica() {
     if (typeof window.JCDC_Targetica === 'undefined' || typeof window.JCDC_Targetica.print !== 'function') {
       if (typeof Toast !== 'undefined') Toast.show('Módulo targetica.js no cargado', 'error', 2500);
@@ -2213,9 +2159,6 @@ const QuoteWizard = {
     });
   },
 
-  // ============================================
-  // CÓDIGO DE VERIFICACIÓN
-  // ============================================
   generarCodigoVerificacion(numDoc, fecha, contenido) {
     const sec = (window.SOPORTE_CONFIG.security && window.SOPORTE_CONFIG.security.docSecret) || 'jcdc';
     const data = numDoc + '|' + fecha + '|' + contenido + '|' + sec;
@@ -2227,9 +2170,6 @@ const QuoteWizard = {
     return 'VC-' + hex.slice(0, 4) + '-' + hex.slice(4, 8);
   },
 
-  // ============================================
-  // CÁLCULOS (con garantía)
-  // ============================================
   calculate() {
     const self = this;
 
@@ -2256,7 +2196,6 @@ const QuoteWizard = {
         });
       });
 
-      // Extras (aplican igual)
       let extrasTotal = 0;
       let urgentPct = 0;
       Object.keys(this.extrasDef).forEach(function (key) {
@@ -2272,7 +2211,6 @@ const QuoteWizard = {
       });
       total += extrasTotal;
 
-      // Garantía
       const tramo = self.garantiaTramos.find(function (t) { return t.dias === self.garantiaSeleccionada; });
       if (tramo && tramo.pct > 0) {
         const gAmount = Math.round(total * tramo.pct);
@@ -2280,7 +2218,6 @@ const QuoteWizard = {
         total += gAmount;
       }
 
-      // Urgente
       if (urgentPct > 0) {
         const urgAmount = Math.round(total * urgentPct);
         lines.push({ label: 'Entrega urgente', sub: '+' + (urgentPct * 100) + '%', value: urgAmount });
@@ -2296,7 +2233,6 @@ const QuoteWizard = {
       const lines = calc.lines;
       let total = calc.total;
 
-      // Extras
       let extrasTotal = 0;
       let urgentPct = 0;
       Object.keys(this.extrasDef).forEach(function (key) {
@@ -2312,7 +2248,6 @@ const QuoteWizard = {
       });
       total += extrasTotal;
 
-      // Garantía (todos los servicios)
       const tramo = self.garantiaTramos.find(function (t) { return t.dias === self.garantiaSeleccionada; });
       if (tramo && tramo.pct > 0) {
         const gAmount = Math.round(total * tramo.pct);
@@ -2320,7 +2255,6 @@ const QuoteWizard = {
         total += gAmount;
       }
 
-      // Urgente
       if (urgentPct > 0) {
         const urgAmount = Math.round(total * urgentPct);
         lines.push({ label: 'Entrega urgente', sub: '+' + (urgentPct * 100) + '%', value: urgAmount });
@@ -2344,7 +2278,6 @@ const QuoteWizard = {
       lines.push({ label: f.label, sub: qty + ' × $' + f.unit, value: cost });
     });
 
-    // Extras
     let extrasTotal = 0;
     let urgentPct = 0;
     Object.keys(this.extrasDef).forEach(function (key) {
@@ -2360,7 +2293,6 @@ const QuoteWizard = {
 
     let total = subtotal + extrasTotal;
 
-    // Garantía
     const tramo = this.garantiaTramos.find(function (t) { return t.dias === self.garantiaSeleccionada; });
     if (tramo && tramo.pct > 0) {
       const gAmount = Math.round(total * tramo.pct);
@@ -2368,7 +2300,6 @@ const QuoteWizard = {
       total += gAmount;
     }
 
-    // Urgente
     if (urgentPct > 0) {
       const urgAmount = Math.round(total * urgentPct);
       lines.push({ label: 'Entrega urgente', sub: '+' + (urgentPct * 100) + '%', value: urgAmount });
@@ -2402,9 +2333,6 @@ const QuoteWizard = {
     return { lines: lines, total: total };
   },
 
-  // ============================================
-  // Helper · Encabezado cliente reutilizable
-  // ============================================
   _buildClienteHeaderHTML(esFactura, numero, cliente, fechaEmision, fechaVencimiento, diasValidez, equipo, marca, modelo) {
     let html = '';
     html += '<div class="quote-summary__client' + (esFactura ? ' quote-summary__client--factura' : '') + '">';
@@ -2430,9 +2358,6 @@ const QuoteWizard = {
     return html;
   },
 
-  // ============================================
-  // RENDER SUMMARY
-  // ============================================
   renderSummary() {
     const calc = this.calculate();
     const lines = calc.lines;
@@ -2492,16 +2417,10 @@ const QuoteWizard = {
 
     this.els.summary.innerHTML = html;
 
-    // Gestionar el botón documentos adicionales
     this._actualizarBloqueDocumentos();
-
-    // Gestionar el botón targetica DENTRO del contenedor de acciones
     this._actualizarBloqueTargetica(isReparacion);
   },
 
-  // ============================================
-  // CONFIRMACIÓN antes de generar (paso 3 → 4)
-  // ============================================
   async _confirmarGeneracion() {
     const isReparacion = this.service === 'reparacion';
     const rep = isReparacion ? this.reparacion : null;
@@ -2513,7 +2432,6 @@ const QuoteWizard = {
       tipoLabel = estado === 'pagada' ? 'FACTURA PAGADA' : 'FACTURA NO PAGADA';
     }
 
-    // Solo ofrecer adicionales si es FACTURA PAGADA
     const esFacturaPagada = (tipoDoc === 'factura' && estado === 'pagada');
     const disponibles = (esFacturaPagada && typeof window.JCDC_Plantillas !== 'undefined' && window.JCDC_Plantillas.disponibles)
       ? window.JCDC_Plantillas.disponibles(this.extras)
@@ -2523,7 +2441,9 @@ const QuoteWizard = {
     if (disponibles.length) {
       msg += '<br><br>También se generará' + (disponibles.length === 1 ? '' : 'n') + ' <strong>' + disponibles.length + ' documento' + (disponibles.length === 1 ? '' : 's') + ' adicional' + (disponibles.length === 1 ? '' : 'es') + '</strong>.';
     }
-    msg += '<br><br>Todo quedará guardado en el sistema con su <strong>código de verificación</strong>.<br><br>¿Deseas continuar?';
+    msg += '<br><br>Todo quedará guardado en el sistema con su <strong>código de verificación</strong>.';
+    msg += '<br><br><em style="color:var(--neon-green); font-size:0.85rem;">💡 Si necesitas este documento <strong>firmado y sellado</strong> por el encargado, podrás solicitarlo en el siguiente paso.</em>';
+    msg += '<br><br>¿Deseas continuar?';
 
     return this._confirmar(msg, {
       titulo: 'Confirmar generación',
@@ -2534,9 +2454,6 @@ const QuoteWizard = {
     });
   },
 
-  // ============================================
-  // GENERAR TODO (guardar + abrir docs)
-  // ============================================
   async _generarTodo() {
     const isReparacion = this.service === 'reparacion';
     const rep = isReparacion ? this.reparacion : null;
@@ -2544,10 +2461,8 @@ const QuoteWizard = {
     const estado  = rep ? rep.estado  : this.documento.estado;
     const esFacturaPagada = (tipoDoc === 'factura' && estado === 'pagada');
 
-    // Guardar doc principal
     try { this.registrarDocumento(); } catch (e) { console.error('[JCDC]', e); }
 
-    // Reglas: cotización NO genera adicionales; factura NO pagada tampoco
     if (tipoDoc === 'cotizacion') {
       console.log('[JCDC] Cotización: sin adicionales.');
       return;
@@ -2573,9 +2488,6 @@ const QuoteWizard = {
     window.JCDC_Plantillas.open(data, docs);
   },
 
-  // ============================================
-  // Construir datos para plantillas
-  // ============================================
   _buildDocsData() {
     const isReparacion = this.service === 'reparacion';
     const calc = this.calculate();
@@ -2591,7 +2503,6 @@ const QuoteWizard = {
     const eqList = (window.SOPORTE_CONFIG.equipos || []);
     const equipo = rep ? (eqList.find(function (e) { return e.id === rep.equipo; }) || {}) : {};
 
-    // ✅ Usar el número ya cacheado (coincide con el del documento padre)
     const numeroBase = rep ? rep.numero : (this.documento.numero || this._generarNumeroDocumento());
 
     const fechaBaseVC = rep ? rep.fechaEmision : (this.documento.fechaEmision || new Date().toISOString().slice(0, 10));
@@ -2623,20 +2534,13 @@ const QuoteWizard = {
     };
   },
 
-  // ============================================
-  // BLOQUE DOCUMENTOS ADICIONALES en Paso 4
-  // ============================================
   _actualizarBloqueDocumentos() {
-    // Ya no hay botón manual — los adicionales se generan automáticamente al emitir factura pagada
     const actionsContainer = document.querySelector('.quote-cta__actions');
     if (!actionsContainer) return;
     const prev = actionsContainer.querySelector('.rep-documentos-wrap');
     if (prev) prev.remove();
   },
 
-  // ============================================
-  // MODAL DE DOCUMENTOS ADICIONALES
-  // ============================================
   abrirModalDocumentos(disponibles) {
     const self = this;
 
@@ -2675,7 +2579,6 @@ const QuoteWizard = {
       document.body.appendChild(overlay);
       document.body.classList.add('jcdc-modal-open');
 
-      // Toggle de checkboxes
       overlay.querySelectorAll('.jcdc-docs-item').forEach(function (item) {
         const input = item.querySelector('input');
         item.addEventListener('click', function (e) {
@@ -2716,9 +2619,6 @@ const QuoteWizard = {
     });
   },
 
-  // ============================================
-  // GENERAR DOCUMENTOS (guardar antes de abrir)
-  // ============================================
   async imprimirDocumentosSeleccionados(tipos) {
     if (typeof window.JCDC_Plantillas === 'undefined') {
       if (typeof Toast !== 'undefined') Toast.show('Módulo plantillas.js no cargado', 'error', 2500);
@@ -2736,9 +2636,6 @@ const QuoteWizard = {
     window.JCDC_Plantillas.open(data, docs);
   },
 
-  // ============================================
-  // GUARDAR DOCUMENTOS GENERADOS en Firestore
-  // ============================================
   _registrarDocumentosGenerados(generados, data) {
     if (data.tipoDoc !== 'factura' || data.estado !== 'pagada') {
       console.log('[JCDC] Guard: solo se anidan adicionales en FACTURA PAGADA. Ignorado.');
@@ -2788,19 +2685,14 @@ const QuoteWizard = {
     if (typeof Toast !== 'undefined') Toast.show(adicionales.length + ' doc anidado(s)', 'success', 2500);
   },
 
-  // ============================================
-  // BLOQUE TARGETICA en Paso 4
-  // ============================================
   _actualizarBloqueTargetica(isReparacion) {
     const self = this;
     const actionsContainer = document.querySelector('.quote-cta__actions');
     if (!actionsContainer) return;
 
-    // Remover bloque targetica previo (si existe)
     const prev = actionsContainer.querySelector('.rep-targetica-wrap');
     if (prev) prev.remove();
 
-    // Solo aplica para reparación + factura pagada + admin + datos completos
     if (!isReparacion || !this.reparacion) return;
     const rep = this.reparacion;
     const esAdmin = (this._tipoAcceso === 'admin' || this.facturaUnlocked);
@@ -2809,10 +2701,8 @@ const QuoteWizard = {
     const tieneDatos = !!rep.cliente.nombre && !!rep.equipo;
     if (!(esAdmin && esFactura && esPagada && tieneDatos)) return;
 
-    // Cantidad por defecto (o la última elegida)
     const cantidadActual = this.cantidadTargeticas || 12;
 
-    // HTML del bloque
     const wrap = document.createElement('div');
     wrap.className = 'rep-targetica-wrap';
     wrap.innerHTML = `
@@ -2832,10 +2722,8 @@ const QuoteWizard = {
       </button>
     `;
 
-    // Insertar como primer hijo del contenedor de acciones
     actionsContainer.insertBefore(wrap, actionsContainer.firstChild);
 
-    // Handlers de cantidad
     wrap.querySelectorAll('.rep-targetica-count__btn').forEach(function (btn) {
       btn.addEventListener('click', function () {
         const n = parseInt(btn.dataset.count, 10);
@@ -2847,23 +2735,19 @@ const QuoteWizard = {
       });
     });
 
-    // Handler del botón imprimir
     const tBtn = document.getElementById('repTargeticaBtn');
     if (tBtn) {
       tBtn.addEventListener('click', function () { self.imprimirTargetica(); });
     }
   },
 
-  // ============================================
-  // RESTART
-  // ============================================
   restart() {
     this.currentStep = 1;
     this.service = null;
     this.values = {};
     this.extras = {};
     this.reparacion = null;
-    this.garantiaSeleccionada = 30;
+    this.garantiaSeleccionada = 0;
     this.diasValidez = (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.documentos && window.SOPORTE_CONFIG.documentos.cotizacionValidezDias) || 15;
     this.documento = {
       tipoDoc: 'cotizacion',
@@ -2876,6 +2760,7 @@ const QuoteWizard = {
       timestamp: 0
     };
     this.accesorios = {};
+    this.accesoriosVariantes = {};
     this.accesoriosCatActiva = 'all';
 
     document.querySelectorAll('[data-service]').forEach(function (o) {
@@ -2896,9 +2781,6 @@ const QuoteWizard = {
     if (typeof Toast !== 'undefined') Toast.show('Cotizador reiniciado', 'info', 1600);
   },
 
-  // ============================================
-  // TEXTO PLANO
-  // ============================================
   buildPlainText() {
     const cfg = this.services[this.service];
     const calc = this.calculate();
@@ -2974,6 +2856,30 @@ const QuoteWizard = {
     if (typeof Toast !== 'undefined') Toast.show('Abriendo WhatsApp…', 'success', 1800);
   },
 
+  requestSigned() {
+    if (!this.service) {
+      if (typeof Toast !== 'undefined') Toast.show('Completa el cotizador primero', 'info', 2000);
+      return;
+    }
+    
+    this.registrarDocumento();
+
+    const isReparacion = this.service === 'reparacion';
+    const rep = isReparacion ? this.reparacion : null;
+    const doc = this.documento;
+    
+    const cliente = rep ? (rep.cliente.nombre || 'Cliente') : (doc.cliente.nombre || 'Cliente');
+    const num = rep ? (rep.numero || 'No generado') : (doc.numero || 'No generado');
+    const vc = rep ? (rep.codigoVC || 'No generado') : (doc.codigoVC || 'No generado');
+    const tipo = rep ? (rep.tipoDoc === 'factura' ? 'Factura' : 'Cotización') : (doc.tipoDoc === 'factura' ? 'Factura' : 'Cotización');
+
+    const msg = `Hola Julio C. Durán Casado, acabo de generar la ${tipo} *${num}* (VC: ${vc}) a nombre de *${cliente}*. Necesito que la misma sea firmada y sellada por el encargado. ¡Gracias!`;
+    const wa = (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.whatsapp) || '18294213163';
+    window.open(`https://wa.me/${wa}?text=${encodeURIComponent(msg)}`, '_blank');
+    
+    if (typeof Toast !== 'undefined') Toast.show('Abriendo WhatsApp…', 'success', 1800);
+  },
+
   sendEmail() {
     if (!this.service) {
       if (typeof Toast !== 'undefined') Toast.show('Completa el cotizador primero', 'info', 2000);
@@ -2987,9 +2893,6 @@ const QuoteWizard = {
     window.location.href = url;
   },
 
-  // ============================================
-  // SELLO (idéntico al original)
-  // ============================================
   generarSello(fecha, numDoc, tipoDoc, estado) {
     const cfg = window.SOPORTE_CONFIG.documentos || {};
     const prov = (window.SOPORTE_CONFIG.proveedor) || {};
@@ -3043,9 +2946,6 @@ const QuoteWizard = {
 </svg>`;
   },
 
-  // ============================================
-  // REGISTRAR DOCUMENTO (Firestore + email)
-  // ============================================
   registrarDocumento() {
     if (!this.service) return '';
 
@@ -3065,14 +2965,14 @@ const QuoteWizard = {
     const esPagada  = estado === 'pagada';
     const numDoc    = rep ? rep.numero : this._generarNumeroDocumento();
 
-    // ✅ Siempre generar el código VC (para cualquier servicio)
     const fechaBaseVC = rep ? rep.fechaEmision : (this.documento.fechaEmision || new Date().toISOString().slice(0, 10));
     const codigoFinal = this.generarCodigoVerificacion(numDoc, fechaBaseVC, total.toString());
 
-    // ✅ Cachear VC y fecha
     if (!rep) {
       this.documento.codigoVC = codigoFinal;
       this.documento.fechaEmision = fechaBaseVC;
+    } else {
+      rep.codigoVC = codigoFinal;
     }
 
     try {
@@ -3138,7 +3038,6 @@ const QuoteWizard = {
       localStorage.setItem('jcdc_registro_docs', JSON.stringify(registro));
       console.log('[JCDC] Registro guardado:', numDoc, codigoFinal);
 
-      // Firestore
       try {
         var db = window.db;
         if (db && codigoFinal) {
@@ -3167,7 +3066,6 @@ const QuoteWizard = {
         console.error('[Firestore] Error:', e);
       }
 
-      // Email admin
       try {
         this._emailsEnviados = this._emailsEnviados || {};
         if (codigoFinal && !this._emailsEnviados[codigoFinal]) {
@@ -3207,9 +3105,6 @@ const QuoteWizard = {
     }
   },
 
-  // ============================================
-  // PDF (mismo flujo + línea de garantía)
-  // ============================================
   downloadPDF() {
     if (!this.service) {
       if (typeof Toast !== 'undefined') Toast.show('Completa el cotizador primero', 'info', 2000);
@@ -3243,7 +3138,6 @@ const QuoteWizard = {
       colorDoc = docCfg.colorSelloCotizacion || '#0369a1';
     }
 
-    // ✅ Calcular VC para TODOS los servicios (no solo reparación)
     const fechaBaseVC = rep ? rep.fechaEmision : (this.documento.fechaEmision || new Date().toISOString().slice(0, 10));
     const codigoVC = this.generarCodigoVerificacion(numDoc, fechaBaseVC, total.toString());
 
@@ -3259,7 +3153,6 @@ const QuoteWizard = {
 
     this.registrarDocumento();
 
-    // ✅ Cliente visible para TODOS los servicios (no solo reparación)
     let clienteBlock = '';
     const cliData = rep ? rep.cliente : this.documento.cliente;
     if (cliData && (cliData.nombre || cliData.cedula || cliData.telefono || cliData.email || cliData.direccion)) {
@@ -3286,7 +3179,6 @@ const QuoteWizard = {
       equipoBlock += '  </div>';
       equipoBlock += '</div>';
     } else if (!isReparacion) {
-      // ✅ Servicios normales: mostrar el nombre del servicio como "Equipo/Servicio"
       const cfgServ = this.services[this.service] || {};
       if (cfgServ.label) {
         equipoBlock += '<div class="info-block">';
@@ -3301,7 +3193,6 @@ const QuoteWizard = {
     let rows = '';
     lines.forEach(function (l) {
       const sub = l.sub ? '<div class="row-sub">' + l.sub + '</div>' : '';
-      // ✅ DOP para reparación y accesorios; conversión para el resto
       const lValueDOP = esDOP ? l.value : Math.round(l.value * rate);
       const price = 'RD$' + lValueDOP.toLocaleString('es-DO');
       rows += '<tr>';
@@ -3310,7 +3201,6 @@ const QuoteWizard = {
       rows += '</tr>';
     });
 
-    // ✅ Total primario siempre en DOP (más familiar para cliente dominicano)
     const totalRow = 'RD$' + dop.toLocaleString('es-DO');
 
     const hora = new Date().toLocaleTimeString('es-DO', { hour: '2-digit', minute: '2-digit' });
@@ -3322,7 +3212,6 @@ const QuoteWizard = {
       ? '<strong>Nota:</strong> Esta factura corresponde al servicio descrito arriba. ' + garantiaTexto + ' Gracias por su preferencia.'
       : '<strong>Nota:</strong> Cotización generada desde el cotizador web <strong>jcdurancasado.github.io/inf</strong> el ' + date + ' a las ' + hora + '. Válida por ' + (rep ? rep.diasValidez : this.diasValidez) + ' días.';
 
-    // ✅ Observaciones: leer de reparación O de documento según el caso
     const obsReal = rep ? rep.descripcion : this.documento.observaciones;
     const observacionesTexto = (obsReal && obsReal.trim())
       ? obsReal

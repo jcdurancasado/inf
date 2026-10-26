@@ -66,14 +66,31 @@
       gap: var(--space-xl);
       max-width: 1150px;
       margin: 0 auto var(--space-2xl);
-      align-items: start;
+      align-items: stretch; /* <-- Cambiado de start a stretch */
     }
     @media (max-width: 900px) {
       .contacto-grid { grid-template-columns: 1fr; }
     }
 
     /* Columna del formulario */
-    .contacto-form-col { position: relative; }
+    .contacto-form-col { 
+      position: relative; 
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* --- NUEVO: Estirar la terminal para igualar altura --- */
+    .contacto-form-col .form-terminal {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .contacto-form-col .form-terminal__body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    /* ------------------------------------------------------ */
 
     /* Columna lateral con datos directos */
     .contacto-info {

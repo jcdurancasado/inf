@@ -13389,8 +13389,9 @@ body.jcdc-modal-open input {
 .nav__link[href$="cotizador.html"].nav__link--active,
 .nav__link[href$="verificar.html"].nav__link--active,
 .nav__link--cta.nav__link--active {
-  animation: none;
-  box-shadow: inset 0 0 15px var(--nav-glow), 0 0 15px var(--nav-glow);
+  /* Eliminado el animation: none para que el botón NO se salte la cascada */
+  border-width: 2px !important;
+  font-weight: 700;
   background: var(--nav-glow);
   color: var(--bg-primary); 
 }

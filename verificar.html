@@ -410,7 +410,7 @@ document.documentElement.setAttribute('data-theme', saved || 'dark');
       </div>
 
       <div class="admin-lista__filtros">
-        <input type="text" id="adminListaBuscar" class="admin-lista__buscar" placeholder="Buscar por número, cliente o código VC..." />
+<input type="text" id="adminListaBuscar" class="admin-lista__buscar" placeholder="Buscar por número, cliente o código VC..." autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');" />
         <button type="button" class="admin-lista__chip active" data-filtro="todos">TODOS</button>
         <button type="button" class="admin-lista__chip" data-filtro="cotizacion">COTIZACIONES</button>
         <button type="button" class="admin-lista__chip" data-filtro="factura">FACTURAS</button>
@@ -576,6 +576,35 @@ document.documentElement.setAttribute('data-theme', saved || 'dark');
 
   <!-- Scripts del proyecto -->
   <script src="js/main.js"></script>
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const buscador = document.getElementById('adminListaBuscar');
+    const listaContenido = document.getElementById('adminListaContenido');
+
+    if (buscador) {
+      // Vigilamos si el navegador intenta meter algo en el buscador
+      const observer = new MutationObserver(() => {
+        // Si detecta un correo (que es lo que inyecta Chrome)
+        if (buscador.value.includes('@')) {
+          buscador.value = ''; // Lo borramos
+          // Disparamos un evento 'input' falso para que tu script de verificar.js 
+          // vuelva a mostrar todos los documentos
+          const event = new Event('input', { bubbles: true });
+          buscador.dispatchEvent(event); 
+        }
+      });
+      
+      observer.observe(buscador, { attributes: true, attributeFilter: ['value'] });
+      
+      // Escuchamos también si el valor cambia de golpe
+      buscador.addEventListener('input', function() {
+        if (this.value.includes('@')) {
+          this.value = '';
+        }
+      });
+    }
+  });
+</script>
   <script src="js/firma-admin.js"></script>
   <script src="js/targetica.js"></script>
   <script src="js/plantillas.js"></script>

@@ -204,6 +204,34 @@
       html += '<div class="verify-row"><span>Número</span><strong>' + (r.numero || '-') + '</strong></div>';
       if (r.codigoVC) html += '<div class="verify-row"><span>Código VC</span><strong>' + r.codigoVC + '</strong></div>';
       html += '<div class="verify-row"><span>Fecha de emisión</span><strong>' + (r.fecha || '-') + '</strong></div>';
+
+      // ✅ LÓGICA DE VENCIMIENTO PARA COTIZACIONES
+      if (r.tipo === 'cotizacion') {
+        var diasVal = (r.snapshot && r.snapshot.diasValidez) ? r.snapshot.diasValidez : 15;
+        var fechaVencTxt = '-';
+        var esVencida = false;
+
+        if (r.snapshot && r.snapshot.fechaVencimiento) {
+          fechaVencTxt = r.snapshot.fechaVencimiento;
+        } else if (r.snapshot && r.snapshot.fechaEmision) {
+          var d = new Date(r.snapshot.fechaEmision);
+          d.setDate(d.getDate() + diasVal);
+          fechaVencTxt = d.toISOString().slice(0, 10);
+        }
+
+        if (fechaVencTxt !== '-') {
+          var hoy = new Date();
+          hoy.setHours(0, 0, 0, 0);
+          var venc = new Date(fechaVencTxt);
+          if (venc < hoy) esVencida = true;
+        }
+
+        var tagVenc = esVencida ? 'tag--no-pagada' : 'tag--pagada';
+        var txtVenc = esVencida ? 'VENCIDA' : 'VIGENTE';
+
+        html += '<div class="verify-row"><span>Válida hasta</span><strong>' + fechaVencTxt + ' (' + diasVal + ' días)</strong></div>';
+        html += '<div class="verify-row"><span>Estado de validez</span><strong class="tag ' + tagVenc + '">' + txtVenc + '</strong></div>';
+      }
       html += '<div class="verify-row"><span>Monto total</span><strong>' + formatearMoneda(r.total, r.moneda) + '</strong></div>';
       if (r.cliente && r.cliente !== '-') html += '<div class="verify-row"><span>Cliente</span><strong>' + r.cliente + '</strong></div>';
       if (r.tipo === 'factura') {

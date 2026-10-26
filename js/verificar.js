@@ -1763,7 +1763,7 @@
               return;
             }
             var adic = parentDoc.documentosAdicionales.find(function (a) { return a.tipo === tipoAdic; });
-            if (!adic) { alert('No se encontró el adicional.'); return; }
+            if (!adic) { customAlert('No se encontró el adicional.', 'ERROR', 'danger'); return; }
 
             if (tipo === 'email-adicional') {
               solicitarEnviarEmail(parentDoc);

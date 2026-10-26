@@ -234,216 +234,19 @@
           </div>
           <div class="serv-filters" role="tablist">
             <button type="button" class="serv-filter active" data-filter="all"><i class="fa-solid fa-layer-group"></i> Todos</button>
-            <button type="button" class="serv-filter" data-filter="red"><i class="fa-solid fa-network-wired"></i> Redes</button>
-            <button type="button" class="serv-filter" data-filter="audit"><i class="fa-solid fa-shield-halved"></i> Seguridad</button>
-            <button type="button" class="serv-filter" data-filter="training"><i class="fa-solid fa-chalkboard-user"></i> Formación</button>
-            <button type="button" class="serv-filter" data-filter="support"><i class="fa-solid fa-screwdriver-wrench"></i> Soporte</button>
-            <button type="button" class="serv-filter" data-filter="cloud"><i class="fa-solid fa-cloud"></i> Cloud</button>
-            <button type="button" class="serv-filter" data-filter="cctv"><i class="fa-solid fa-video"></i> CCTV</button>
-            <button type="button" class="serv-filter" data-filter="reparacion"><i class="fa-solid fa-toolbox"></i> Reparación</button>
+            <button type="button" class="serv-filter" data-filter="soporte"><i class="fa-solid fa-screwdriver-wrench"></i> Soporte</button>
+            <button type="button" class="serv-filter" data-filter="formacion"><i class="fa-solid fa-chalkboard-user"></i> Formación</button>
+            <button type="button" class="serv-filter" data-filter="desarrollo"><i class="fa-solid fa-laptop-code"></i> Desarrollo</button>
+            <button type="button" class="serv-filter" data-filter="redes"><i class="fa-solid fa-network-wired"></i> Redes</button>
+            <button type="button" class="serv-filter" data-filter="seguridad"><i class="fa-solid fa-shield-halved"></i> Seguridad</button>
+            <button type="button" class="serv-filter" data-filter="cloud"><i class="fa-solid fa-cloud"></i> Cloud & CCTV</button>
           </div>
         </div>
 
         <div class="serv-grid" id="servGrid">
 
-          <!-- ===== RED EMPRESARIAL ===== -->
-          <article class="serv-card serv-card--red" id="red" data-serv="red" data-reveal>
-            <div class="serv-card__head">
-              <div class="serv-card__icon"><i class="fa-solid fa-network-wired"></i></div>
-              <div class="serv-card__heading">
-                <span class="serv-card__tag">REDES · CISCO</span>
-                <h2 class="serv-card__title">Red Empresarial</h2>
-                <p class="serv-card__subtitle">Diseño, implementación y documentación de infraestructura de red empresarial.</p>
-              </div>
-            </div>
-            <div class="serv-card__grid">
-              <div>
-                <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
-                <ul class="serv-block__list">
-                  <li><i class="fa-solid fa-check"></i> Levantamiento completo de la red existente</li>
-                  <li><i class="fa-solid fa-check"></i> Diseño de topología física y lógica documentada</li>
-                  <li><i class="fa-solid fa-check"></i> Configuración de routers Cisco, switches L2/L3 y APs</li>
-                  <li><i class="fa-solid fa-check"></i> Segmentación con VLANs, trunking 802.1Q y STP</li>
-                  <li><i class="fa-solid fa-check"></i> Enrutamiento estático, OSPF y BGP básico</li>
-                  <li><i class="fa-solid fa-check"></i> VPNs site-to-site (IPsec) y acceso remoto (SSL)</li>
-                  <li><i class="fa-solid fa-check"></i> QoS para tráfico crítico (voz, video, datos)</li>
-                  <li><i class="fa-solid fa-check"></i> Direccionamiento IP y DHCP centralizado</li>
-                  <li><i class="fa-solid fa-check"></i> Documentación técnica + diagramas en Visio/Draw.io</li>
-                  <li><i class="fa-solid fa-check"></i> Capacitación al personal de TI</li>
-                </ul>
-              </div>
-              <div>
-                <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
-                <ul class="serv-block__list">
-                  <li><i class="fa-solid fa-1"></i> Reunión inicial para entender necesidades del negocio</li>
-                  <li><i class="fa-solid fa-2"></i> Inventario y análisis de la infraestructura actual</li>
-                  <li><i class="fa-solid fa-3"></i> Propuesta técnica con diagrama preliminar</li>
-                  <li><i class="fa-solid fa-4"></i> Configuración y despliegue por fases</li>
-                  <li><i class="fa-solid fa-5"></i> Pruebas de conectividad, rendimiento y failover</li>
-                  <li><i class="fa-solid fa-6"></i> Documentación final y transferencia de conocimiento</li>
-                </ul>
-              </div>
-            </div>
-            <div class="serv-meta">
-              <div class="serv-meta__item"><span>Modalidad</span><strong>Presencial / Remoto</strong></div>
-              <div class="serv-meta__item"><span>Cobertura</span><strong>RD + Global</strong></div>
-              <div class="serv-meta__item"><span>Duración</span><strong>1 a 4 semanas</strong></div>
-            </div>
-            <div class="serv-card__actions">
-              <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
-              <a href="contacto.html" class="cyber-btn cyber-btn--secondary"><span>CONSULTAR</span><i class="fa-solid fa-comments"></i></a>
-            </div>
-          </article>
-
-          <!-- ===== AUDITORÍA DE SEGURIDAD ===== -->
-          <article class="serv-card serv-card--audit" id="audit" data-serv="audit" data-reveal>
-            <div class="serv-card__head">
-              <div class="serv-card__icon"><i class="fa-solid fa-shield-halved"></i></div>
-              <div class="serv-card__heading">
-                <span class="serv-card__tag">CIBERSEGURIDAD</span>
-                <h2 class="serv-card__title">Auditoría de Seguridad</h2>
-                <p class="serv-card__subtitle">Evaluación completa del estado de seguridad de tu infraestructura.</p>
-              </div>
-            </div>
-            <div class="serv-card__grid">
-              <div>
-                <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
-                <ul class="serv-block__list">
-                  <li><i class="fa-solid fa-check"></i> Escaneo de puertos, servicios y vulnerabilidades conocidas</li>
-                  <li><i class="fa-solid fa-check"></i> Análisis de configuración de routers, switches y firewalls</li>
-                  <li><i class="fa-solid fa-check"></i> Revisión de políticas de contraseñas y accesos</li>
-                  <li><i class="fa-solid fa-check"></i> Análisis de logs y eventos de seguridad</li>
-                  <li><i class="fa-solid fa-check"></i> Pruebas de penetración controladas (red interna y externa)</li>
-                  <li><i class="fa-solid fa-check"></i> Detección de servicios expuestos y puertos abiertos</li>
-                  <li><i class="fa-solid fa-check"></i> Plan de hardening por criticidad (CVSS)</li>
-                  <li><i class="fa-solid fa-check"></i> Recomendaciones priorizadas por riesgo</li>
-                  <li><i class="fa-solid fa-check"></i> Informe ejecutivo (para dirección) + técnico (para TI)</li>
-                  <li><i class="fa-solid fa-check"></i> Reunión de cierre para explicar hallazgos</li>
-                </ul>
-              </div>
-              <div>
-                <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
-                <ul class="serv-block__list">
-                  <li><i class="fa-solid fa-1"></i> Firma de autorización y NDA para pruebas</li>
-                  <li><i class="fa-solid fa-2"></i> Recolección pasiva de información (OSINT)</li>
-                  <li><i class="fa-solid fa-3"></i> Escaneo activo con Nmap, Nessus, OpenVAS</li>
-                  <li><i class="fa-solid fa-4"></i> Explotación controlada de hallazgos</li>
-                  <li><i class="fa-solid fa-5"></i> Clasificación por severidad (Crítica a Baja)</li>
-                  <li><i class="fa-solid fa-6"></i> Entrega de informe + presentación de resultados</li>
-                </ul>
-              </div>
-            </div>
-            <div class="serv-meta">
-              <div class="serv-meta__item"><span>Modalidad</span><strong>Remoto / Presencial</strong></div>
-              <div class="serv-meta__item"><span>Cobertura</span><strong>Global</strong></div>
-              <div class="serv-meta__item"><span>Duración</span><strong>1 a 3 semanas</strong></div>
-            </div>
-            <div class="serv-card__actions">
-              <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
-              <a href="contacto.html" class="cyber-btn cyber-btn--secondary"><span>CONSULTAR</span><i class="fa-solid fa-comments"></i></a>
-            </div>
-          </article>
-
-          <!-- ===== CAPACITACIÓN TÉCNICA ===== -->
-          <article class="serv-card serv-card--training" id="training" data-serv="training" data-reveal>
-            <div class="serv-card__head">
-              <div class="serv-card__icon"><i class="fa-solid fa-chalkboard-user"></i></div>
-              <div class="serv-card__heading">
-                <span class="serv-card__tag">FORMACIÓN · CISCO ACADEMY</span>
-                <h2 class="serv-card__title">Capacitación Técnica</h2>
-                <p class="serv-card__subtitle">Formación oficial Cisco Networking Academy para empresas y profesionales.</p>
-              </div>
-            </div>
-            <div class="serv-card__grid">
-              <div>
-                <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
-                <ul class="serv-block__list">
-                  <li><i class="fa-solid fa-check"></i> Diseño de ruta formativa según objetivos del equipo</li>
-                  <li><i class="fa-solid fa-check"></i> Acceso a material oficial Cisco Networking Academy</li>
-                  <li><i class="fa-solid fa-check"></i> Rutas disponibles: CCNA (3 módulos), CCNP, CyberOps, IT Essentials</li>
-                  <li><i class="fa-solid fa-check"></i> Laboratorios prácticos en Packet Tracer y equipos reales</li>
-                  <li><i class="fa-solid fa-check"></i> Casos reales adaptados al sector de la empresa</li>
-                  <li><i class="fa-solid fa-check"></i> Evaluaciones por módulo y examen final</li>
-                  <li><i class="fa-solid fa-check"></i> Certificado digital verificable (Cisco / Credly)</li>
-                  <li><i class="fa-solid fa-check"></i> Material de estudio descargable</li>
-                  <li><i class="fa-solid fa-check"></i> Grabación de sesiones virtuales</li>
-                  <li><i class="fa-solid fa-check"></i> Soporte post-curso por 30 días</li>
-                </ul>
-              </div>
-              <div>
-                <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
-                <ul class="serv-block__list">
-                  <li><i class="fa-solid fa-1"></i> Diagnóstico del nivel inicial del grupo</li>
-                  <li><i class="fa-solid fa-2"></i> Diseño del temario y cronograma</li>
-                  <li><i class="fa-solid fa-3"></i> Sesiones teórico-prácticas (presencial o virtual)</li>
-                  <li><i class="fa-solid fa-4"></i> Laboratorios guiados con retroalimentación</li>
-                  <li><i class="fa-solid fa-5"></i> Evaluación por módulo y examen final</li>
-                  <li><i class="fa-solid fa-6"></i> Entrega de certificado y plan de mejora continua</li>
-                </ul>
-              </div>
-            </div>
-            <div class="serv-meta">
-              <div class="serv-meta__item"><span>Modalidad</span><strong>Presencial / Virtual</strong></div>
-              <div class="serv-meta__item"><span>Cobertura</span><strong>RD + Global</strong></div>
-              <div class="serv-meta__item"><span>Duración</span><strong>Variable (a medida)</strong></div>
-            </div>
-            <div class="serv-card__actions">
-              <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
-              <a href="cursos.html" class="cyber-btn cyber-btn--secondary"><span>VER CURSOS</span><i class="fa-solid fa-graduation-cap"></i></a>
-            </div>
-          </article>
-
-          <!-- ===== SOPORTE MENSUAL ===== -->
-          <article class="serv-card serv-card--support" id="support" data-serv="support" data-reveal>
-            <div class="serv-card__head">
-              <div class="serv-card__icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
-              <div class="serv-card__heading">
-                <span class="serv-card__tag">SOPORTE CONTINUO</span>
-                <h2 class="serv-card__title">Soporte Mensual</h2>
-                <p class="serv-card__subtitle">Mantenimiento preventivo y asistencia técnica continua para tu infraestructura.</p>
-              </div>
-            </div>
-            <div class="serv-card__grid">
-              <div>
-                <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
-                <ul class="serv-block__list">
-                  <li><i class="fa-solid fa-check"></i> Monitoreo proactivo 24/7 de red y servicios críticos</li>
-                  <li><i class="fa-solid fa-check"></i> Mantenimiento preventivo programado (mensual o bimensual)</li>
-                  <li><i class="fa-solid fa-check"></i> Atención de incidencias por prioridad con SLA definido</li>
-                  <li><i class="fa-solid fa-check"></i> Actualización de firmware y parches de seguridad</li>
-                  <li><i class="fa-solid fa-check"></i> Gestión de respaldos automáticos y verificación</li>
-                  <li><i class="fa-solid fa-check"></i> Antivirus y protección de endpoints</li>
-                  <li><i class="fa-solid fa-check"></i> Administración de usuarios y permisos</li>
-                  <li><i class="fa-solid fa-check"></i> Reporte mensual con métricas y hallazgos</li>
-                  <li><i class="fa-solid fa-check"></i> Reunión mensual de seguimiento</li>
-                  <li><i class="fa-solid fa-check"></i> Horas de soporte remoto incluidas (según plan)</li>
-                </ul>
-              </div>
-              <div>
-                <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
-                <ul class="serv-block__list">
-                  <li><i class="fa-solid fa-1"></i> Auditoría inicial de infraestructura</li>
-                  <li><i class="fa-solid fa-2"></i> Configuración de monitoreo y alertas</li>
-                  <li><i class="fa-solid fa-3"></i> Definición de SLAs según criticidad</li>
-                  <li><i class="fa-solid fa-4"></i> Atención de tickets vía WhatsApp / email / panel</li>
-                  <li><i class="fa-solid fa-5"></i> Mantenimiento preventivo programado</li>
-                  <li><i class="fa-solid fa-6"></i> Reportes y reuniones mensuales de revisión</li>
-                </ul>
-              </div>
-            </div>
-            <div class="serv-meta">
-              <div class="serv-meta__item"><span>Modalidad</span><strong>Remoto + Visitas</strong></div>
-              <div class="serv-meta__item"><span>Cobertura</span><strong>RD + Global</strong></div>
-              <div class="serv-meta__item"><span>Contrato</span><strong>Mensual</strong></div>
-            </div>
-            <div class="serv-card__actions">
-              <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
-              <a href="contacto.html" class="cyber-btn cyber-btn--secondary"><span>CONSULTAR</span><i class="fa-solid fa-comments"></i></a>
-            </div>
-          </article>
-
-          <!-- ===== REPARACIÓN TÉCNICA ===== -->
-          <article class="serv-card serv-card--reparacion" id="reparacion" data-serv="reparacion" data-reveal>
+          <!-- ==================== 1. REPARACIÓN ==================== -->
+          <article class="serv-card serv-card--reparacion" id="reparacion" data-serv="soporte" data-reveal>
             <div class="serv-card__head">
               <div class="serv-card__icon"><i class="fa-solid fa-toolbox"></i></div>
               <div class="serv-card__heading">
@@ -456,27 +259,23 @@
               <div>
                 <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
                 <ul class="serv-block__list">
-                  <li><i class="fa-solid fa-check"></i> Diagnóstico inicial sin costo (presencial o remoto)</li>
-                  <li><i class="fa-solid fa-check"></i> Reparación de impresoras (inyección, láser, matricial)</li>
-                  <li><i class="fa-solid fa-check"></i> Mantenimiento de laptops y PCs (limpieza, pasta térmica)</li>
-                  <li><i class="fa-solid fa-check"></i> Cambio e instalación de componentes (RAM, SSD, HDD, pantalla, teclado)</li>
-                  <li><i class="fa-solid fa-check"></i> Formateo, instalación de Windows/Linux y drivers</li>
-                  <li><i class="fa-solid fa-check"></i> Eliminación de virus, malware y ransomware</li>
-                  <li><i class="fa-solid fa-check"></i> Recuperación de datos (discos dañados, archivos borrados)</li>
-                  <li><i class="fa-solid fa-check"></i> Optimización de rendimiento</li>
-                  <li><i class="fa-solid fa-check"></i> Reparación de equipos de red (routers, switches)</li>
-                  <li><i class="fa-solid fa-check"></i> Garantía de 30 a 365 días por escrito</li>
+                  <li><i class="fa-solid fa-check"></i> Diagnóstico inicial sin costo</li>
+                  <li><i class="fa-solid fa-check"></i> Reparación de impresoras, laptops y PCs</li>
+                  <li><i class="fa-solid fa-check"></i> Mantenimiento (limpieza, pasta térmica)</li>
+                  <li><i class="fa-solid fa-check"></i> Cambio de componentes (RAM, SSD, pantalla)</li>
+                  <li><i class="fa-solid fa-check"></i> Formateo y eliminación de virus</li>
+                  <li><i class="fa-solid fa-check"></i> Recuperación de datos</li>
+                  <li><i class="fa-solid fa-check"></i> Garantía de 30 a 365 días</li>
                 </ul>
               </div>
               <div>
                 <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
                 <ul class="serv-block__list">
-                  <li><i class="fa-solid fa-1"></i> Recepción del equipo y descripción del problema</li>
-                  <li><i class="fa-solid fa-2"></i> Diagnóstico técnico (presencial o remoto)</li>
-                  <li><i class="fa-solid fa-3"></i> Cotización previa aprobada por el cliente</li>
-                  <li><i class="fa-solid fa-4"></i> Reparación con repuestos originales o de calidad</li>
-                  <li><i class="fa-solid fa-5"></i> Pruebas exhaustivas antes de entregar</li>
-                  <li><i class="fa-solid fa-6"></i> Entrega con documentación y garantía por escrito</li>
+                  <li><i class="fa-solid fa-1"></i> Recepción y diagnóstico técnico</li>
+                  <li><i class="fa-solid fa-2"></i> Cotización aprobada por el cliente</li>
+                  <li><i class="fa-solid fa-3"></i> Reparación con repuestos de calidad</li>
+                  <li><i class="fa-solid fa-4"></i> Pruebas exhaustivas</li>
+                  <li><i class="fa-solid fa-5"></i> Entrega con garantía por escrito</li>
                 </ul>
               </div>
             </div>
@@ -491,48 +290,44 @@
             </div>
           </article>
 
-          <!-- ===== DISEÑO WIFI EMPRESARIAL ===== -->
-          <article class="serv-card serv-card--wifi" id="wifi" data-serv="red" data-reveal>
+          <!-- ==================== 2. ACCESORIOS ==================== -->
+          <article class="serv-card serv-card--support" id="accesorios" data-serv="soporte" data-reveal>
             <div class="serv-card__head">
-              <div class="serv-card__icon"><i class="fa-solid fa-wifi"></i></div>
+              <div class="serv-card__icon"><i class="fa-solid fa-plug"></i></div>
               <div class="serv-card__heading">
-                <span class="serv-card__tag">REDES INALÁMBRICAS</span>
-                <h2 class="serv-card__title">Diseño de Red WiFi Empresarial</h2>
-                <p class="serv-card__subtitle">Planificación, site survey y configuración de redes WiFi de alto rendimiento.</p>
+                <span class="serv-card__tag">SUMINISTROS · HARDWARE</span>
+                <h2 class="serv-card__title">Accesorios y Repuestos</h2>
+                <p class="serv-card__subtitle">Venta e instalación de cables, periféricos, piezas y consumibles de calidad.</p>
               </div>
             </div>
             <div class="serv-card__grid">
               <div>
                 <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
                 <ul class="serv-block__list">
-                  <li><i class="fa-solid fa-check"></i> Site survey con análisis de interferencias</li>
-                  <li><i class="fa-solid fa-check"></i> Planificación de canales en 2.4 / 5 / 6 GHz</li>
-                  <li><i class="fa-solid fa-check"></i> Ubicación óptima de access points con heat map</li>
-                  <li><i class="fa-solid fa-check"></i> Configuración de SSIDs múltiples (empleados, invitados, IoT)</li>
-                  <li><i class="fa-solid fa-check"></i> VLANs por tipo de usuario y roaming sin cortes</li>
-                  <li><i class="fa-solid fa-check"></i> Portal cautivo / autenticación 802.1X (opcional)</li>
-                  <li><i class="fa-solid fa-check"></i> Ancho de banda y QoS para aplicaciones críticas</li>
-                  <li><i class="fa-solid fa-check"></i> Configuración de seguridad WPA2/WPA3-Enterprise</li>
-                  <li><i class="fa-solid fa-check"></i> Validación con herramientas profesionales (Ekahau, NetSpot)</li>
-                  <li><i class="fa-solid fa-check"></i> Entrega de mapa de calor final</li>
+                  <li><i class="fa-solid fa-check"></i> Cables (HDMI, VGA, USB, Red)</li>
+                  <li><i class="fa-solid fa-check"></i> Periféricos (mouse, teclados, webcams)</li>
+                  <li><i class="fa-solid fa-check"></i> Almacenamiento (pendrives, SSD, SD)</li>
+                  <li><i class="fa-solid fa-check"></i> Adaptadores y Hubs</li>
+                  <li><i class="fa-solid fa-check"></i> Repuestos (tóners, cartuchos, fuentes)</li>
+                  <li><i class="fa-solid fa-check"></i> Asesoría de compra</li>
+                  <li><i class="fa-solid fa-check"></i> Garantía por defectos de fábrica</li>
                 </ul>
               </div>
               <div>
                 <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
                 <ul class="serv-block__list">
-                  <li><i class="fa-solid fa-1"></i> Levantamiento del plano y características del local</li>
-                  <li><i class="fa-solid fa-2"></i> Análisis de interferencias y cobertura actual</li>
-                  <li><i class="fa-solid fa-3"></i> Diseño de ubicación de APs con heat map predictivo</li>
-                  <li><i class="fa-solid fa-4"></i> Instalación física y configuración de red</li>
-                  <li><i class="fa-solid fa-5"></i> Validación post-instalación con medición real</li>
-                  <li><i class="fa-solid fa-6"></i> Entrega de documentación + mapa de cobertura</li>
+                  <li><i class="fa-solid fa-1"></i> Identificación de la necesidad</li>
+                  <li><i class="fa-solid fa-2"></i> Cotización de opciones</li>
+                  <li><i class="fa-solid fa-3"></i> Suministro inmediato</li>
+                  <li><i class="fa-solid fa-4"></i> Instalación (si aplica)</li>
+                  <li><i class="fa-solid fa-5"></i> Entrega con comprobante</li>
                 </ul>
               </div>
             </div>
             <div class="serv-meta">
-              <div class="serv-meta__item"><span>Modalidad</span><strong>Presencial</strong></div>
+              <div class="serv-meta__item"><span>Modalidad</span><strong>Presencial / Delivery</strong></div>
               <div class="serv-meta__item"><span>Cobertura</span><strong>RD</strong></div>
-              <div class="serv-meta__item"><span>Duración</span><strong>2 a 5 días</strong></div>
+              <div class="serv-meta__item"><span>Precio</span><strong>Por pieza</strong></div>
             </div>
             <div class="serv-card__actions">
               <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
@@ -540,48 +335,45 @@
             </div>
           </article>
 
-          <!-- ===== FIREWALL ===== -->
-          <article class="serv-card serv-card--firewall" id="firewall" data-serv="audit" data-reveal>
+          <!-- ==================== 3. SOPORTE MENSUAL ==================== -->
+          <article class="serv-card serv-card--support" id="support" data-serv="soporte" data-reveal>
             <div class="serv-card__head">
-              <div class="serv-card__icon"><i class="fa-solid fa-fire-flame-curved"></i></div>
+              <div class="serv-card__icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
               <div class="serv-card__heading">
-                <span class="serv-card__tag">CIBERSEGURIDAD · PERÍMETRO</span>
-                <h2 class="serv-card__title">Firewall y Seguridad Perimetral</h2>
-                <p class="serv-card__subtitle">Protección del borde de tu red con firewalls de nueva generación.</p>
+                <span class="serv-card__tag">SOPORTE CONTINUO</span>
+                <h2 class="serv-card__title">Soporte Mensual</h2>
+                <p class="serv-card__subtitle">Mantenimiento preventivo y asistencia técnica continua para tu infraestructura.</p>
               </div>
             </div>
             <div class="serv-card__grid">
               <div>
                 <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
                 <ul class="serv-block__list">
-                  <li><i class="fa-solid fa-check"></i> Configuración de Fortinet, pfSense, OPNsense o Cisco ASA</li>
-                  <li><i class="fa-solid fa-check"></i> Reglas de firewall basadas en zona y aplicación</li>
-                  <li><i class="fa-solid fa-check"></i> NAT, port forwarding y segmentación de red (DMZ)</li>
-                  <li><i class="fa-solid fa-check"></i> Filtrado de contenido web y bloqueo por categorías</li>
-                  <li><i class="fa-solid fa-check"></i> VPN integrada (IPsec / SSL) para acceso remoto</li>
-                  <li><i class="fa-solid fa-check"></i> Detección y prevención de intrusiones (IDS/IPS)</li>
-                  <li><i class="fa-solid fa-check"></i> Antivirus y anti-malware a nivel de gateway</li>
-                  <li><i class="fa-solid fa-check"></i> Logs centralizados y alertas en tiempo real</li>
-                  <li><i class="fa-solid fa-check"></i> Respaldos de configuración periódicos</li>
-                  <li><i class="fa-solid fa-check"></i> Documentación completa de reglas y políticas</li>
+                  <li><i class="fa-solid fa-check"></i> Monitoreo proactivo 24/7</li>
+                  <li><i class="fa-solid fa-check"></i> Mantenimiento preventivo programado</li>
+                  <li><i class="fa-solid fa-check"></i> Atención de incidencias (SLA)</li>
+                  <li><i class="fa-solid fa-check"></i> Actualización de firmware y parches</li>
+                  <li><i class="fa-solid fa-check"></i> Gestión de respaldos automáticos</li>
+                  <li><i class="fa-solid fa-check"></i> Administración de usuarios</li>
+                  <li><i class="fa-solid fa-check"></i> Reporte mensual con métricas</li>
                 </ul>
               </div>
               <div>
                 <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
                 <ul class="serv-block__list">
-                  <li><i class="fa-solid fa-1"></i> Análisis de tráfico y servicios requeridos</li>
-                  <li><i class="fa-solid fa-2"></i> Selección del equipo adecuado al tamaño de red</li>
-                  <li><i class="fa-solid fa-3"></i> Instalación física y configuración base</li>
-                  <li><i class="fa-solid fa-4"></i> Definición de políticas y reglas por zona</li>
-                  <li><i class="fa-solid fa-5"></i> Pruebas de penetración desde el exterior</li>
-                  <li><i class="fa-solid fa-6"></i> Documentación final y capacitación al equipo</li>
+                  <li><i class="fa-solid fa-1"></i> Auditoría inicial</li>
+                  <li><i class="fa-solid fa-2"></i> Configuración de monitoreo</li>
+                  <li><i class="fa-solid fa-3"></i> Definición de SLAs</li>
+                  <li><i class="fa-solid fa-4"></i> Atención de tickets</li>
+                  <li><i class="fa-solid fa-5"></i> Mantenimiento programado</li>
+                  <li><i class="fa-solid fa-6"></i> Reuniones de revisión</li>
                 </ul>
               </div>
             </div>
             <div class="serv-meta">
-              <div class="serv-meta__item"><span>Modalidad</span><strong>Presencial / Remoto</strong></div>
+              <div class="serv-meta__item"><span>Modalidad</span><strong>Remoto + Visitas</strong></div>
               <div class="serv-meta__item"><span>Cobertura</span><strong>RD + Global</strong></div>
-              <div class="serv-meta__item"><span>Duración</span><strong>3 a 7 días</strong></div>
+              <div class="serv-meta__item"><span>Contrato</span><strong>Mensual</strong></div>
             </div>
             <div class="serv-card__actions">
               <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
@@ -589,204 +381,54 @@
             </div>
           </article>
 
-          <!-- ===== CABLEADO ESTRUCTURADO ===== -->
-          <article class="serv-card serv-card--cableado" id="cableado" data-serv="red" data-reveal>
+          <!-- ==================== 4. CAPACITACIÓN ==================== -->
+          <article class="serv-card serv-card--training" id="training" data-serv="formacion" data-reveal>
             <div class="serv-card__head">
-              <div class="serv-card__icon"><i class="fa-solid fa-ethernet"></i></div>
+              <div class="serv-card__icon"><i class="fa-solid fa-chalkboard-user"></i></div>
               <div class="serv-card__heading">
-                <span class="serv-card__tag">REDES · INFRAESTRUCTURA</span>
-                <h2 class="serv-card__title">Cableado Estructurado Certificado</h2>
-                <p class="serv-card__subtitle">Instalación de cableado Cat 5e / 6 / 6A con certificación de puntos.</p>
+                <span class="serv-card__tag">FORMACIÓN · CISCO ACADEMY</span>
+                <h2 class="serv-card__title">Capacitación Técnica</h2>
+                <p class="serv-card__subtitle">Formación oficial Cisco Networking Academy para empresas y profesionales.</p>
               </div>
             </div>
             <div class="serv-card__grid">
               <div>
                 <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
                 <ul class="serv-block__list">
-                  <li><i class="fa-solid fa-check"></i> Diseño de rutas y canalizaciones (bandejas, tuberías)</li>
-                  <li><i class="fa-solid fa-check"></i> Cableado UTP/FTP Cat 5e, 6 o 6A</li>
-                  <li><i class="fa-solid fa-check"></i> Ponchado profesional y etiquetado de extremos</li>
-                  <li><i class="fa-solid fa-check"></i> Instalación de patch panel y jacks RJ45</li>
-                  <li><i class="fa-solid fa-check"></i> Certificación de cada punto con tester Fluke</li>
-                  <li><i class="fa-solid fa-check"></i> Pruebas de continuidad, NEXT y pérdida de retorno</li>
-                  <li><i class="fa-solid fa-check"></i> Reporte de certificación por punto</li>
-                  <li><i class="fa-solid fa-check"></i> Documentación con rutas y numeración</li>
-                  <li><i class="fa-solid fa-check"></i> Ordenamiento de racks y cable managers</li>
-                  <li><i class="fa-solid fa-check"></i> Garantía sobre la instalación</li>
+                  <li><i class="fa-solid fa-check"></i> Material oficial Cisco</li>
+                  <li><i class="fa-solid fa-check"></i> Rutas: CCNA, CCNP, CyberOps</li>
+                  <li><i class="fa-solid fa-check"></i> Laboratorios prácticos</li>
+                  <li><i class="fa-solid fa-check"></i> Casos reales de la empresa</li>
+                  <li><i class="fa-solid fa-check"></i> Evaluaciones y examen final</li>
+                  <li><i class="fa-solid fa-check"></i> Certificado digital (Credly)</li>
+                  <li><i class="fa-solid fa-check"></i> Grabación de sesiones</li>
                 </ul>
               </div>
               <div>
                 <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
                 <ul class="serv-block__list">
-                  <li><i class="fa-solid fa-1"></i> Visita técnica y medición de distancias</li>
-                  <li><i class="fa-solid fa-2"></i> Presupuesto por punto + materiales detallados</li>
-                  <li><i class="fa-solid fa-3"></i> Instalación del cableado por fases</li>
-                  <li><i class="fa-solid fa-4"></i> Ponchado en patch panel y rosetas</li>
-                  <li><i class="fa-solid fa-5"></i> Certificación de cada punto con tester</li>
-                  <li><i class="fa-solid fa-6"></i> Entrega de plano, reporte y garantía</li>
+                  <li><i class="fa-solid fa-1"></i> Diagnóstico inicial</li>
+                  <li><i class="fa-solid fa-2"></i> Diseño del temario</li>
+                  <li><i class="fa-solid fa-3"></i> Sesiones teórico-prácticas</li>
+                  <li><i class="fa-solid fa-4"></i> Laboratorios guiados</li>
+                  <li><i class="fa-solid fa-5"></i> Examen final</li>
+                  <li><i class="fa-solid fa-6"></i> Entrega de certificado</li>
                 </ul>
               </div>
             </div>
             <div class="serv-meta">
-              <div class="serv-meta__item"><span>Modalidad</span><strong>Presencial</strong></div>
-              <div class="serv-meta__item"><span>Cobertura</span><strong>RD</strong></div>
-              <div class="serv-meta__item"><span>Precio</span><strong>Por punto</strong></div>
-            </div>
-            <div class="serv-card__actions">
-              <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
-              <a href="contacto.html" class="cyber-btn cyber-btn--secondary"><span>CONSULTAR</span><i class="fa-solid fa-comments"></i></a>
-            </div>
-          </article>
-
-          <!-- ===== VPN CORPORATIVA ===== -->
-          <article class="serv-card serv-card--vpn" id="vpn" data-serv="red" data-reveal>
-            <div class="serv-card__head">
-              <div class="serv-card__icon"><i class="fa-solid fa-user-shield"></i></div>
-              <div class="serv-card__heading">
-                <span class="serv-card__tag">REDES · ACCESO SEGURO</span>
-                <h2 class="serv-card__title">VPN Corporativa (Site-to-Site)</h2>
-                <p class="serv-card__subtitle">Conexión segura entre sedes y acceso remoto para empleados.</p>
-              </div>
-            </div>
-            <div class="serv-card__grid">
-              <div>
-                <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
-                <ul class="serv-block__list">
-                  <li><i class="fa-solid fa-check"></i> VPN Site-to-Site entre sedes</li>
-                  <li><i class="fa-solid fa-check"></i> VPN Remote Access para empleados en cualquier lugar</li>
-                  <li><i class="fa-solid fa-check"></i> Configuración con IPsec, SSL/TLS o WireGuard</li>
-                  <li><i class="fa-solid fa-check"></i> Autenticación por usuario, certificado o MFA</li>
-                  <li><i class="fa-solid fa-check"></i> Split tunneling (opcional para optimizar tráfico)</li>
-                  <li><i class="fa-solid fa-check"></i> Reglas de firewall integradas</li>
-                  <li><i class="fa-solid fa-check"></i> QoS para tráfico VPN sensible</li>
-                  <li><i class="fa-solid fa-check"></i> Manual de configuración para usuarios</li>
-                  <li><i class="fa-solid fa-check"></i> Perfiles preconfigurados (.ovpn, WireGuard, etc.)</li>
-                  <li><i class="fa-solid fa-check"></i> Soporte durante la primera semana de uso</li>
-                </ul>
-              </div>
-              <div>
-                <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
-                <ul class="serv-block__list">
-                  <li><i class="fa-solid fa-1"></i> Análisis de sedes, usuarios y tráfico esperado</li>
-                  <li><i class="fa-solid fa-2"></i> Diseño de la topología VPN (hub-and-spoke o malla)</li>
-                  <li><i class="fa-solid fa-3"></i> Configuración de endpoints y políticas</li>
-                  <li><i class="fa-solid fa-4"></i> Pruebas de túnel, throughput y failover</li>
-                  <li><i class="fa-solid fa-5"></i> Despliegue y entrega de perfiles a usuarios</li>
-                  <li><i class="fa-solid fa-6"></i> Capacitación y manual de uso</li>
-                </ul>
-              </div>
-            </div>
-            <div class="serv-meta">
-              <div class="serv-meta__item"><span>Modalidad</span><strong>Remoto + Presencial</strong></div>
+              <div class="serv-meta__item"><span>Modalidad</span><strong>Presencial / Virtual</strong></div>
               <div class="serv-meta__item"><span>Cobertura</span><strong>RD + Global</strong></div>
-              <div class="serv-meta__item"><span>Duración</span><strong>2 a 5 días</strong></div>
+              <div class="serv-meta__item"><span>Duración</span><strong>A medida</strong></div>
             </div>
             <div class="serv-card__actions">
               <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
-              <a href="contacto.html" class="cyber-btn cyber-btn--secondary"><span>CONSULTAR</span><i class="fa-solid fa-comments"></i></a>
+              <a href="cursos.html" class="cyber-btn cyber-btn--secondary"><span>VER CURSOS</span><i class="fa-solid fa-graduation-cap"></i></a>
             </div>
           </article>
 
-          <!-- ===== PENTESTING ===== -->
-          <article class="serv-card serv-card--pentest" id="pentest" data-serv="audit" data-reveal>
-            <div class="serv-card__head">
-              <div class="serv-card__icon"><i class="fa-solid fa-bullseye"></i></div>
-              <div class="serv-card__heading">
-                <span class="serv-card__tag">CIBERSEGURIDAD OFENSIVA</span>
-                <h2 class="serv-card__title">Pentesting</h2>
-                <p class="serv-card__subtitle">Pruebas de penetración autorizadas sobre infraestructura y aplicaciones web.</p>
-              </div>
-            </div>
-            <div class="serv-card__grid">
-              <div>
-                <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
-                <ul class="serv-block__list">
-                  <li><i class="fa-solid fa-check"></i> Reconocimiento pasivo (OSINT) y activo</li>
-                  <li><i class="fa-solid fa-check"></i> Escaneo de vulnerabilidades con herramientas pro</li>
-                  <li><i class="fa-solid fa-check"></i> Explotación controlada de hallazgos (con autorización)</li>
-                  <li><i class="fa-solid fa-check"></i> Pruebas en red interna y externa</li>
-                  <li><i class="fa-solid fa-check"></i> Pruebas en aplicaciones web (OWASP Top 10)</li>
-                  <li><i class="fa-solid fa-check"></i> Escalada de privilegios y post-explotación</li>
-                  <li><i class="fa-solid fa-check"></i> Pruebas de ingeniería social (opcional)</li>
-                  <li><i class="fa-solid fa-check"></i> Prueba de contraseñas y hashes (offline)</li>
-                  <li><i class="fa-solid fa-check"></i> Informe ejecutivo + técnico con PoC y capturas</li>
-                  <li><i class="fa-solid fa-check"></i> Plan de remediación priorizado por riesgo</li>
-                </ul>
-              </div>
-              <div>
-                <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
-                <ul class="serv-block__list">
-                  <li><i class="fa-solid fa-1"></i> Firma de autorización y NDA</li>
-                  <li><i class="fa-solid fa-2"></i> Definición clara del alcance y reglas de juego</li>
-                  <li><i class="fa-solid fa-3"></i> Reconocimiento y escaneo (Nmap, Nessus, Burp)</li>
-                  <li><i class="fa-solid fa-4"></i> Explotación controlada con evidencia</li>
-                  <li><i class="fa-solid fa-5"></i> Post-explotación, pivoting y persistencia</li>
-                  <li><i class="fa-solid fa-6"></i> Informe final + presentación ejecutiva</li>
-                </ul>
-              </div>
-            </div>
-            <div class="serv-meta">
-              <div class="serv-meta__item"><span>Modalidad</span><strong>Remoto</strong></div>
-              <div class="serv-meta__item"><span>Cobertura</span><strong>Global</strong></div>
-              <div class="serv-meta__item"><span>Duración</span><strong>1 a 3 semanas</strong></div>
-            </div>
-            <div class="serv-card__actions">
-              <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
-              <a href="contacto.html" class="cyber-btn cyber-btn--secondary"><span>CONSULTAR</span><i class="fa-solid fa-comments"></i></a>
-            </div>
-          </article>
-
-          <!-- ===== CLOUD / M365 ===== -->
-          <article class="serv-card serv-card--cloud" id="cloud" data-serv="cloud" data-reveal>
-            <div class="serv-card__head">
-              <div class="serv-card__icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
-              <div class="serv-card__heading">
-                <span class="serv-card__tag">CLOUD · PRODUCTIVIDAD</span>
-                <h2 class="serv-card__title">Migración a Microsoft 365 / Google Workspace</h2>
-                <p class="serv-card__subtitle">Correo corporativo profesional, almacenamiento y colaboración en la nube.</p>
-              </div>
-            </div>
-            <div class="serv-card__grid">
-              <div>
-                <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
-                <ul class="serv-block__list">
-                  <li><i class="fa-solid fa-check"></i> Configuración de dominio propio</li>
-                  <li><i class="fa-solid fa-check"></i> Migración de correos existentes sin pérdida</li>
-                  <li><i class="fa-solid fa-check"></i> Creación de buzones, alias, grupos y listas</li>
-                  <li><i class="fa-solid fa-check"></i> Configuración de SPF, DKIM y DMARC</li>
-                  <li><i class="fa-solid fa-check"></i> Firma corporativa unificada para todos</li>
-                  <li><i class="fa-solid fa-check"></i> Políticas de seguridad (MFA, anti-phishing)</li>
-                  <li><i class="fa-solid fa-check"></i> Configuración de OneDrive / Google Drive</li>
-                  <li><i class="fa-solid fa-check"></i> Teams / Meet / Calendar configurados</li>
-                  <li><i class="fa-solid fa-check"></i> Configuración en dispositivos móviles y PC</li>
-                  <li><i class="fa-solid fa-check"></i> Capacitación al equipo + manual PDF</li>
-                </ul>
-              </div>
-              <div>
-                <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
-                <ul class="serv-block__list">
-                  <li><i class="fa-solid fa-1"></i> Análisis de cuentas y datos actuales</li>
-                  <li><i class="fa-solid fa-2"></i> Alta del dominio en la plataforma elegida</li>
-                  <li><i class="fa-solid fa-3"></i> Verificación DNS (SPF, DKIM, DMARC)</li>
-                  <li><i class="fa-solid fa-4"></i> Migración de correos y archivos compartidos</li>
-                  <li><i class="fa-solid fa-5"></i> Configuración de dispositivos y apps</li>
-                  <li><i class="fa-solid fa-6"></i> Capacitación y entrega de manual</li>
-                </ul>
-              </div>
-            </div>
-            <div class="serv-meta">
-              <div class="serv-meta__item"><span>Modalidad</span><strong>Remoto</strong></div>
-              <div class="serv-meta__item"><span>Cobertura</span><strong>Global</strong></div>
-              <div class="serv-meta__item"><span>Duración</span><strong>2 a 7 días</strong></div>
-            </div>
-            <div class="serv-card__actions">
-              <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
-              <a href="contacto.html" class="cyber-btn cyber-btn--secondary"><span>CONSULTAR</span><i class="fa-solid fa-comments"></i></a>
-            </div>
-          </article>
-
-          <!-- ===== CCTV IP ===== -->
-          <article class="serv-card serv-card--cctv" id="cctv" data-serv="cctv" data-reveal>
+          <!-- ==================== 5. CCTV IP ==================== -->
+          <article class="serv-card serv-card--cctv" id="cctv" data-serv="cloud" data-reveal>
             <div class="serv-card__head">
               <div class="serv-card__icon"><i class="fa-solid fa-video"></i></div>
               <div class="serv-card__heading">
@@ -799,27 +441,24 @@
               <div>
                 <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
                 <ul class="serv-block__list">
-                  <li><i class="fa-solid fa-check"></i> Análisis de puntos de instalación y ángulos de visión</li>
-                  <li><i class="fa-solid fa-check"></i> Cámaras IP (domo, bala, PTZ) Hikvision / Dahua / otras</li>
-                  <li><i class="fa-solid fa-check"></i> Configuración de NVR / NAS con retención</li>
-                  <li><i class="fa-solid fa-check"></i> Acceso remoto desde app móvil y web</li>
-                  <li><i class="fa-solid fa-check"></i> Cableado de red (PoE) y alimentación</li>
-                  <li><i class="fa-solid fa-check"></i> Configuración de grabación por movimiento o continua</li>
-                  <li><i class="fa-solid fa-check"></i> Detección de movimiento y alertas</li>
-                  <li><i class="fa-solid fa-check"></i> Configuración de backups automáticos</li>
-                  <li><i class="fa-solid fa-check"></i> Cálculo de almacenamiento según días de retención</li>
-                  <li><i class="fa-solid fa-check"></i> Capacitación de uso al cliente</li>
+                  <li><i class="fa-solid fa-check"></i> Cámaras IP de alta resolución</li>
+                  <li><i class="fa-solid fa-check"></i> NVR configurado</li>
+                  <li><i class="fa-solid fa-check"></i> Acceso remoto desde app</li>
+                  <li><i class="fa-solid fa-check"></i> Cableado y alimentación PoE</li>
+                  <li><i class="fa-solid fa-check"></i> Detección de movimiento</li>
+                  <li><i class="fa-solid fa-check"></i> Backups automáticos</li>
+                  <li><i class="fa-solid fa-check"></i> Capacitación de uso</li>
                 </ul>
               </div>
               <div>
                 <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
                 <ul class="serv-block__list">
-                  <li><i class="fa-solid fa-1"></i> Visita técnica y levantamiento del sitio</li>
-                  <li><i class="fa-solid fa-2"></i> Diseño y presupuesto por cámara</li>
-                  <li><i class="fa-solid fa-3"></i> Instalación física, cableado y montaje</li>
+                  <li><i class="fa-solid fa-1"></i> Visita técnica</li>
+                  <li><i class="fa-solid fa-2"></i> Presupuesto por cámara</li>
+                  <li><i class="fa-solid fa-3"></i> Instalación física</li>
                   <li><i class="fa-solid fa-4"></i> Configuración de red y NVR</li>
-                  <li><i class="fa-solid fa-5"></i> Pruebas de grabación, movimiento y remoto</li>
-                  <li><i class="fa-solid fa-6"></i> Capacitación al cliente + manual de uso</li>
+                  <li><i class="fa-solid fa-5"></i> Pruebas de grabación</li>
+                  <li><i class="fa-solid fa-6"></i> Capacitación al cliente</li>
                 </ul>
               </div>
             </div>
@@ -834,41 +473,452 @@
             </div>
           </article>
 
-          <!-- ===== MENTORÍA 1:1 ===== -->
-          <article class="serv-card serv-card--mentoria" id="mentoria" data-serv="training" data-reveal>
+          <!-- ==================== 6. DESARROLLO WEB ==================== -->
+          <article class="serv-card serv-card--red" id="web" data-serv="desarrollo" data-reveal>
             <div class="serv-card__head">
-              <div class="serv-card__icon"><i class="fa-solid fa-user-graduate"></i></div>
+              <div class="serv-card__icon"><i class="fa-solid fa-laptop-code"></i></div>
               <div class="serv-card__heading">
-                <span class="serv-card__tag">FORMACIÓN PERSONALIZADA</span>
-                <h2 class="serv-card__title">Mentoría Técnica 1:1</h2>
-                <p class="serv-card__subtitle">Sesiones privadas por videollamada para resolver dudas puntuales o preparar certificaciones.</p>
+                <span class="serv-card__tag">DESARROLLO · SOFTWARE</span>
+                <h2 class="serv-card__title">Desarrollo y Gestión Web</h2>
+                <p class="serv-card__subtitle">Creación de sitios web, landing pages, sistemas a medida y mantenimiento.</p>
               </div>
             </div>
             <div class="serv-card__grid">
               <div>
                 <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
                 <ul class="serv-block__list">
-                  <li><i class="fa-solid fa-check"></i> Sesiones 1:1 por videollamada (Zoom / Meet / Teams)</li>
-                  <li><i class="fa-solid fa-check"></i> Temario 100% adaptado a tus necesidades</li>
-                  <li><i class="fa-solid fa-check"></i> Compartir pantalla y laboratorios en vivo</li>
-                  <li><i class="fa-solid fa-check"></i> Preparación para CCNA, CCNP, CyberOps, ITE</li>
-                  <li><i class="fa-solid fa-check"></i> Resolución de dudas técnicas puntuales</li>
-                  <li><i class="fa-solid fa-check"></i> Revisión de tu configuración / proyecto personal</li>
-                  <li><i class="fa-solid fa-check"></i> Grabación de cada sesión (opcional)</li>
-                  <li><i class="fa-solid fa-check"></i> Materiales, ejercicios y guías descargables</li>
-                  <li><i class="fa-solid fa-check"></i> Soporte por chat entre sesiones</li>
-                  <li><i class="fa-solid fa-check"></i> Descuentos por paquetes de horas</li>
+                  <li><i class="fa-solid fa-check"></i> Diseño responsive</li>
+                  <li><i class="fa-solid fa-check"></i> Páginas web o landing pages</li>
+                  <li><i class="fa-solid fa-check"></i> Módulos funcionales (login, pagos)</li>
+                  <li><i class="fa-solid fa-check"></i> Panel administrable</li>
+                  <li><i class="fa-solid fa-check"></i> Optimización SEO básica</li>
+                  <li><i class="fa-solid fa-check"></i> Hosting y SSL incluidos</li>
+                  <li><i class="fa-solid fa-check"></i> Capacitación de administración</li>
                 </ul>
               </div>
               <div>
                 <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
                 <ul class="serv-block__list">
-                  <li><i class="fa-solid fa-1"></i> Llamada inicial gratuita (15 min) para conocernos</li>
-                  <li><i class="fa-solid fa-2"></i> Definición clara de objetivos y plazo</li>
-                  <li><i class="fa-solid fa-3"></i> Plan de sesiones y temario personalizado</li>
-                  <li><i class="fa-solid fa-4"></i> Sesiones programadas según tu disponibilidad</li>
-                  <li><i class="fa-solid fa-5"></i> Ejercicios y proyectos entre sesiones</li>
-                  <li><i class="fa-solid fa-6"></i> Evaluación de progreso y ajuste continuo</li>
+                  <li><i class="fa-solid fa-1"></i> Reunión de requerimientos</li>
+                  <li><i class="fa-solid fa-2"></i> Wireframes visuales</li>
+                  <li><i class="fa-solid fa-3"></i> Desarrollo de módulos</li>
+                  <li><i class="fa-solid fa-4"></i> Revisión y ajustes</li>
+                  <li><i class="fa-solid fa-5"></i> Despliegue a producción</li>
+                  <li><i class="fa-solid fa-6"></i> Entrega y capacitación</li>
+                </ul>
+              </div>
+            </div>
+            <div class="serv-meta">
+              <div class="serv-meta__item"><span>Modalidad</span><strong>Remoto</strong></div>
+              <div class="serv-meta__item"><span>Cobertura</span><strong>Global</strong></div>
+              <div class="serv-meta__item"><span>Duración</span><strong>2 a 6 semanas</strong></div>
+            </div>
+            <div class="serv-card__actions">
+              <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
+              <a href="contacto.html" class="cyber-btn cyber-btn--secondary"><span>CONSULTAR</span><i class="fa-solid fa-comments"></i></a>
+            </div>
+          </article>
+
+          <!-- ==================== 7. RED EMPRESARIAL ==================== -->
+          <article class="serv-card serv-card--red" id="red" data-serv="redes" data-reveal>
+            <div class="serv-card__head">
+              <div class="serv-card__icon"><i class="fa-solid fa-network-wired"></i></div>
+              <div class="serv-card__heading">
+                <span class="serv-card__tag">REDES · CISCO</span>
+                <h2 class="serv-card__title">Red Empresarial</h2>
+                <p class="serv-card__subtitle">Diseño, implementación y documentación de infraestructura de red empresarial.</p>
+              </div>
+            </div>
+            <div class="serv-card__grid">
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-check"></i> Levantamiento de red</li>
+                  <li><i class="fa-solid fa-check"></i> Topología documentada</li>
+                  <li><i class="fa-solid fa-check"></i> Configuración de routers y switches</li>
+                  <li><i class="fa-solid fa-check"></i> Segmentación de VLANs</li>
+                  <li><i class="fa-solid fa-check"></i> Enrutamiento y QoS</li>
+                  <li><i class="fa-solid fa-check"></i> VPNs y acceso remoto</li>
+                  <li><i class="fa-solid fa-check"></i> Diagramas técnicos</li>
+                </ul>
+              </div>
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-1"></i> Reunión inicial</li>
+                  <li><i class="fa-solid fa-2"></i> Inventario actual</li>
+                  <li><i class="fa-solid fa-3"></i> Propuesta técnica</li>
+                  <li><i class="fa-solid fa-4"></i> Despliegue por fases</li>
+                  <li><i class="fa-solid fa-5"></i> Pruebas de rendimiento</li>
+                  <li><i class="fa-solid fa-6"></i> Transferencia de conocimiento</li>
+                </ul>
+              </div>
+            </div>
+            <div class="serv-meta">
+              <div class="serv-meta__item"><span>Modalidad</span><strong>Presencial / Remoto</strong></div>
+              <div class="serv-meta__item"><span>Cobertura</span><strong>RD + Global</strong></div>
+              <div class="serv-meta__item"><span>Duración</span><strong>1 a 4 semanas</strong></div>
+            </div>
+            <div class="serv-card__actions">
+              <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
+              <a href="contacto.html" class="cyber-btn cyber-btn--secondary"><span>CONSULTAR</span><i class="fa-solid fa-comments"></i></a>
+            </div>
+          </article>
+
+          <!-- ==================== 8. AUDITORÍA ==================== -->
+          <article class="serv-card serv-card--audit" id="audit" data-serv="seguridad" data-reveal>
+            <div class="serv-card__head">
+              <div class="serv-card__icon"><i class="fa-solid fa-shield-halved"></i></div>
+              <div class="serv-card__heading">
+                <span class="serv-card__tag">CIBERSEGURIDAD</span>
+                <h2 class="serv-card__title">Auditoría de Seguridad</h2>
+                <p class="serv-card__subtitle">Evaluación completa del estado de seguridad de tu infraestructura.</p>
+              </div>
+            </div>
+            <div class="serv-card__grid">
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-check"></i> Escaneo de vulnerabilidades</li>
+                  <li><i class="fa-solid fa-check"></i> Análisis de configuraciones</li>
+                  <li><i class="fa-solid fa-check"></i> Revisión de contraseñas y accesos</li>
+                  <li><i class="fa-solid fa-check"></i> Análisis de logs</li>
+                  <li><i class="fa-solid fa-check"></i> Pruebas de penetración controladas</li>
+                  <li><i class="fa-solid fa-check"></i> Plan de hardening (CVSS)</li>
+                  <li><i class="fa-solid fa-check"></i> Informe ejecutivo y técnico</li>
+                </ul>
+              </div>
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-1"></i> Firma de autorización (NDA)</li>
+                  <li><i class="fa-solid fa-2"></i> Recolección de información</li>
+                  <li><i class="fa-solid fa-3"></i> Escaneo activo</li>
+                  <li><i class="fa-solid fa-4"></i> Explotación de hallazgos</li>
+                  <li><i class="fa-solid fa-5"></i> Clasificación por severidad</li>
+                  <li><i class="fa-solid fa-6"></i> Presentación de resultados</li>
+                </ul>
+              </div>
+            </div>
+            <div class="serv-meta">
+              <div class="serv-meta__item"><span>Modalidad</span><strong>Remoto / Presencial</strong></div>
+              <div class="serv-meta__item"><span>Cobertura</span><strong>Global</strong></div>
+              <div class="serv-meta__item"><span>Duración</span><strong>1 a 3 semanas</strong></div>
+            </div>
+            <div class="serv-card__actions">
+              <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
+              <a href="contacto.html" class="cyber-btn cyber-btn--secondary"><span>CONSULTAR</span><i class="fa-solid fa-comments"></i></a>
+            </div>
+          </article>
+
+          <!-- ==================== 9. FIREWALL ==================== -->
+          <article class="serv-card serv-card--firewall" id="firewall" data-serv="redes" data-reveal>
+            <div class="serv-card__head">
+              <div class="serv-card__icon"><i class="fa-solid fa-fire-flame-curved"></i></div>
+              <div class="serv-card__heading">
+                <span class="serv-card__tag">SEGURIDAD · PERÍMETRO</span>
+                <h2 class="serv-card__title">Firewall Perimetral</h2>
+                <p class="serv-card__subtitle">Protección del borde de tu red con firewalls de nueva generación.</p>
+              </div>
+            </div>
+            <div class="serv-card__grid">
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-check"></i> Configuración de Fortinet / pfSense</li>
+                  <li><i class="fa-solid fa-check"></i> Reglas de firewall</li>
+                  <li><i class="fa-solid fa-check"></i> NAT y segmentación (DMZ)</li>
+                  <li><i class="fa-solid fa-check"></i> Filtrado web</li>
+                  <li><i class="fa-solid fa-check"></i> VPN integrada</li>
+                  <li><i class="fa-solid fa-check"></i> Detección de intrusiones (IDS/IPS)</li>
+                  <li><i class="fa-solid fa-check"></i> Respaldos de configuración</li>
+                </ul>
+              </div>
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-1"></i> Análisis de tráfico</li>
+                  <li><i class="fa-solid fa-2"></i> Selección del equipo</li>
+                  <li><i class="fa-solid fa-3"></i> Instalación y configuración base</li>
+                  <li><i class="fa-solid fa-4"></i> Políticas por zona</li>
+                  <li><i class="fa-solid fa-5"></i> Pruebas de penetración externa</li>
+                  <li><i class="fa-solid fa-6"></i> Documentación y capacitación</li>
+                </ul>
+              </div>
+            </div>
+            <div class="serv-meta">
+              <div class="serv-meta__item"><span>Modalidad</span><strong>Presencial / Remoto</strong></div>
+              <div class="serv-meta__item"><span>Cobertura</span><strong>RD + Global</strong></div>
+              <div class="serv-meta__item"><span>Duración</span><strong>3 a 7 días</strong></div>
+            </div>
+            <div class="serv-card__actions">
+              <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
+              <a href="contacto.html" class="cyber-btn cyber-btn--secondary"><span>CONSULTAR</span><i class="fa-solid fa-comments"></i></a>
+            </div>
+          </article>
+
+          <!-- ==================== 10. WIFI ==================== -->
+          <article class="serv-card serv-card--wifi" id="wifi" data-serv="redes" data-reveal>
+            <div class="serv-card__head">
+              <div class="serv-card__icon"><i class="fa-solid fa-wifi"></i></div>
+              <div class="serv-card__heading">
+                <span class="serv-card__tag">REDES INALÁMBRICAS</span>
+                <h2 class="serv-card__title">Diseño WiFi Empresarial</h2>
+                <p class="serv-card__subtitle">Planificación, site survey y configuración de redes WiFi de alto rendimiento.</p>
+              </div>
+            </div>
+            <div class="serv-card__grid">
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-check"></i> Site survey</li>
+                  <li><i class="fa-solid fa-check"></i> Planificación de canales</li>
+                  <li><i class="fa-solid fa-check"></i> Ubicación de APs (heat map)</li>
+                  <li><i class="fa-solid fa-check"></i> Múltiples SSIDs</li>
+                  <li><i class="fa-solid fa-check"></i> Roaming sin cortes</li>
+                  <li><i class="fa-solid fa-check"></i> Seguridad WPA3</li>
+                  <li><i class="fa-solid fa-check"></i> Mapa de calor final</li>
+                </ul>
+              </div>
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-1"></i> Levantamiento del plano</li>
+                  <li><i class="fa-solid fa-2"></i> Análisis de interferencias</li>
+                  <li><i class="fa-solid fa-3"></i> Diseño de ubicación (heat map)</li>
+                  <li><i class="fa-solid fa-4"></i> Instalación física</li>
+                  <li><i class="fa-solid fa-5"></i> Validación de cobertura</li>
+                  <li><i class="fa-solid fa-6"></i> Entrega de documentación</li>
+                </ul>
+              </div>
+            </div>
+            <div class="serv-meta">
+              <div class="serv-meta__item"><span>Modalidad</span><strong>Presencial</strong></div>
+              <div class="serv-meta__item"><span>Cobertura</span><strong>RD</strong></div>
+              <div class="serv-meta__item"><span>Duración</span><strong>2 a 5 días</strong></div>
+            </div>
+            <div class="serv-card__actions">
+              <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
+              <a href="contacto.html" class="cyber-btn cyber-btn--secondary"><span>CONSULTAR</span><i class="fa-solid fa-comments"></i></a>
+            </div>
+          </article>
+
+          <!-- ==================== 11. VPN ==================== -->
+          <article class="serv-card serv-card--vpn" id="vpn" data-serv="redes" data-reveal>
+            <div class="serv-card__head">
+              <div class="serv-card__icon"><i class="fa-solid fa-user-shield"></i></div>
+              <div class="serv-card__heading">
+                <span class="serv-card__tag">REDES · ACCESO SEGURO</span>
+                <h2 class="serv-card__title">VPN Corporativa</h2>
+                <p class="serv-card__subtitle">Conexión segura entre sedes y acceso remoto para empleados.</p>
+              </div>
+            </div>
+            <div class="serv-card__grid">
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-check"></i> VPN Site-to-Site</li>
+                  <li><i class="fa-solid fa-check"></i> VPN Remote Access</li>
+                  <li><i class="fa-solid fa-check"></i> IPsec, SSL o WireGuard</li>
+                  <li><i class="fa-solid fa-check"></i> Autenticación MFA</li>
+                  <li><i class="fa-solid fa-check"></i> Split tunneling</li>
+                  <li><i class="fa-solid fa-check"></i> QoS para VPN</li>
+                  <li><i class="fa-solid fa-check"></i> Manual de configuración</li>
+                </ul>
+              </div>
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-1"></i> Análisis de sedes y tráfico</li>
+                  <li><i class="fa-solid fa-2"></i> Diseño de topología</li>
+                  <li><i class="fa-solid fa-3"></i> Configuración de endpoints</li>
+                  <li><i class="fa-solid fa-4"></i> Pruebas de túnel</li>
+                  <li><i class="fa-solid fa-5"></i> Despliegue a usuarios</li>
+                  <li><i class="fa-solid fa-6"></i> Capacitación</li>
+                </ul>
+              </div>
+            </div>
+            <div class="serv-meta">
+              <div class="serv-meta__item"><span>Modalidad</span><strong>Remoto + Presencial</strong></div>
+              <div class="serv-meta__item"><span>Cobertura</span><strong>RD + Global</strong></div>
+              <div class="serv-meta__item"><span>Duración</span><strong>2 a 5 días</strong></div>
+            </div>
+            <div class="serv-card__actions">
+              <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
+              <a href="contacto.html" class="cyber-btn cyber-btn--secondary"><span>CONSULTAR</span><i class="fa-solid fa-comments"></i></a>
+            </div>
+          </article>
+
+          <!-- ==================== 12. PENTESTING ==================== -->
+          <article class="serv-card serv-card--pentest" id="pentest" data-serv="seguridad" data-reveal>
+            <div class="serv-card__head">
+              <div class="serv-card__icon"><i class="fa-solid fa-bullseye"></i></div>
+              <div class="serv-card__heading">
+                <span class="serv-card__tag">CIBERSEGURIDAD OFENSIVA</span>
+                <h2 class="serv-card__title">Pentesting</h2>
+                <p class="serv-card__subtitle">Pruebas de penetración autorizadas sobre infraestructura y aplicaciones web.</p>
+              </div>
+            </div>
+            <div class="serv-card__grid">
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-check"></i> Reconocimiento OSINT</li>
+                  <li><i class="fa-solid fa-check"></i> Escaneo de vulnerabilidades</li>
+                  <li><i class="fa-solid fa-check"></i> Explotación controlada</li>
+                  <li><i class="fa-solid fa-check"></i> Pruebas web (OWASP Top 10)</li>
+                  <li><i class="fa-solid fa-check"></i> Escalada de privilegios</li>
+                  <li><i class="fa-solid fa-check"></i> Ingeniería social (opcional)</li>
+                  <li><i class="fa-solid fa-check"></i> Informe con PoC</li>
+                </ul>
+              </div>
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-1"></i> Firma de autorización</li>
+                  <li><i class="fa-solid fa-2"></i> Definición de alcance</li>
+                  <li><i class="fa-solid fa-3"></i> Reconocimiento y escaneo</li>
+                  <li><i class="fa-solid fa-4"></i> Explotación con evidencia</li>
+                  <li><i class="fa-solid fa-5"></i> Post-explotación</li>
+                  <li><i class="fa-solid fa-6"></i> Informe y presentación</li>
+                </ul>
+              </div>
+            </div>
+            <div class="serv-meta">
+              <div class="serv-meta__item"><span>Modalidad</span><strong>Remoto</strong></div>
+              <div class="serv-meta__item"><span>Cobertura</span><strong>Global</strong></div>
+              <div class="serv-meta__item"><span>Duración</span><strong>1 a 3 semanas</strong></div>
+            </div>
+            <div class="serv-card__actions">
+              <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
+              <a href="contacto.html" class="cyber-btn cyber-btn--secondary"><span>CONSULTAR</span><i class="fa-solid fa-comments"></i></a>
+            </div>
+          </article>
+
+          <!-- ==================== 13. CLOUD ==================== -->
+          <article class="serv-card serv-card--cloud" id="cloud" data-serv="cloud" data-reveal>
+            <div class="serv-card__head">
+              <div class="serv-card__icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+              <div class="serv-card__heading">
+                <span class="serv-card__tag">CLOUD · PRODUCTIVIDAD</span>
+                <h2 class="serv-card__title">Migración Cloud</h2>
+                <p class="serv-card__subtitle">Correo corporativo, almacenamiento y colaboración en la nube (M365 / Workspace).</p>
+              </div>
+            </div>
+            <div class="serv-card__grid">
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-check"></i> Dominio propio</li>
+                  <li><i class="fa-solid fa-check"></i> Migración de correos</li>
+                  <li><i class="fa-solid fa-check"></i> Buzones, alias y grupos</li>
+                  <li><i class="fa-solid fa-check"></i> SPF, DKIM y DMARC</li>
+                  <li><i class="fa-solid fa-check"></i> Firma corporativa</li>
+                  <li><i class="fa-solid fa-check"></i> Políticas MFA</li>
+                  <li><i class="fa-solid fa-check"></i> Configuración de dispositivos</li>
+                </ul>
+              </div>
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-1"></i> Análisis de cuentas</li>
+                  <li><i class="fa-solid fa-2"></i> Alta del dominio</li>
+                  <li><i class="fa-solid fa-3"></i> Verificación DNS</li>
+                  <li><i class="fa-solid fa-4"></i> Migración de datos</li>
+                  <li><i class="fa-solid fa-5"></i> Configuración de apps</li>
+                  <li><i class="fa-solid fa-6"></i> Capacitación</li>
+                </ul>
+              </div>
+            </div>
+            <div class="serv-meta">
+              <div class="serv-meta__item"><span>Modalidad</span><strong>Remoto</strong></div>
+              <div class="serv-meta__item"><span>Cobertura</span><strong>Global</strong></div>
+              <div class="serv-meta__item"><span>Duración</span><strong>2 a 7 días</strong></div>
+            </div>
+            <div class="serv-card__actions">
+              <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
+              <a href="contacto.html" class="cyber-btn cyber-btn--secondary"><span>CONSULTAR</span><i class="fa-solid fa-comments"></i></a>
+            </div>
+          </article>
+
+          <!-- ==================== 14. CABLEADO ==================== -->
+          <article class="serv-card serv-card--cableado" id="cableado" data-serv="redes" data-reveal>
+            <div class="serv-card__head">
+              <div class="serv-card__icon"><i class="fa-solid fa-ethernet"></i></div>
+              <div class="serv-card__heading">
+                <span class="serv-card__tag">REDES · INFRAESTRUCTURA</span>
+                <h2 class="serv-card__title">Cableado Estructurado</h2>
+                <p class="serv-card__subtitle">Instalación de cableado Cat 5e / 6 / 6A con certificación de puntos.</p>
+              </div>
+            </div>
+            <div class="serv-card__grid">
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-check"></i> Diseño de rutas</li>
+                  <li><i class="fa-solid fa-check"></i> Cableado UTP/FTP</li>
+                  <li><i class="fa-solid fa-check"></i> Ponchado y etiquetado</li>
+                  <li><i class="fa-solid fa-check"></i> Patch panel y jacks RJ45</li>
+                  <li><i class="fa-solid fa-check"></i> Certificación (Fluke)</li>
+                  <li><i class="fa-solid fa-check"></i> Reporte de certificación</li>
+                  <li><i class="fa-solid fa-check"></i> Ordenamiento de racks</li>
+                </ul>
+              </div>
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-1"></i> Visita y medición</li>
+                  <li><i class="fa-solid fa-2"></i> Presupuesto por punto</li>
+                  <li><i class="fa-solid fa-3"></i> Instalación por fases</li>
+                  <li><i class="fa-solid fa-4"></i> Ponchado de paneles</li>
+                  <li><i class="fa-solid fa-5"></i> Certificación de puntos</li>
+                  <li><i class="fa-solid fa-6"></i> Entrega de reporte</li>
+                </ul>
+              </div>
+            </div>
+            <div class="serv-meta">
+              <div class="serv-meta__item"><span>Modalidad</span><strong>Presencial</strong></div>
+              <div class="serv-meta__item"><span>Cobertura</span><strong>RD</strong></div>
+              <div class="serv-meta__item"><span>Precio</span><strong>Por punto</strong></div>
+            </div>
+            <div class="serv-card__actions">
+              <a href="cotizador.html" class="cyber-btn cyber-btn--primary"><span>COTIZAR ESTE SERVICIO</span><i class="fa-solid fa-calculator"></i></a>
+              <a href="contacto.html" class="cyber-btn cyber-btn--secondary"><span>CONSULTAR</span><i class="fa-solid fa-comments"></i></a>
+            </div>
+          </article>
+
+          <!-- ==================== 15. MENTORÍA ==================== -->
+          <article class="serv-card serv-card--mentoria" id="mentoria" data-serv="formacion" data-reveal>
+            <div class="serv-card__head">
+              <div class="serv-card__icon"><i class="fa-solid fa-user-graduate"></i></div>
+              <div class="serv-card__heading">
+                <span class="serv-card__tag">FORMACIÓN PERSONALIZADA</span>
+                <h2 class="serv-card__title">Mentoría Técnica 1:1</h2>
+                <p class="serv-card__subtitle">Sesiones privadas por videollamada para preparar certificaciones o resolver dudas.</p>
+              </div>
+            </div>
+            <div class="serv-card__grid">
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-check-double"></i> Qué incluye</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-check"></i> Sesiones 1:1 por videollamada</li>
+                  <li><i class="fa-solid fa-check"></i> Temario 100% adaptado</li>
+                  <li><i class="fa-solid fa-check"></i> Laboratorios en vivo</li>
+                  <li><i class="fa-solid fa-check"></i> Preparación CCNA, CCNP, CyberOps</li>
+                  <li><i class="fa-solid fa-check"></i> Resolución de dudas</li>
+                  <li><i class="fa-solid fa-check"></i> Grabación de sesiones</li>
+                  <li><i class="fa-solid fa-check"></i> Soporte por chat</li>
+                </ul>
+              </div>
+              <div>
+                <div class="serv-block__title"><i class="fa-solid fa-list-ol"></i> Cómo se hace</div>
+                <ul class="serv-block__list">
+                  <li><i class="fa-solid fa-1"></i> Llamada inicial gratuita</li>
+                  <li><i class="fa-solid fa-2"></i> Definición de objetivos</li>
+                  <li><i class="fa-solid fa-3"></i> Plan de sesiones</li>
+                  <li><i class="fa-solid fa-4"></i> Sesiones programadas</li>
+                  <li><i class="fa-solid fa-5"></i> Ejercicios entre sesiones</li>
+                  <li><i class="fa-solid fa-6"></i> Evaluación de progreso</li>
                 </ul>
               </div>
             </div>

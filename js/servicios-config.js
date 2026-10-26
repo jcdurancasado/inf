@@ -12,7 +12,7 @@ window.SOPORTE_CONFIG = {
     nombre: 'Julio C. Durán Casado',
     cedula: '016-0017787-5',
     profesion: 'Ingeniero en Redes y Telecomunicaciones',
-    telefono: '+1 829-421-3163',
+    telefono: '+1 000-000-0000',
     email: 'jcdurancasado@gmail.com',
     web: 'jcdurancasado.github.io/inf'
   },
@@ -492,8 +492,9 @@ window.SOPORTE_CONFIG = {
   // Genera el Paso 1 y define campos por servicio
   // ============================================
   serviciosCotizador: {
-    // ==================== SOPORTE & REPARACIÓN ====================
+    // ==================== 1. REPARACIÓN (custom) ====================
     reparacion: {
+      order: 1,
       label: 'Reparación Técnica',
       category: 'soporte',
       categoryLabel: 'Soporte',
@@ -502,7 +503,10 @@ window.SOPORTE_CONFIG = {
       base: 0,
       custom: true
     },
+
+    // ==================== 2. ACCESORIOS (custom) ====================
     accesorios: {
+      order: 2,
       label: 'Accesorios y Repuestos',
       category: 'soporte',
       categoryLabel: 'Soporte',
@@ -511,150 +515,312 @@ window.SOPORTE_CONFIG = {
       base: 0,
       custom: true
     },
+
+    // ==================== 3. SOPORTE MENSUAL ====================
     support: {
+      order: 3,
       label: 'Soporte Mensual',
       category: 'soporte',
       categoryLabel: 'Soporte',
       icon: 'fa-screwdriver-wrench',
-      desc: 'Mantenimiento y asistencia',
+      desc: 'Mantenimiento y asistencia mensual',
+      include: [
+        'Atención remota y presencial',
+        'Mantenimiento preventivo mensual',
+        'Monitoreo de red y servidores',
+        'Respaldos automáticos',
+        'Reporte mensual de incidencias',
+        'Tiempo de respuesta menor a 4 horas'
+      ],
       base: 200,
+      baseLabel: 'Base mensual (monitoreo + reporte)',
       fields: [
-        { id: 'users', label: 'Usuarios', min: 1, max: 500, step: 5, default: 20, unit: 3, unitLabel: '$3 por usuario/mes' }
+        { id: 'users', label: 'Usuarios / equipos', hint: 'Cantidad de usuarios o equipos bajo soporte', min: 1, max: 500, step: 5, default: 20, unit: 3, unitLabel: '$3 por usuario/mes' }
       ]
     },
 
-    // ==================== REDES ====================
-    red: {
-      label: 'Red Empresarial',
-      category: 'redes',
-      categoryLabel: 'Redes',
-      icon: 'fa-network-wired',
-      desc: 'Cisco, VLANs, routing',
-      base: 500,
-      fields: [
-        { id: 'users',    label: 'Usuarios / dispositivos', min: 1, max: 500, step: 5, default: 20, unit: 8,   unitLabel: '$8 por usuario' },
-        { id: 'branches', label: 'Sucursales',              min: 1, max: 30,  step: 1, default: 1,  unit: 150, unitLabel: '$150 por sucursal' }
-      ]
-    },
-    wifi: {
-      label: 'Diseño WiFi Empresarial',
-      category: 'redes',
-      categoryLabel: 'Redes',
-      icon: 'fa-wifi',
-      desc: 'Site survey, APs, heat map',
-      base: 400,
-      fields: [
-        { id: 'aps',  label: 'Access Points', min: 1,  max: 100,  step: 1,  default: 4,   unit: 60,  unitLabel: '$60 por AP' },
-        { id: 'area', label: 'Área (m²)',     min: 50, max: 5000, step: 50, default: 300, unit: 0.5, unitLabel: '$0.50 por m²' }
-      ]
-    },
-    cableado: {
-      label: 'Cableado Estructurado',
-      category: 'redes',
-      categoryLabel: 'Redes',
-      icon: 'fa-ethernet',
-      desc: 'Cat 5e/6/6A certificado',
-      base: 200,
-      fields: [
-        { id: 'puntos', label: 'Puntos de red', min: 1, max: 300, step: 1, default: 10, unit: 55, unitLabel: '$55 por punto' }
-      ]
-    },
-    vpn: {
-      label: 'VPN Corporativa',
-      category: 'redes',
-      categoryLabel: 'Redes',
-      icon: 'fa-user-shield',
-      desc: 'Site-to-site + Remote Access',
-      base: 400,
-      fields: [
-        { id: 'sedes', label: 'Sedes a conectar', min: 2, max: 30,  step: 1, default: 2,  unit: 180, unitLabel: '$180 por sede' },
-        { id: 'users', label: 'Usuarios remotos',  min: 1, max: 500, step: 5, default: 10, unit: 5,   unitLabel: '$5 por usuario' }
-      ]
-    },
-    firewall: {
-      label: 'Firewall Perimetral',
-      category: 'redes',
-      categoryLabel: 'Redes',
-      icon: 'fa-fire-flame-curved',
-      desc: 'Fortinet, pfSense, Cisco',
-      base: 700,
-      fields: [
-        { id: 'users', label: 'Usuarios protegidos', min: 1, max: 1000, step: 10, default: 50, unit: 6, unitLabel: '$6 por usuario' }
-      ]
-    },
-
-    // ==================== SEGURIDAD ====================
-    audit: {
-      label: 'Auditoría de Seguridad',
-      category: 'seguridad',
-      categoryLabel: 'Seguridad',
-      icon: 'fa-shield-halved',
-      desc: 'Análisis, hardening, informes',
-      base: 800,
-      fields: [
-        { id: 'servers',  label: 'Servidores a auditar', min: 1, max: 100, step: 1, default: 3, unit: 100, unitLabel: '$100 por servidor' },
-        { id: 'branches', label: 'Sucursales',            min: 1, max: 30,  step: 1, default: 1, unit: 200, unitLabel: '$200 por sucursal' }
-      ]
-    },
-    pentest: {
-      label: 'Pentesting',
-      category: 'seguridad',
-      categoryLabel: 'Seguridad',
-      icon: 'fa-bullseye',
-      desc: 'Pruebas ofensivas autorizadas',
-      base: 1200,
-      fields: [
-        { id: 'targets', label: 'Objetivos (IPs / Dominios)', min: 1, max: 50, step: 1, default: 5, unit: 180, unitLabel: '$180 por objetivo' },
-        { id: 'days',    label: 'Días de pruebas',             min: 2, max: 30, step: 1, default: 5, unit: 250, unitLabel: '$250 por día' }
-      ]
-    },
-
-    // ==================== FORMACIÓN ====================
+    // ==================== 4. CAPACITACIÓN ====================
     training: {
+      order: 4,
       label: 'Capacitación Técnica',
       category: 'formacion',
       categoryLabel: 'Formación',
       icon: 'fa-chalkboard-user',
       desc: 'CCNA, CyberOps, IT Essentials',
+      include: [
+        'Material oficial Cisco / IT Essentials',
+        'Instructor certificado',
+        'Acceso a Cisco Networking Academy',
+        'Laboratorios con Packet Tracer',
+        'Certificado de participación',
+        'Evaluación final del curso'
+      ],
       base: 300,
+      baseLabel: 'Base de curso (material + plataforma)',
       fields: [
-        { id: 'students', label: 'Estudiantes',   min: 5, max: 200, step: 5, default: 15, unit: 25, unitLabel: '$25 por estudiante' },
-        { id: 'hours',    label: 'Horas totales', min: 4, max: 200, step: 4, default: 24, unit: 15, unitLabel: '$15 por hora' }
-      ]
-    },
-    mentoria: {
-      label: 'Mentoría Técnica 1:1',
-      category: 'formacion',
-      categoryLabel: 'Formación',
-      icon: 'fa-user-graduate',
-      desc: 'Sesiones privadas por videollamada',
-      base: 0,
-      fields: [
-        { id: 'hours', label: 'Horas de mentoría', min: 1, max: 60, step: 1, default: 4, unit: 40, unitLabel: '$40 por hora' }
+        { id: 'students', label: 'Estudiantes',   hint: 'Cantidad de participantes', min: 5, max: 200, step: 5, default: 15, unit: 25, unitLabel: '$25 por estudiante' },
+        { id: 'hours',    label: 'Horas totales', hint: 'Duración total del curso', min: 4, max: 200, step: 4, default: 24, unit: 15, unitLabel: '$15 por hora' }
       ]
     },
 
-    // ==================== CLOUD & CCTV ====================
-    cloud: {
-      label: 'Migración Cloud',
-      category: 'cloud',
-      categoryLabel: 'Cloud & CCTV',
-      icon: 'fa-cloud-arrow-up',
-      desc: 'M365 / Google Workspace',
-      base: 300,
-      fields: [
-        { id: 'accounts', label: 'Cuentas a migrar', min: 1, max: 500, step: 1, default: 15, unit: 18, unitLabel: '$18 por cuenta' }
-      ]
-    },
+    // ==================== 5. CCTV IP ====================
     cctv: {
+      order: 5,
       label: 'Instalación CCTV IP',
       category: 'cloud',
       categoryLabel: 'Cloud & CCTV',
       icon: 'fa-video',
       desc: 'Hikvision, Dahua, NVR',
+      include: [
+        'Cámaras IP (4MP o superior)',
+        'NVR / grabador incluido',
+        'Cableado UTP certificado',
+        'Configuración de acceso remoto',
+        'App móvil para visualización',
+        'Garantía de instalación'
+      ],
       base: 200,
+      baseLabel: 'Base (cableado + NVR setup)',
       fields: [
-        { id: 'cameras', label: 'Cámaras IP', min: 1, max: 100, step: 1, default: 4, unit: 120, unitLabel: '$120 por cámara' }
+        { id: 'cameras', label: 'Cámaras IP', hint: 'Cantidad de cámaras (interior/exterior)', min: 1, max: 100, step: 1, default: 4, unit: 120, unitLabel: '$120 por cámara' }
+      ]
+    },
+
+    // ==================== 6. DESARROLLO Y GESTIÓN WEB (NUEVO) ====================
+    web: {
+      order: 6,
+      label: 'Desarrollo y Gestión Web',
+      category: 'desarrollo',
+      categoryLabel: 'Desarrollo',
+      icon: 'fa-laptop-code',
+      desc: 'Sitios web, sistemas, landings, mantenimiento',
+      include: [
+        'Diseño responsive (móvil + tablet + escritorio)',
+        'Optimización SEO básica',
+        'Formulario de contacto funcional',
+        'Hosting + dominio (1 año)',
+        'SSL / HTTPS incluido',
+        'Panel de administración (si aplica)',
+        'Capacitación de uso para el cliente'
+      ],
+      base: 400,
+      baseLabel: 'Setup base (hosting + dominio + SSL)',
+      fields: [
+        { id: 'pages',   label: 'Páginas / pantallas', hint: 'Inicio, servicios, contacto, blog, etc.', min: 1, max: 50, step: 1, default: 5, unit: 45,  unitLabel: '$45 por página' },
+        { id: 'modules', label: 'Módulos funcionales', hint: 'Login, carrito, pagos, blog, chat, etc.', min: 0, max: 30, step: 1, default: 2, unit: 180, unitLabel: '$180 por módulo' },
+        { id: 'revs',    label: 'Rondas de revisión',  hint: 'Ajustes y cambios post-entrega',          min: 1, max: 10, step: 1, default: 2, unit: 80,  unitLabel: '$80 por ronda' }
+      ]
+    },
+
+    // ==================== 7. RED EMPRESARIAL ====================
+    red: {
+      order: 7,
+      label: 'Red Empresarial',
+      category: 'redes',
+      categoryLabel: 'Redes',
+      icon: 'fa-network-wired',
+      desc: 'Cisco, VLANs, routing',
+      include: [
+        'Diseño de topología de red',
+        'Configuración de routers y switches Cisco',
+        'VLANs y segmentación',
+        'Documentación técnica',
+        'Pruebas de conectividad',
+        'Capacitación básica de uso'
+      ],
+      base: 500,
+      baseLabel: 'Base de diseño + configuración',
+      fields: [
+        { id: 'users',    label: 'Usuarios / dispositivos', hint: 'Equipos conectados a la red', min: 1, max: 500, step: 5, default: 20, unit: 8,   unitLabel: '$8 por usuario' },
+        { id: 'branches', label: 'Sucursales',              hint: 'Ubicaciones físicas a conectar', min: 1, max: 30,  step: 1, default: 1,  unit: 150, unitLabel: '$150 por sucursal' }
+      ]
+    },
+
+    // ==================== 8. AUDITORÍA ====================
+    audit: {
+      order: 8,
+      label: 'Auditoría de Seguridad',
+      category: 'seguridad',
+      categoryLabel: 'Seguridad',
+      icon: 'fa-shield-halved',
+      desc: 'Análisis, hardening, informes',
+      include: [
+        'Análisis de vulnerabilidades',
+        'Revisión de configuraciones',
+        'Hardening de servidores',
+        'Informe ejecutivo detallado',
+        'Recomendaciones priorizadas',
+        'Reunión de presentación de resultados'
+      ],
+      base: 800,
+      baseLabel: 'Base de auditoría + informe',
+      fields: [
+        { id: 'servers',  label: 'Servidores a auditar', hint: 'Servidores físicos o virtuales', min: 1, max: 100, step: 1, default: 3, unit: 100, unitLabel: '$100 por servidor' },
+        { id: 'branches', label: 'Sucursales',            hint: 'Ubicaciones a incluir',          min: 1, max: 30,  step: 1, default: 1, unit: 200, unitLabel: '$200 por sucursal' }
+      ]
+    },
+
+    // ==================== 9. FIREWALL ====================
+    firewall: {
+      order: 9,
+      label: 'Firewall Perimetral',
+      category: 'redes',
+      categoryLabel: 'Redes',
+      icon: 'fa-fire-flame-curved',
+      desc: 'Fortinet, pfSense, Cisco',
+      include: [
+        'Implementación de firewall perimetral',
+        'Reglas de filtrado personalizadas',
+        'VPN site-to-site',
+        'Bloqueo de amenazas en tiempo real',
+        'Documentación de configuración',
+        'Capacitación de administración'
+      ],
+      base: 700,
+      baseLabel: 'Base (hardware + configuración)',
+      fields: [
+        { id: 'users', label: 'Usuarios protegidos', hint: 'Usuarios detrás del firewall', min: 1, max: 1000, step: 10, default: 50, unit: 6, unitLabel: '$6 por usuario' }
+      ]
+    },
+
+    // ==================== 10. WIFI ====================
+    wifi: {
+      order: 10,
+      label: 'Diseño WiFi Empresarial',
+      category: 'redes',
+      categoryLabel: 'Redes',
+      icon: 'fa-wifi',
+      desc: 'Site survey, APs, heat map',
+      include: [
+        'Site survey profesional',
+        'Mapa de calor (heat map)',
+        'Instalación de access points',
+        'Optimización de canales',
+        'Portal cautivo (si aplica)',
+        'Documentación de cobertura'
+      ],
+      base: 400,
+      baseLabel: 'Base (site survey + heat map)',
+      fields: [
+        { id: 'aps',  label: 'Access Points',      hint: 'Cantidad de APs a instalar',   min: 1,  max: 100,  step: 1,  default: 4,   unit: 60,  unitLabel: '$60 por AP' },
+        { id: 'area', label: 'Área a cubrir (m²)', hint: 'Metros cuadrados del espacio', min: 50, max: 5000, step: 50, default: 300, unit: 0.5, unitLabel: '$0.50 por m²' }
+      ]
+    },
+
+    // ==================== 11. VPN ====================
+    vpn: {
+      order: 11,
+      label: 'VPN Corporativa',
+      category: 'redes',
+      categoryLabel: 'Redes',
+      icon: 'fa-user-shield',
+      desc: 'Site-to-site + Remote Access',
+      include: [
+        'VPN site-to-site entre sedes',
+        'VPN remote access para usuarios',
+        'Certificados y claves',
+        'Autenticación 2FA (si aplica)',
+        'Documentación de conexión',
+        'Capacitación de uso'
+      ],
+      base: 400,
+      baseLabel: 'Base (configuración + certificados)',
+      fields: [
+        { id: 'sedes', label: 'Sedes a conectar', hint: 'Oficinas con VPN site-to-site', min: 2, max: 30,  step: 1, default: 2,  unit: 180, unitLabel: '$180 por sede' },
+        { id: 'users', label: 'Usuarios remotos', hint: 'Usuarios con acceso remoto',    min: 1, max: 500, step: 5, default: 10, unit: 5,   unitLabel: '$5 por usuario' }
+      ]
+    },
+
+    // ==================== 12. PENTESTING ====================
+    pentest: {
+      order: 12,
+      label: 'Pentesting',
+      category: 'seguridad',
+      categoryLabel: 'Seguridad',
+      icon: 'fa-bullseye',
+      desc: 'Pruebas ofensivas autorizadas',
+      include: [
+        'Pruebas de penetración autorizadas',
+        'Análisis de vulnerabilidades',
+        'Explotación controlada',
+        'Informe técnico y ejecutivo',
+        'Recomendaciones de remediación',
+        'Re-test post-corrección'
+      ],
+      base: 1200,
+      baseLabel: 'Base de pentesting',
+      fields: [
+        { id: 'targets', label: 'Objetivos (IPs / dominios)', hint: 'Activos a probar',        min: 1, max: 50, step: 1, default: 5, unit: 180, unitLabel: '$180 por objetivo' },
+        { id: 'days',    label: 'Días de pruebas',             hint: 'Duración del pentesting', min: 2, max: 30, step: 1, default: 5, unit: 250, unitLabel: '$250 por día' }
+      ]
+    },
+
+    // ==================== 13. MIGRACIÓN CLOUD ====================
+    cloud: {
+      order: 13,
+      label: 'Migración Cloud',
+      category: 'cloud',
+      categoryLabel: 'Cloud & CCTV',
+      icon: 'fa-cloud-arrow-up',
+      desc: 'M365 / Google Workspace',
+      include: [
+        'Migración de correos y archivos',
+        'Configuración de M365 / Workspace',
+        'Reglas de seguridad y spam',
+        'Configuración de dispositivos',
+        'Capacitación de uso',
+        'Soporte post-migración (30 días)'
+      ],
+      base: 300,
+      baseLabel: 'Base (configuración + cutover)',
+      fields: [
+        { id: 'accounts', label: 'Cuentas a migrar', hint: 'Usuarios / buzones de correo', min: 1, max: 500, step: 1, default: 15, unit: 18, unitLabel: '$18 por cuenta' }
+      ]
+    },
+
+    // ==================== 14. CABLEADO ====================
+    cableado: {
+      order: 14,
+      label: 'Cableado Estructurado',
+      category: 'redes',
+      categoryLabel: 'Redes',
+      icon: 'fa-ethernet',
+      desc: 'Cat 5e/6/6A certificado',
+      include: [
+        'Cableado Cat 5e / 6 / 6A',
+        'Certificación de puntos',
+        'Patch panels y faceplates',
+        'Peinado y organización',
+        'Etiquetado profesional',
+        'Documentación de puntos'
+      ],
+      base: 200,
+      baseLabel: 'Base (materiales generales)',
+      fields: [
+        { id: 'puntos', label: 'Puntos de red', hint: 'Tomas de red a instalar', min: 1, max: 300, step: 1, default: 10, unit: 55, unitLabel: '$55 por punto' }
+      ]
+    },
+
+    // ==================== 15. MENTORÍA ====================
+    mentoria: {
+      order: 15,
+      label: 'Mentoría Técnica 1:1',
+      category: 'formacion',
+      categoryLabel: 'Formación',
+      icon: 'fa-user-graduate',
+      desc: 'Sesiones privadas por videollamada',
+      include: [
+        'Sesiones personalizadas 1:1',
+        'Plan de estudio ajustado',
+        'Ejercicios prácticos en vivo',
+        'Grabación de sesiones',
+        'Material complementario',
+        'Soporte por WhatsApp entre sesiones'
+      ],
+      base: 0,
+      baseLabel: 'Sin cargo base',
+      fields: [
+        { id: 'hours', label: 'Horas de mentoría', hint: 'Horas totales contratadas', min: 1, max: 60, step: 1, default: 4, unit: 40, unitLabel: '$40 por hora' }
       ]
     },
 

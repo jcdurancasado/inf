@@ -45,11 +45,12 @@ const QuoteWizard = {
   // ============================================
   services: {},
   categories: {
-    soporte:   { label: 'SOPORTE & REPARACIÓN',  icon: 'fa-screwdriver-wrench' },
-    redes:     { label: 'REDES',                 icon: 'fa-network-wired' },
-    seguridad: { label: 'SEGURIDAD',             icon: 'fa-shield-halved' },
-    formacion: { label: 'FORMACIÓN',             icon: 'fa-chalkboard-user' },
-    cloud:     { label: 'CLOUD & CCTV',          icon: 'fa-cloud' }
+    soporte:    { label: 'SOPORTE & REPARACIÓN', icon: 'fa-screwdriver-wrench' },
+    formacion:  { label: 'FORMACIÓN',            icon: 'fa-chalkboard-user' },
+    desarrollo: { label: 'DESARROLLO',           icon: 'fa-laptop-code' },
+    redes:      { label: 'REDES',                icon: 'fa-network-wired' },
+    seguridad:  { label: 'SEGURIDAD',            icon: 'fa-shield-halved' },
+    cloud:      { label: 'CLOUD & CCTV',         icon: 'fa-cloud' }
   },
   extrasDef: {},
 
@@ -127,6 +128,8 @@ const QuoteWizard = {
 
     const self = this;
 
+    this._svcInjectStyles();
+
     // Generar los 13 servicios (si hay host en el HTML)
     this.renderServicesHost();
 
@@ -139,22 +142,33 @@ const QuoteWizard = {
         input.checked = !input.checked;
         opt.classList.toggle('checked', input.checked);
         self.extras[opt.dataset.extra] = input.checked;
+        self._updateExtrasTotal();
       });
     });
+
+    // ✅ NUEVO: bloque de TOTAL ESTIMADO en el panel de extras (Paso 3)
+    const extrasPanel = document.querySelector('.quote-panel[data-panel="3"]');
+    if (extrasPanel && !extrasPanel.querySelector('#extrasTotal')) {
+      const totalDiv = document.createElement('div');
+      totalDiv.className = 'rep-total';
+      totalDiv.id = 'extrasTotal';
+      totalDiv.innerHTML = '<span class="rep-total__label">TOTAL ESTIMADO:</span>' +
+                           '<span class="rep-total__value" id="extrasTotalValue">RD$0</span>';
+      extrasPanel.appendChild(totalDiv);
+    }
 
     this.els.back.addEventListener('click', function () { self.prev(); });
     this.els.next.addEventListener('click', function () { self.next(); });
     this.els.restart.addEventListener('click', function () { self.restart(); });
 
-    const waBtn = document.getElementById('quoteWhatsApp');
     const dlBtn = document.getElementById('quoteDownload');
-    const emBtn = document.getElementById('quoteEmail');
-    if (waBtn) waBtn.addEventListener('click', function () { self.sendWhatsApp(); });
     if (dlBtn) dlBtn.addEventListener('click', function () { self.downloadPDF(); });
-    if (emBtn) emBtn.addEventListener('click', function () { self.sendEmail(); });
 
     const signedBtn = document.getElementById('quoteRequestSigned');
     if (signedBtn) signedBtn.addEventListener('click', function () { self.requestSigned(); });
+
+    const signedWABtn = document.getElementById('quoteRequestSignedWA');
+    if (signedWABtn) signedWABtn.addEventListener('click', function () { self.requestSignedWA(); });
 
     this.renderStepIndicator();
     this.updateNextBtn();
@@ -201,7 +215,7 @@ const QuoteWizard = {
           chip.classList.add('active');
           const filter = chip.dataset.filter || 'all';
 
-          host.querySelectorAll('.quote-option[data-service]').forEach(function (card) {
+          host.querySelectorAll('.svc-card[data-service]').forEach(function (card) {
             const cat = card.dataset.category || 'otros';
             const show = (filter === 'all') || (cat === filter);
             card.dataset.hidden = show ? 'false' : 'true';
@@ -211,20 +225,26 @@ const QuoteWizard = {
     }
 
     let html = '';
-    Object.keys(cats).forEach(function (catId) {
-      Object.keys(svcs).forEach(function (id) {
-        const s = svcs[id];
-        if (s.category !== catId) return;
-        html += '<label class="quote-option" data-service="' + id + '" data-category="' + catId + '">';
-        html += '  <input type="radio" name="service" value="' + id + '">';
-        html += '  <span class="quote-option__icon"><i class="fa-solid ' + (s.icon || 'fa-circle') + '"></i></span>';
-        html += '  <span class="quote-option__name">' + s.label + '</span>';
-        html += '  <span class="quote-option__desc">' + (s.desc || '') + '</span>';
-        html += '</label>';
-      });
+    // ✅ Ordenar servicios por campo "order" (fallback: 999 al final)
+    const orderedIds = Object.keys(svcs).sort(function (a, b) {
+      const oa = (svcs[a].order !== undefined) ? svcs[a].order : 999;
+      const ob = (svcs[b].order !== undefined) ? svcs[b].order : 999;
+      return oa - ob;
+    });
+    orderedIds.forEach(function (id) {
+      const s = svcs[id];
+      html += '<label class="svc-card" data-service="' + id + '" data-category="' + (s.category || 'otros') + '">';
+      html += '  <input type="radio" name="service" value="' + id + '" style="display:none;">';
+      html += '  <div class="svc-card__head">';
+      html += '    <span class="svc-card__icon"><i class="fa-solid ' + (s.icon || 'fa-circle') + '"></i></span>';
+      html += '    <span class="svc-card__name">' + s.label + '</span>';
+      html += '  </div>';
+      html += '  <span class="svc-card__desc">' + (s.desc || '') + '</span>';
+      html += '</label>';
     });
 
     host.innerHTML = html;
+    host.className = 'svc-cards-grid'; // ✅ Forzamos al contenedor a ser la cuadrícula
 
     host.querySelectorAll('[data-service]').forEach(function (opt) {
       opt.addEventListener('click', async function () {
@@ -724,7 +744,7 @@ const QuoteWizard = {
         var waMsg = encodeURIComponent(
           'Hola Julio C. Durán Casado, ' + saludo + '. Estoy intentando generar una cotización desde el cotizador de tu sitio web y el sistema me solicita un código de acceso temporal. ¿Podrías facilitármelo, por favor? Muchas gracias.'
         );
-        var wa = (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.whatsapp) || '18294213163';
+        var wa = (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.whatsapp) || '10000000000';
         window.open('https://wa.me/' + wa + '?text=' + waMsg, '_blank', 'noopener');
 
         const apiBase = (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.apiBaseUrl) || 'https://jcdcapi.vercel.app';
@@ -1221,12 +1241,18 @@ const QuoteWizard = {
     }
 
     if (this.currentStep === 1 && this.service) {
-      if (this.service === 'reparacion') {
-        this.renderReparacionFields();
-      } else if (this.service === 'accesorios') {
-        this.renderAccesoriosFields();
-      } else {
-        this.renderFields();
+      try {
+        if (this.service === 'reparacion') {
+          this.renderReparacionFields();
+        } else if (this.service === 'accesorios') {
+          this.renderAccesoriosFields();
+        } else {
+          this.renderFields();
+        }
+      } catch (e) {
+        console.error('[JCDC next] ERROR al renderizar "' + this.service + '":', e);
+        if (typeof Toast !== 'undefined') Toast.show('Error interno — revisa F12 → Console', 'error', 3500);
+        return;
       }
     }
 
@@ -1249,6 +1275,12 @@ const QuoteWizard = {
     this.renderStepIndicator();
     this.updateNextBtn();
     this.scrollTop();
+
+    // ✅ Actualizar total estimado según el paso actual
+    if (this.currentStep === 3) {
+      const self = this;
+      setTimeout(function () { self._updateExtrasTotal(); }, 50);
+    }
   },
 
   prev() {
@@ -1271,30 +1303,62 @@ const QuoteWizard = {
     if (!cfg) return;
     this.els.scopeTitle.textContent = 'Alcance · ' + cfg.label;
 
+    this._svcInjectStyles();
+
     let html = '';
 
     html += this._renderDocTypeBlock();
 
-    cfg.fields.forEach(function (f) {
-      const val = this.values[f.id];
-      html += '<div class="quote-field" data-field="' + f.id + '">';
-      html += '  <div class="quote-field__head">';
-      html += '    <span class="quote-field__label">' + f.label + '</span>';
-      html += '    <span class="quote-field__rate">' + f.unitLabel + '</span>';
-      html += '  </div>';
-      html += '  <div class="quote-field__row">';
-      html += '    <button type="button" class="quote-step-btn" data-step-btn="' + f.id + '" data-dir="-1" aria-label="Disminuir">−</button>';
-      html += '    <input type="range" class="quote-range" min="' + f.min + '" max="' + f.max + '" step="1" value="' + val + '" data-field-slider="' + f.id + '" data-min="' + f.min + '" data-max="' + f.max + '">';
-      html += '    <span class="quote-field__val" data-field-val="' + f.id + '">' + val + '</span>';
-      html += '    <button type="button" class="quote-step-btn" data-step-btn="' + f.id + '" data-dir="1" aria-label="Aumentar">+</button>';
-      html += '  </div>';
+    if (cfg.include && cfg.include.length) {
+      html += '<div class="rep-block">';
+      html += '  <h4 class="rep-block__title"><i class="fa-solid fa-circle-check"></i> QUÉ INCLUYE ESTE SERVICIO</h4>';
+      html += '  <ul class="svc-include-list">';
+      cfg.include.forEach(function (item) {
+        html += '<li><i class="fa-solid fa-check"></i> ' + item + '</li>';
+      });
+      html += '  </ul>';
       html += '</div>';
-    }.bind(this));
+    }
+
+    if (cfg.fields && cfg.fields.length) {
+      html += '<div class="rep-block">';
+      html += '  <h4 class="rep-block__title"><i class="fa-solid fa-sliders"></i> AJUSTA EL ALCANCE</h4>';
+      html += '  <p class="rep-block__hint">Ajusta las cantidades con los controles. El total se recalcula en vivo.</p>';
+      const _rateDOP = this.RATE_DOP;
+      cfg.fields.forEach(function (f) {
+        const val = this.values[f.id];
+        const _unitDOP = Math.round((f.unit || 0) * _rateDOP);
+        const _sufijo = (f.unitLabel || '').replace(/^\$[\d.]+\s*/, '');
+        const _unitLabelDOP = 'RD$' + _unitDOP.toLocaleString('es-DO') + (_sufijo ? ' ' + _sufijo : '');
+        html += '<div class="quote-field" data-field="' + f.id + '" style="margin-top:12px;">';
+        html += '  <div class="quote-field__head">';
+        html += '    <span class="quote-field__label">' + f.label + '</span>';
+        html += '    <span class="quote-field__rate">' + _unitLabelDOP + '</span>';
+        html += '  </div>';
+        if (f.hint) {
+          html += '  <div class="svc-field-hint">' + f.hint + '</div>';
+        }
+        html += '  <div class="quote-field__row">';
+        html += '    <button type="button" class="quote-step-btn" data-step-btn="' + f.id + '" data-dir="-1" aria-label="Disminuir">−</button>';
+        html += '    <input type="range" class="quote-range" min="' + f.min + '" max="' + f.max + '" step="1" value="' + val + '" data-field-slider="' + f.id + '" data-min="' + f.min + '" data-max="' + f.max + '">';
+        html += '    <span class="quote-field__val" data-field-val="' + f.id + '">' + val + '</span>';
+        html += '    <button type="button" class="quote-step-btn" data-step-btn="' + f.id + '" data-dir="1" aria-label="Aumentar">+</button>';
+        html += '  </div>';
+        html += '</div>';
+      }.bind(this));
+      html += '</div>';
+    }
 
     html += this._renderClienteBlock();
     html += this._renderGarantiaBlock();
     html += this._renderValidezBlock();
     html += this._renderObservacionesBlock();
+
+    html += '<div class="rep-total" id="stdTotal">';
+    html += '  <span class="rep-total__label">TOTAL ESTIMADO:</span>';
+    html += '  <span class="rep-total__value" id="stdTotalValue">RD$0</span>';
+    html += '</div>';
+    html += '<div class="svc-total-breakdown" id="stdTotalBreakdown"></div>';
 
     this.els.fields.innerHTML = html;
 
@@ -1305,6 +1369,7 @@ const QuoteWizard = {
       slider.addEventListener('input', function () {
         self.values[id] = parseInt(slider.value, 10);
         if (valEl) valEl.textContent = slider.value;
+        self._updateStdTotal();
       });
     });
 
@@ -1324,11 +1389,13 @@ const QuoteWizard = {
         self.values[id] = next;
         const valEl = self.els.fields.querySelector('[data-field-val="' + id + '"]');
         if (valEl) valEl.textContent = next;
+        self._updateStdTotal();
       });
     });
 
     this._attachGarantiaHandlers();
     this._attachValidezHandlers();
+    this._updateStdTotal();
   },
 
   _generarNumeroDocumento() {
@@ -1542,7 +1609,8 @@ const QuoteWizard = {
 
         // ✅ ACTUALIZAR EL TOTAL VISUAL EN TIEMPO REAL
         if (self.service === 'reparacion') self.updateRepTotal();
-        if (self.service === 'accesorios') self._updateAccTotal();
+        else if (self.service === 'accesorios') self._updateAccTotal();
+        else self._updateStdTotal();
       });
     });
   },
@@ -1577,6 +1645,7 @@ const QuoteWizard = {
     }
 
     this.els.scopeTitle.textContent = 'Selecciona los accesorios o repuestos';
+    this._accInjectStyles();
 
     const self = this;
     const catActiva = this.accesoriosCatActiva || 'all';
@@ -1616,14 +1685,14 @@ const QuoteWizard = {
 
         html += '<div class="acc-item' + (qty > 0 ? ' acc-item--on' : '') + '" data-cat="' + cat.cat + '" data-family="' + fam.id + '">';
         html += '  <div class="acc-item__head">';
-        html += '    <span class="acc-item__name">' + fam.label + '</span>';
-        html += '    <div class="acc-item__meta">';
-        html += '      <span class="acc-item__price" data-acc-price="' + fam.id + '">' + (sel ? 'RD$' + sel.precio.toLocaleString('es-DO') : 'RD$0') + '</span>';
-        html += '      <span class="acc-qty" data-acc-qty="' + fam.id + '">' + qty + '</span>';
+        html += '    <div class="acc-item__name-wrap">';
+        html += '      <span class="acc-item__name">' + fam.label + '</span>';
+        html += '      <span class="acc-qty" data-acc-qty="' + fam.id + '" title="Cantidad: ' + qty + '">Cant: ' + qty + '</span>';
         html += '    </div>';
+        html += '    <span class="acc-item__price" data-acc-price="' + fam.id + '">' + (sel ? 'RD$' + sel.precio.toLocaleString('es-DO') : 'RD$0') + '</span>';
         html += '  </div>';
         html += '  <div class="acc-item__row">';
-        html += '    <button type="button" class="acc-btn" data-acc-minus="' + fam.id + '"' + (sel && qty > 0 ? '' : ' disabled') + '>−</button>';
+        html += '    <button type="button" class="acc-btn" data-acc-minus="' + fam.id + '"' + (sel && qty > 0 ? '' : ' disabled') + ' aria-label="Disminuir">−</button>';
         html += '    <select class="acc-variant" data-acc-variant="' + fam.id + '">';
         html += '      <option value=""' + (!sel ? ' selected' : '') + '>— Seleccionar —</option>';
         fam.variants.forEach(function (v) {
@@ -1631,7 +1700,7 @@ const QuoteWizard = {
           html += '<option value="' + v.id + '" data-precio="' + v.precio + '"' + isSel + '>' + v.label + ' — RD$' + v.precio.toLocaleString('es-DO') + '</option>';
         });
         html += '    </select>';
-        html += '    <button type="button" class="acc-btn" data-acc-plus="' + fam.id + '"' + (sel ? '' : ' disabled') + '>+</button>';
+        html += '    <button type="button" class="acc-btn" data-acc-plus="' + fam.id + '"' + (sel ? '' : ' disabled') + ' aria-label="Aumentar">+</button>';
         html += '  </div>';
         html += '</div>';
       });
@@ -1676,7 +1745,10 @@ const QuoteWizard = {
       if (selId) qty = parseInt(self.accesorios[selId], 10) || 0;
 
       const qtyEl = item.querySelector('[data-acc-qty]');
-      if (qtyEl) qtyEl.textContent = qty;
+      if (qtyEl) {
+        qtyEl.textContent = 'Cant: ' + qty;
+        qtyEl.title = 'Cantidad: ' + qty;
+      }
 
       const plusBtn = item.querySelector('[data-acc-plus]');
       if (plusBtn) plusBtn.disabled = !selId;
@@ -1694,6 +1766,11 @@ const QuoteWizard = {
         const opt = sel.options[sel.selectedIndex];
         const prevVal = self.accesoriosVariantes[famId];
         
+        // ✅ FIX: Borrar la cantidad de la variante anterior si cambiamos a otra
+        if (prevVal && prevVal !== opt.value) {
+          delete self.accesorios[prevVal];
+        }
+
         self.accesoriosVariantes[famId] = opt.value || '';
         
         const precioEl = document.querySelector('[data-acc-price="' + famId + '"]');
@@ -1703,10 +1780,9 @@ const QuoteWizard = {
 
         // ✅ AUTO-INCREMENTAR AL SELECCIONAR
         if (opt.value) {
-          const qty = parseInt(self.accesorios[opt.value], 10) || 0;
-          if (qty === 0) self.accesorios[opt.value] = 1;
-        } else {
-          if (prevVal) delete self.accesorios[prevVal];
+          if (!self.accesorios[opt.value]) {
+            self.accesorios[opt.value] = 1;
+          }
         }
 
         refreshFamily(famId);
@@ -2102,6 +2178,285 @@ const QuoteWizard = {
     });
   },
 
+  _accInjectStyles() {
+    if (document.getElementById('acc-custom-styles')) return;
+    const s = document.createElement('style');
+    s.id = 'acc-custom-styles';
+    s.textContent = `
+      .acc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-top: 15px; }
+      .acc-item {
+        background: linear-gradient(145deg, rgba(20, 20, 30, 0.9), rgba(10, 10, 15, 0.95));
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 12px; padding: 16px; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 14px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      }
+      .acc-item:hover { border-color: rgba(0, 240, 255, 0.3); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4); transform: translateY(-2px); }
+      .acc-item--on {
+        border-color: rgba(0, 255, 136, 0.5);
+        box-shadow: 0 8px 24px rgba(0, 255, 136, 0.15);
+        background: linear-gradient(145deg, rgba(0, 255, 136, 0.05), rgba(10, 10, 15, 0.95));
+      }
+      .acc-item--on::before {
+        content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+        background: linear-gradient(90deg, transparent, #00ff88, transparent);
+      }
+      .acc-item__head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+      .acc-item__name-wrap { display: flex; flex-direction: column; gap: 6px; }
+      .acc-item__name { font-family: 'Rajdhani', sans-serif; font-size: 1.05rem; font-weight: 700; color: #fff; line-height: 1.3; }
+      .acc-qty {
+        font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; background: rgba(255, 255, 255, 0.05);
+        color: #8b93a7; padding: 2px 8px; border-radius: 20px; display: inline-flex; align-items: center;
+        justify-content: center; border: 1px solid transparent; width: max-content; transition: all 0.3s;
+      }
+      .acc-item--on .acc-qty { background: rgba(0, 255, 136, 0.15); color: #00ff88; border-color: rgba(0, 255, 136, 0.3); }
+      .acc-item__price { font-family: 'Share Tech Mono', monospace; font-size: 1.1rem; font-weight: 700; color: #00f0ff; text-align: right; white-space: nowrap; }
+      .acc-item--on .acc-item__price { color: #00ff88; text-shadow: 0 0 10px rgba(0, 255, 136, 0.3); }
+      .acc-item__row { display: flex; gap: 8px; margin-top: auto; }
+      .acc-btn {
+        width: 38px; height: 38px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+        background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px;
+        color: #a0a8b8; font-size: 1.2rem; font-weight: bold; cursor: pointer; transition: all 0.2s;
+      }
+      .acc-btn:hover:not(:disabled) { background: rgba(0, 240, 255, 0.1); border-color: #00f0ff; color: #00f0ff; }
+      .acc-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+      .acc-variant {
+        flex: 1; min-width: 0; padding: 0 12px; height: 38px;
+        background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px;
+        color: #fff; font-family: 'Rajdhani', sans-serif; font-size: 0.85rem; font-weight: 500;
+        outline: none; cursor: pointer; appearance: none; -webkit-appearance: none; text-overflow: ellipsis;
+        background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2300f0ff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+        background-repeat: no-repeat; background-position: right 12px center; background-size: 10px; transition: all 0.2s;
+      }
+      .acc-variant:focus { border-color: #00f0ff; box-shadow: 0 0 10px rgba(0, 240, 255, 0.15); }
+      .acc-variant option { background: #13131a; color: #fff; }
+    `;
+    document.head.appendChild(s);
+  },
+
+  _svcInjectStyles() {
+    if (document.getElementById('svc-std-styles')) return;
+    const s = document.createElement('style');
+    s.id = 'svc-std-styles';
+    s.textContent = `
+      /* 🎨 NUEVAS TARJETAS PARA EL PASO 1 (SERVICIOS) */
+      .svc-cards-grid {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+        gap: 16px !important;
+        margin-top: 15px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        list-style: none !important;
+      }
+      .svc-card {
+        background: linear-gradient(145deg, rgba(20, 20, 30, 0.9), rgba(10, 10, 15, 0.95)) !important;
+        border: 1px solid rgba(255, 255, 255, 0.05) !important;
+        border-radius: 12px !important;
+        padding: 20px !important;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+        position: relative !important;
+        overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: flex-start !important;
+        gap: 12px !important;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.2) !important;
+        cursor: pointer !important;
+        box-sizing: border-box !important;
+        margin: 0 !important;
+        width: auto !important;
+        height: auto !important;
+      }
+      .svc-card[data-hidden="true"] { display: none !important; }
+      .svc-card:hover {
+        border-color: rgba(0, 240, 255, 0.3) !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+        transform: translateY(-2px) !important;
+      }
+      .svc-card.checked {
+        border-color: rgba(0, 255, 136, 0.5) !important;
+        box-shadow: 0 8px 24px rgba(0, 255, 136, 0.15) !important;
+        background: linear-gradient(145deg, rgba(0, 255, 136, 0.05), rgba(10, 10, 15, 0.95)) !important;
+      }
+      .svc-card.checked::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 2px;
+        background: linear-gradient(90deg, transparent, #00ff88, transparent);
+      }
+      .svc-card__head {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+      }
+      .svc-card__icon {
+        width: 42px !important; height: 42px !important;
+        display: flex !important; align-items: center !important; justify-content: center !important;
+        background: rgba(0, 240, 255, 0.05) !important;
+        border: 1px solid rgba(0, 240, 255, 0.2) !important;
+        border-radius: 10px !important;
+        color: #00f0ff !important;
+        font-size: 1.2rem !important;
+        transition: all 0.3s !important;
+        flex-shrink: 0 !important;
+      }
+      .svc-card.checked .svc-card__icon {
+        background: rgba(0, 255, 136, 0.1) !important;
+        border-color: rgba(0, 255, 136, 0.4) !important;
+        color: #00ff88 !important;
+        box-shadow: 0 0 15px rgba(0, 255, 136, 0.2) !important;
+      }
+      .svc-card__name {
+        font-family: 'Rajdhani', sans-serif !important;
+        font-size: 1.15rem !important;
+        font-weight: 700 !important;
+        color: #fff !important;
+        line-height: 1.3 !important;
+      }
+      .svc-card__desc {
+        font-size: 0.85rem !important;
+        color: #a0a8b8 !important;
+        line-height: 1.4 !important;
+      }
+
+      /* ESTILOS DEL PASO 2 */
+      .svc-include-list { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 8px; }
+      .svc-include-list li {
+        display: flex; gap: 10px; align-items: flex-start;
+        padding: 9px 12px;
+        background: rgba(0,255,136,0.04);
+        border-left: 3px solid var(--neon-green, #00ff88);
+        border-radius: 4px;
+        font-size: 0.88rem;
+        color: var(--text-primary, #f0f0ff);
+        line-height: 1.4;
+      }
+      .svc-include-list li i { color: var(--neon-green, #00ff88); margin-top: 3px; font-size: 0.75rem; flex-shrink: 0; }
+      .svc-field-hint {
+        font-size: 0.76rem; color: var(--text-muted, #8b93a7);
+        font-style: italic; margin: 2px 0 8px;
+        font-family: var(--font-mono, monospace);
+        letter-spacing: 0.02em;
+      }
+      .svc-total-breakdown {
+        margin-top: 14px; padding: 14px 16px;
+        background: rgba(0,240,255,0.03);
+        border: 1px solid rgba(0,240,255,0.2);
+        border-radius: 8px;
+      }
+      .svc-total-breakdown__row {
+        display: flex; justify-content: space-between; gap: 12px;
+        padding: 6px 0; font-size: 0.85rem;
+        border-bottom: 1px dashed rgba(255,255,255,0.08);
+      }
+      .svc-total-breakdown__row:last-of-type { border-bottom: none; }
+      .svc-total-breakdown__label { color: var(--text-secondary, #a0a8b8); }
+      .svc-total-breakdown__value { font-family: var(--font-mono, monospace); color: var(--text-primary, #f0f0ff); }
+      .svc-total-breakdown__row--total {
+        padding-top: 10px; margin-top: 6px;
+        border-top: 2px solid var(--neon-cyan, #00f0ff);
+        border-bottom: none;
+        font-weight: 700;
+      }
+      .svc-total-breakdown__row--total .svc-total-breakdown__label {
+        color: var(--neon-cyan, #00f0ff); font-size: 0.9rem;
+      }
+      .svc-total-breakdown__value--total {
+        color: var(--neon-green, #00ff88); font-size: 1.15rem; font-weight: 800;
+      }
+      .svc-total-breakdown__foot {
+        text-align: right; margin-top: 8px;
+        font-size: 0.7rem; color: var(--text-muted, #8b93a7);
+        font-family: var(--font-mono, monospace);
+      }
+    `;
+    document.head.appendChild(s);
+  },
+
+  _updateStdTotal() {
+    const self = this;
+    const cfg = this.services[this.service];
+    if (!cfg || cfg.custom) return;
+
+    const rate = self.RATE_DOP;
+    const subtotalBase = cfg.base || 0;
+    const desglose = [];
+    let subtotalFieldsDOP = 0;
+
+    if (cfg.fields) {
+      cfg.fields.forEach(function (f) {
+        const qty = self.values[f.id] || 0;
+        const unitDOP = Math.round((f.unit || 0) * rate);
+        const costDOP = qty * unitDOP;
+        subtotalFieldsDOP += costDOP;
+        desglose.push({
+          label: f.label + ' (' + qty + ' × RD$' + unitDOP.toLocaleString('es-DO') + ')',
+          valueDOP: costDOP,
+          qty: qty
+        });
+      });
+    }
+
+    const baseDOP = Math.round(subtotalBase * rate);
+    const subtotalDOP = baseDOP + subtotalFieldsDOP;
+
+    const tramo = self.garantiaTramos.find(function (t) {
+      return t.dias === self.garantiaSeleccionada;
+    });
+    let garantiaDOP = 0;
+    if (tramo && tramo.pct > 0) {
+      garantiaDOP = Math.round(subtotalDOP * tramo.pct);
+    }
+
+    const totalDOP = subtotalDOP + garantiaDOP;
+
+    const el = document.getElementById('stdTotalValue');
+    if (el) el.textContent = 'RD$' + totalDOP.toLocaleString('es-DO');
+
+    const breakdown = document.getElementById('stdTotalBreakdown');
+    if (breakdown) {
+      let html = '';
+      if (baseDOP > 0) {
+        html += '<div class="svc-total-breakdown__row">';
+        html += '  <span class="svc-total-breakdown__label">' + (cfg.baseLabel || 'Base del servicio') + '</span>';
+        html += '  <span class="svc-total-breakdown__value">RD$' + baseDOP.toLocaleString('es-DO') + '</span>';
+        html += '</div>';
+      }
+      desglose.forEach(function (d) {
+        if (d.qty <= 0 && d.valueDOP <= 0) return;
+        html += '<div class="svc-total-breakdown__row">';
+        html += '  <span class="svc-total-breakdown__label">' + d.label + '</span>';
+        html += '  <span class="svc-total-breakdown__value">RD$' + d.valueDOP.toLocaleString('es-DO') + '</span>';
+        html += '</div>';
+      });
+      if (garantiaDOP > 0) {
+        html += '<div class="svc-total-breakdown__row">';
+        html += '  <span class="svc-total-breakdown__label">Garantía ' + tramo.label + ' (+' + Math.round(tramo.pct * 100) + '%)</span>';
+        html += '  <span class="svc-total-breakdown__value">RD$' + garantiaDOP.toLocaleString('es-DO') + '</span>';
+        html += '</div>';
+      }
+      html += '<div class="svc-total-breakdown__row svc-total-breakdown__row--total">';
+      html += '  <span class="svc-total-breakdown__label">TOTAL</span>';
+      html += '  <span class="svc-total-breakdown__value svc-total-breakdown__value--total">RD$' + totalDOP.toLocaleString('es-DO') + '</span>';
+      html += '</div>';
+      breakdown.innerHTML = html;
+    }
+  },
+
+  _updateExtrasTotal() {
+    const el = document.getElementById('extrasTotalValue');
+    if (!el) return;
+    if (!this.service) { el.textContent = 'RD$0'; return; }
+    const calc = this.calculate();
+    const isReparacion = this.service === 'reparacion';
+    const isAccesorios = this.service === 'accesorios';
+    const esDOP = isReparacion || isAccesorios;
+    const totalDOP = esDOP ? calc.total : Math.round(calc.total * this.RATE_DOP);
+    el.textContent = 'RD$' + totalDOP.toLocaleString('es-DO');
+  },
+
   updateRepTotal() {
     const self = this;
     let baseTotal = 0;
@@ -2206,7 +2561,7 @@ const QuoteWizard = {
         } else {
           const exDop = Math.round(ex.price * self.RATE_DOP);
           extrasTotal += exDop;
-          lines.push({ label: ex.label, sub: '$' + ex.price + ' USD', value: exDop });
+          lines.push({ label: ex.label, sub: 'Adicional', value: exDop });
         }
       });
       total += extrasTotal;
@@ -2243,7 +2598,7 @@ const QuoteWizard = {
         } else {
           const exDop = Math.round(ex.price * self.RATE_DOP);
           extrasTotal += exDop;
-          lines.push({ label: ex.label, sub: '$' + ex.price + ' USD', value: exDop });
+          lines.push({ label: ex.label, sub: 'Adicional', value: exDop });
         }
       });
       total += extrasTotal;
@@ -2268,14 +2623,16 @@ const QuoteWizard = {
     if (!cfg) return { lines: [], total: 0 };
 
     const lines = [];
+    const _rateN = self.RATE_DOP;
     let subtotal = cfg.base;
-    lines.push({ label: cfg.label + ' · base', value: cfg.base });
+    lines.push({ label: (cfg.baseLabel || cfg.label + ' · base'), value: cfg.base });
 
     cfg.fields.forEach(function (f) {
       const qty = self.values[f.id] || 0;
       const cost = qty * f.unit;
       subtotal += cost;
-      lines.push({ label: f.label, sub: qty + ' × $' + f.unit, value: cost });
+      const unitDOP = Math.round((f.unit || 0) * _rateN);
+      lines.push({ label: f.label, sub: qty + ' × RD$' + unitDOP.toLocaleString('es-DO'), value: cost });
     });
 
     let extrasTotal = 0;
@@ -2365,8 +2722,8 @@ const QuoteWizard = {
     const isReparacion = this.service === 'reparacion';
     const isAccesorios = this.service === 'accesorios';
     const esDOP = isReparacion || isAccesorios;
-    const dop = esDOP ? total : total * this.RATE_DOP;
-    const usd = esDOP ? null : total;
+    const rate = this.RATE_DOP;
+    const dop = esDOP ? total : Math.round(total * rate);
 
     let html = '';
 
@@ -2392,30 +2749,39 @@ const QuoteWizard = {
 
     lines.forEach(function (l) {
       const sub = l.sub ? '<small>' + l.sub + '</small>' : '';
-      const price = esDOP
-        ? 'RD$' + l.value.toLocaleString('es-DO')
-        : '$' + l.value.toLocaleString('en-US');
+      const valueDOP = esDOP ? l.value : Math.round(l.value * rate);
+      const price = 'RD$' + valueDOP.toLocaleString('es-DO');
       html += '<div class="quote-summary__row">';
       html += '  <span class="quote-summary__label">' + l.label + sub + '</span>';
       html += '  <span class="quote-summary__value">' + price + '</span>';
       html += '</div>';
     });
 
-    if (esDOP) {
-      html += '<div class="quote-summary__totals">';
-      html += '  <div class="quote-summary__totals-label">TOTAL</div>';
-      html += '  <div class="quote-summary__total-usd">RD$' + Math.round(dop).toLocaleString('es-DO') + '</div>';
-      html += '  <div class="quote-summary__total-dop">Pesos dominicanos (DOP)</div>';
-      html += '</div>';
-    } else {
-      html += '<div class="quote-summary__totals">';
-      html += '  <div class="quote-summary__totals-label">TOTAL ESTIMADO</div>';
-      html += '  <div class="quote-summary__total-usd">RD$' + Math.round(dop).toLocaleString('es-DO') + '</div>';
-      html += '  <div class="quote-summary__total-dop">Pesos dominicanos (DOP)</div>';
-      html += '</div>';
-    }
+    html += '<div class="quote-summary__totals">';
+    html += '  <div class="quote-summary__totals-label">TOTAL ESTIMADO</div>';
+    html += '  <div class="quote-summary__total-usd">RD$' + dop.toLocaleString('es-DO') + '</div>';
+    html += '  <div class="quote-summary__total-dop">Pesos dominicanos (DOP)</div>';
+    html += '</div>';
 
     this.els.summary.innerHTML = html;
+
+    // ✅ Lógica dinámica para los botones
+    const rep = isReparacion ? this.reparacion : null;
+    const tipoDoc = rep ? rep.tipoDoc : this.documento.tipoDoc;
+    const btnDownloadText = document.getElementById('quoteDownloadText');
+    const btnRequestSigned = document.getElementById('quoteRequestSigned');
+
+    const btnRequestSignedWA = document.getElementById('quoteRequestSignedWA');
+
+    if (tipoDoc === 'factura') {
+      if (btnDownloadText) btnDownloadText.textContent = 'DESCARGAR FACTURA';
+      if (btnRequestSigned) btnRequestSigned.style.display = 'none';
+      if (btnRequestSignedWA) btnRequestSignedWA.style.display = 'none';
+    } else {
+      if (btnDownloadText) btnDownloadText.textContent = 'DESCARGAR COTIZACIÓN';
+      if (btnRequestSigned) btnRequestSigned.style.display = 'inline-flex';
+      if (btnRequestSignedWA) btnRequestSignedWA.style.display = 'inline-flex';
+    }
 
     this._actualizarBloqueDocumentos();
     this._actualizarBloqueTargetica(isReparacion);
@@ -2822,21 +3188,17 @@ const QuoteWizard = {
     }
     txt += '\n── DETALLE ────────────────────────────\n';
 
+    const _rateTxt = this.RATE_DOP;
     lines.forEach(function (l) {
       const sub = l.sub ? ' (' + l.sub + ')' : '';
+      const valueDOP = esDOP ? l.value : Math.round(l.value * _rateTxt);
       txt += '• ' + l.label + sub + '\n';
-      txt += '  ' + (esDOP ? 'RD$' + l.value.toLocaleString('es-DO') : '$' + l.value.toLocaleString('en-US')) + '\n';
+      txt += '  RD$' + valueDOP.toLocaleString('es-DO') + '\n';
     });
 
     txt += '\n── TOTALES ────────────────────────────\n';
-    if (isReparacion) {
-      txt += 'Total DOP:  RD$' + dop.toLocaleString('es-DO') + '\n';
-      if (esFactura) txt += '*** PAGADO ***\n';
-    } else {
-      txt += 'Total USD:  $' + total.toLocaleString('en-US') + '\n';
-      txt += 'Total DOP:  RD$' + dop.toLocaleString('es-DO') + '\n';
-      txt += 'Tasa ref.:  1 USD = ' + this.RATE_DOP + ' DOP\n';
-    }
+    txt += 'TOTAL:  RD$' + Math.round(dop).toLocaleString('es-DO') + '\n';
+    if (isReparacion && esFactura) txt += '*** PAGADO ***\n';
     txt += '\nContacto:\n';
     txt += '  Email: jcdurancasado@gmail.com\n';
     txt += '  Web:   https://jcdurancasado.github.io/inf/\n';
@@ -2850,7 +3212,7 @@ const QuoteWizard = {
     }
     this.registrarDocumento();
     const txt = this.buildPlainText();
-    const wa = (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.whatsapp) || '18294213163';
+    const wa = (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.whatsapp) || '10000000000';
     const url = 'https://wa.me/' + wa + '?text=' + encodeURIComponent(txt);
     window.open(url, '_blank', 'noopener');
     if (typeof Toast !== 'undefined') Toast.show('Abriendo WhatsApp…', 'success', 1800);
@@ -2873,8 +3235,35 @@ const QuoteWizard = {
     const vc = rep ? (rep.codigoVC || 'No generado') : (doc.codigoVC || 'No generado');
     const tipo = rep ? (rep.tipoDoc === 'factura' ? 'Factura' : 'Cotización') : (doc.tipoDoc === 'factura' ? 'Factura' : 'Cotización');
 
+    const provEmail = (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.proveedor && window.SOPORTE_CONFIG.proveedor.email) || 'jcdurancasado@gmail.com';
+    
+    const subject = `Solicitud de ${tipo} Firmada - ${num}`;
+    const body = `Hola Julio C. Durán Casado,\n\nAcabo de generar la ${tipo} ${num} (VC: ${vc}) a nombre de ${cliente}.\n\nNecesito que la misma sea firmada y sellada por el encargado.\n\n¡Gracias!`;
+    
+    window.location.href = `mailto:${provEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    
+    if (typeof Toast !== 'undefined') Toast.show('Abriendo cliente de correo...', 'success', 1800);
+  },
+
+  requestSignedWA() {
+    if (!this.service) {
+      if (typeof Toast !== 'undefined') Toast.show('Completa el cotizador primero', 'info', 2000);
+      return;
+    }
+    
+    this.registrarDocumento();
+
+    const isReparacion = this.service === 'reparacion';
+    const rep = isReparacion ? this.reparacion : null;
+    const doc = this.documento;
+    
+    const cliente = rep ? (rep.cliente.nombre || 'Cliente') : (doc.cliente.nombre || 'Cliente');
+    const num = rep ? (rep.numero || 'No generado') : (doc.numero || 'No generado');
+    const vc = rep ? (rep.codigoVC || 'No generado') : (doc.codigoVC || 'No generado');
+    const tipo = rep ? (rep.tipoDoc === 'factura' ? 'Factura' : 'Cotización') : (doc.tipoDoc === 'factura' ? 'Factura' : 'Cotización');
+
     const msg = `Hola Julio C. Durán Casado, acabo de generar la ${tipo} *${num}* (VC: ${vc}) a nombre de *${cliente}*. Necesito que la misma sea firmada y sellada por el encargado. ¡Gracias!`;
-    const wa = (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.whatsapp) || '18294213163';
+    const wa = (window.SOPORTE_CONFIG && window.SOPORTE_CONFIG.whatsapp) || '10000000000';
     window.open(`https://wa.me/${wa}?text=${encodeURIComponent(msg)}`, '_blank');
     
     if (typeof Toast !== 'undefined') Toast.show('Abriendo WhatsApp…', 'success', 1800);

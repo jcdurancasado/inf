@@ -2230,220 +2230,6 @@ ul { list-style: none; }
   .cursos-preview { padding: var(--space-lg) var(--space-sm); border-radius: var(--radius-md); }
   .cursos-preview__title { font-size: 1.35rem; }
 }
-/* ============ NAV · 5 CTA CON EFECTO PIANO ============ */
-/* Toolkit · NetPro · Cursos · Cotizador · Contacto
-   Animan en cascada con delays escalonados (0s · 0.3s · 0.6s · 0.9s · 1.2s) */
-
-/* --- Base común --- */
-.nav__link[href$="toolkit.html"],
-.nav__link[href$="netpro.html"],
-.nav__link[href*="cursos"],
-.nav__link[href$="cotizador.html"],
-.nav__link--cta {
-  position: relative;
-  border: 1px solid;
-  border-radius: var(--radius-sm);
-  transition: all 0.3s ease;
-  animation-duration: 3.2s;
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
-}
-
-/* --- TOOLKIT · cyan + icono caja de herramientas --- */
-.nav__link[href$="toolkit.html"] {
-  padding-left: 2.1rem;
-  background: linear-gradient(135deg, rgba(0,240,255,0.12), rgba(0,102,255,0.12));
-  border-color: rgba(0,240,255,0.4);
-  color: var(--neon-cyan);
-  animation-name: nav-toolkit-pulse;
-  animation-delay: 0s;
-}
-.nav__link[href$="toolkit.html"]::before {
-  content: '\f552'; /* fa-toolbox */
-  font-family: 'Font Awesome 6 Free';
-  font-weight: 900;
-  position: absolute;
-  left: 0.8rem;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 0.78rem;
-  color: var(--neon-cyan);
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.nav__link[href$="toolkit.html"]:hover {
-  border-color: var(--neon-cyan);
-  box-shadow: 0 0 18px rgba(0,240,255,0.5);
-  animation: none;
-}
-.nav__link[href$="toolkit.html"]:hover::before {
-  transform: translateY(-50%) rotate(-12deg) scale(1.15);
-}
-@keyframes nav-toolkit-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(0,240,255,0.2); }
-  50%      { box-shadow: 0 0 16px rgba(0,240,255,0.5); }
-}
-
-/* --- CURSOS · verde · delay 0.6s --- */
-.nav__link[href*="cursos"] {
-  background: linear-gradient(135deg, rgba(0,255,136,0.12), rgba(0,240,255,0.12));
-  border-color: rgba(0,255,136,0.4);
-  color: var(--neon-green);
-  animation-name: nav-cursos-pulse;
-  animation-delay: 0.6s;
-}
-.nav__link[href*="cursos"]:hover {
-  border-color: var(--neon-green);
-  box-shadow: 0 0 18px rgba(0,255,136,0.5);
-  animation: none;
-}
-@keyframes nav-cursos-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(0,255,136,0.2); }
-  50%      { box-shadow: 0 0 16px rgba(0,255,136,0.5); }
-}
-/* Icono CURSOS (viene del HTML con <i>) → hover anim */
-.nav__link[href*="cursos"] i {
-  display: inline-block;
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.nav__link[href*="cursos"]:hover i {
-  transform: rotate(-12deg) scale(1.15);
-}
-/* --- NETPRO · azul + icono globe · delay 0.3s --- */
-.nav__link[href$="netpro.html"] {
-  padding-left: 2.1rem;
-  background: linear-gradient(135deg, rgba(0,102,255,0.15), rgba(184,41,221,0.12));
-  border-color: rgba(0,102,255,0.5);
-  color: #66a3ff;
-  animation-name: nav-netpro-pulse;
-  animation-delay: 0.3s;
-}
-.nav__link[href$="netpro.html"]::before {
-  content: '\f0ac'; /* fa-globe */
-  font-family: 'Font Awesome 6 Free';
-  font-weight: 900;
-  position: absolute;
-  left: 0.8rem;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 0.78rem;
-  color: #66a3ff;
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.nav__link[href$="netpro.html"]:hover {
-  border-color: #0066ff;
-  box-shadow: 0 0 18px rgba(0,102,255,0.6);
-  animation: none;
-}
-.nav__link[href$="netpro.html"]:hover::before {
-  transform: translateY(-50%) rotate(-12deg) scale(1.15);
-}
-.nav__link[href$="netpro.html"].nav__link--active {
-  border-color: #0066ff;
-  background: linear-gradient(135deg, rgba(0,102,255,0.2), rgba(184,41,221,0.15));
-  box-shadow: 0 0 15px rgba(0,102,255,0.4);
-  /* Sin "animation: none" → mantiene la cascada piano aunque esté activo */
-}
-@keyframes nav-netpro-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(0,102,255,0.2); }
-  50%      { box-shadow: 0 0 16px rgba(0,102,255,0.55); }
-}
-
-/* --- COTIZADOR · amarillo/naranja · delay 0.8s --- */
-.nav__link[href$="cotizador.html"] {
-  background: linear-gradient(135deg, rgba(255,238,0,0.12), rgba(255,107,0,0.12));
-  border-color: rgba(255,238,0,0.4);
-  color: var(--neon-yellow);
-  animation-name: nav-quote-pulse;
-  animation-delay: 0.9s;
-}
-.nav__link[href$="cotizador.html"]:hover {
-  border-color: var(--neon-yellow);
-  box-shadow: 0 0 18px rgba(255,238,0,0.5);
-  animation: none;
-}
-@keyframes nav-quote-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(255,238,0,0.2); }
-  50%      { box-shadow: 0 0 16px rgba(255,238,0,0.5); }
-}
-/* Icono COTIZADOR (viene del HTML con <i>) → hover anim */
-.nav__link[href$="cotizador.html"] i {
-  display: inline-block;
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.nav__link[href$="cotizador.html"]:hover i {
-  transform: rotate(-12deg) scale(1.15);
-}
-
-/* --- CONTACTO · cyan + icono comments · delay 1.2s --- */
-.nav__link--cta {
-  padding-left: 2.1rem;
-  background: linear-gradient(135deg, rgba(0,240,255,0.12), rgba(184,41,221,0.12));
-  border-color: rgba(0,240,255,0.4);
-  color: var(--neon-cyan);
-  animation-name: nav-contact-pulse;
-  animation-delay: 1.2s;
-}
-.nav__link--cta::before {
-  content: '\f086'; /* fa-comments */
-  font-family: 'Font Awesome 6 Free';
-  font-weight: 900;
-  position: absolute;
-  left: 0.8rem;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 0.78rem;
-  color: var(--neon-cyan);
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.nav__link--cta:hover {
-  border-color: var(--neon-cyan);
-  box-shadow: 0 0 18px rgba(0,240,255,0.5);
-  animation: none;
-}
-.nav__link--cta:hover::before {
-  transform: translateY(-50%) scale(1.2) rotate(-10deg);
-}
-@keyframes nav-contact-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(0,240,255,0.2); }
-  50%      { box-shadow: 0 0 16px rgba(0,240,255,0.5); }
-}
-
-/* Modo claro · mismos delays, colores ajustados */
-[data-theme="light"] .nav__link[href$="toolkit.html"] {
-  background: linear-gradient(135deg, rgba(0,136,204,0.08), rgba(0,85,187,0.08));
-  border-color: rgba(0,136,204,0.3);
-  color: #0088cc;
-}
-[data-theme="light"] .nav__link[href$="toolkit.html"]::before { color: #0088cc; }
-[data-theme="light"] .nav__link[href$="cotizador.html"] {
-  background: linear-gradient(135deg, rgba(217,119,6,0.1), rgba(234,88,12,0.1));
-  border-color: rgba(217,119,6,0.35);
-  color: #d97706;
-}
-[data-theme="light"] .nav__link--cta {
-  background: linear-gradient(135deg, rgba(0,136,204,0.08), rgba(124,58,237,0.08));
-  border-color: rgba(0,136,204,0.3);
-  color: #0088cc;
-}
-[data-theme="light"] .nav__link--cta::before { color: #0088cc; }
-[data-theme="light"] .nav__link[href$="netpro.html"] {
-  background: linear-gradient(135deg, rgba(0,85,187,0.1), rgba(124,58,237,0.08));
-  border-color: rgba(0,85,187,0.4);
-  color: #0055bb;
-}
-[data-theme="light"] .nav__link[href$="netpro.html"]::before { color: #0055bb; }
-
-/* Móvil: pulsos más lentos y suaves (ahorra batería, menos ruido visual) */
-@media (max-width: 768px) {
-  .nav__link[href$="toolkit.html"],
-  .nav__link[href$="netpro.html"],
-  .nav__link[href*="cursos"],
-  .nav__link[href$="cotizador.html"],
-  .nav__link--cta {
-    animation-duration: 4.5s;
-  }
-  /* La cascada se mantiene idéntica, solo se alarga la duración total */
-}
 
 /* ============ LOGO CORE ACTIVO ============ */
 .logo__svg--core {
@@ -12213,65 +11999,6 @@ html.jcdc-booted .boot-sequence {
   .jcdc-confirm__actions { flex-direction: column-reverse; }
 }
 
-
-/* ============================================
-   NAV · VERIFICAR · púrpura + icono shield
-   (restaurado del CSS original)
-============================================ */
-.nav__link[href$="verificar.html"] {
-  position: relative;
-  border: 1px solid;
-  border-radius: var(--radius-sm);
-  background: linear-gradient(135deg, rgba(184,41,221,0.12), rgba(255,0,110,0.12));
-  border-color: rgba(184,41,221,0.4);
-  color: var(--neon-purple);
-  transition: all 0.3s ease;
-  animation-name: nav-verify-pulse;
-  animation-duration: 3.2s;
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
-  animation-delay: 0.9s;
-}
-
-.nav__link[href$="verificar.html"] i {
-  display: inline-block;
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.nav__link[href$="verificar.html"]:hover {
-  border-color: var(--neon-purple);
-  box-shadow: 0 0 18px rgba(184,41,221,0.5);
-  animation: none;
-}
-
-.nav__link[href$="verificar.html"]:hover i {
-  transform: rotate(-12deg) scale(1.15);
-}
-
-@keyframes nav-verify-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(184,41,221,0.2); }
-  50%      { box-shadow: 0 0 16px rgba(184,41,221,0.5); }
-}
-
-/* Modo claro */
-[data-theme="light"] .nav__link[href$="verificar.html"] {
-  background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(214,0,110,0.08));
-  border-color: rgba(124,58,237,0.35);
-  color: #7c3aed;
-}
-[data-theme="light"] .nav__link[href$="verificar.html"]:hover {
-  border-color: #7c3aed;
-  box-shadow: 0 0 12px rgba(124,58,237,0.3);
-}
-
-/* Móvil: pulso más lento */
-@media (max-width: 768px) {
-  .nav__link[href$="verificar.html"] {
-    animation-duration: 4.5s;
-  }
-}
-
-
 /* OTP: campo con botón ojo integrado */
 .pwd-modal__field--otp {
   position: relative;
@@ -12714,43 +12441,6 @@ body:has(.pwd-overlay) .cursor-ring {
   .pago-card { border: 1px solid #ccc !important; page-break-inside: avoid; }
   .pago-card__nombre, .pago-card__row span, .pago-card__row strong { color: #000 !important; }
   .pago-card__btn { display: none !important; }
-}
-
-/* ============================================
-   NAV · Estados activos con cascada preservada
-   (añadido para uniformar las 5 CTA)
-============================================ */
-.nav__link[href$="toolkit.html"].nav__link--active {
-  border-color: var(--neon-cyan);
-  background: linear-gradient(135deg, rgba(0,240,255,0.2), rgba(0,102,255,0.18));
-  box-shadow: 0 0 15px rgba(0,240,255,0.45);
-}
-.nav__link[href$="cotizador.html"].nav__link--active {
-  border-color: var(--neon-yellow);
-  background: linear-gradient(135deg, rgba(255,238,0,0.2), rgba(255,107,0,0.15));
-  box-shadow: 0 0 15px rgba(255,238,0,0.45);
-}
-.nav__link--cta.nav__link--active {
-  border-color: var(--neon-cyan);
-  background: linear-gradient(135deg, rgba(0,240,255,0.2), rgba(184,41,221,0.18));
-  box-shadow: 0 0 15px rgba(0,240,255,0.45);
-}
-
-/* Modo claro */
-[data-theme="light"] .nav__link[href$="toolkit.html"].nav__link--active {
-  border-color: #0088cc;
-  background: linear-gradient(135deg, rgba(0,136,204,0.18), rgba(0,85,187,0.15));
-  box-shadow: 0 0 12px rgba(0,136,204,0.35);
-}
-[data-theme="light"] .nav__link[href$="cotizador.html"].nav__link--active {
-  border-color: #d97706;
-  background: linear-gradient(135deg, rgba(217,119,6,0.15), rgba(234,88,12,0.12));
-  box-shadow: 0 0 12px rgba(217,119,6,0.3);
-}
-[data-theme="light"] .nav__link--cta.nav__link--active {
-  border-color: #0088cc;
-  background: linear-gradient(135deg, rgba(0,136,204,0.15), rgba(124,58,237,0.15));
-  box-shadow: 0 0 12px rgba(0,136,204,0.35);
 }
 
 /* ============================================
@@ -13526,4 +13216,241 @@ body.jcdc-modal-open input {
 [data-theme="light"] .acc-item--on {
   background: rgba(5, 150, 105, 0.05);
   border-color: #059669;
+}
+
+/* ==========================================================================
+   MENÚ PRINCIPAL · COLORES ÚNICOS Y EFECTO ESCALERA (PIANO)
+   ========================================================================== */
+
+/* 1. Base común para los 5 botones */
+.nav__link[href$="herramientas.html"],
+.nav__link[href*="cursos"],
+.nav__link[href$="cotizador.html"],
+.nav__link[href$="verificar.html"],
+.nav__link--cta {
+  position: relative;
+  border: 1.5px solid;
+  border-radius: var(--radius-sm);
+  transition: all 0.3s ease;
+  animation-duration: 3.2s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-name: nav-custom-pulse;
+}
+
+/* Animación genérica que usa la variable --nav-glow */
+@keyframes nav-custom-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 transparent; }
+  50%      { box-shadow: 0 0 16px var(--nav-glow); }
+}
+
+/* =========================================================
+   2. HERRAMIENTAS (Púrpura) - Delay 0s
+   ========================================================= */
+.nav__link[href$="herramientas.html"] {
+  --nav-color: var(--neon-purple);
+  --nav-glow: rgba(184,41,221,0.5);
+  background: linear-gradient(135deg, rgba(184,41,221,0.12), rgba(184,41,221,0.04));
+  border-color: var(--nav-color);
+  color: var(--nav-color);
+  animation-delay: 0s;
+  padding-left: 2.1rem;
+}
+.nav__link[href$="herramientas.html"]::before {
+  content: '\f552'; /* Icono Toolbox */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  position: absolute;
+  left: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.78rem;
+  color: var(--nav-color);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.nav__link[href$="herramientas.html"]:hover {
+  box-shadow: 0 0 18px var(--nav-glow);
+  animation: none;
+}
+.nav__link[href$="herramientas.html"]:hover::before {
+  transform: translateY(-50%) rotate(-12deg) scale(1.15);
+}
+
+/* =========================================================
+   3. CURSOS (Verde) - Delay 0.3s
+   ========================================================= */
+.nav__link[href*="cursos"] {
+  --nav-color: var(--neon-green);
+  --nav-glow: rgba(0,255,136,0.5);
+  background: linear-gradient(135deg, rgba(0,255,136,0.12), rgba(0,255,136,0.04));
+  border-color: var(--nav-color);
+  color: var(--nav-color);
+  animation-delay: 0.3s;
+}
+.nav__link[href*="cursos"]:hover {
+  box-shadow: 0 0 18px var(--nav-glow);
+  animation: none;
+}
+.nav__link[href*="cursos"] i {
+  display: inline-block;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.nav__link[href*="cursos"]:hover i {
+  transform: rotate(-12deg) scale(1.15);
+}
+
+/* =========================================================
+   4. COTIZAR (Amarillo) - Delay 0.6s
+   ========================================================= */
+.nav__link[href$="cotizador.html"],
+.nav__link--quote {
+  --nav-color: var(--neon-yellow);
+  --nav-glow: rgba(255,238,0,0.5);
+  background: linear-gradient(135deg, rgba(255,238,0,0.12), rgba(255,238,0,0.04));
+  border-color: var(--nav-color);
+  color: var(--nav-color);
+  animation-delay: 0.6s;
+}
+.nav__link[href$="cotizador.html"]:hover,
+.nav__link--quote:hover {
+  box-shadow: 0 0 18px var(--nav-glow);
+  animation: none;
+}
+.nav__link[href$="cotizador.html"] i,
+.nav__link--quote i {
+  display: inline-block;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.nav__link[href$="cotizador.html"]:hover i,
+.nav__link--quote:hover i {
+  transform: rotate(-12deg) scale(1.15);
+}
+
+/* =========================================================
+   5. VERIFICAR (Rosa/Magenta) - Delay 0.9s
+   ========================================================= */
+.nav__link[href$="verificar.html"] {
+  --nav-color: var(--neon-pink);
+  --nav-glow: rgba(255,0,110,0.5);
+  background: linear-gradient(135deg, rgba(255,0,110,0.12), rgba(255,0,110,0.04));
+  border-color: var(--nav-color);
+  color: var(--nav-color);
+  animation-delay: 0.9s;
+}
+.nav__link[href$="verificar.html"]:hover {
+  box-shadow: 0 0 18px var(--nav-glow);
+  animation: none;
+}
+.nav__link[href$="verificar.html"] i {
+  display: inline-block;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.nav__link[href$="verificar.html"]:hover i {
+  transform: rotate(-12deg) scale(1.15);
+}
+
+/* =========================================================
+   6. CONTACTO (Cyan) - Delay 1.2s
+   ========================================================= */
+.nav__link--cta {
+  --nav-color: var(--neon-cyan);
+  --nav-glow: rgba(0,240,255,0.5);
+  background: linear-gradient(135deg, rgba(0,240,255,0.12), rgba(0,240,255,0.04));
+  border-color: var(--nav-color);
+  color: var(--nav-color);
+  animation-delay: 1.2s;
+  padding-left: 2.1rem;
+}
+.nav__link--cta::before {
+  content: '\f086'; /* Icono Comments */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  position: absolute;
+  left: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.78rem;
+  color: var(--nav-color);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.nav__link--cta:hover {
+  box-shadow: 0 0 18px var(--nav-glow);
+  animation: none;
+}
+.nav__link--cta:hover::before {
+  transform: translateY(-50%) scale(1.2) rotate(-10deg);
+}
+
+/* =========================================================
+   7. ESTADOS ACTIVOS (Páginas actuales)
+   ========================================================= */
+.nav__link[href$="herramientas.html"].nav__link--active,
+.nav__link[href*="cursos"].nav__link--active,
+.nav__link[href$="cotizador.html"].nav__link--active,
+.nav__link[href$="verificar.html"].nav__link--active,
+.nav__link--cta.nav__link--active {
+  animation: none;
+  box-shadow: inset 0 0 15px var(--nav-glow), 0 0 15px var(--nav-glow);
+  background: var(--nav-glow);
+  color: var(--bg-primary); 
+}
+
+.nav__link[href$="herramientas.html"].nav__link--active::before,
+.nav__link--cta.nav__link--active::before,
+.nav__link[href*="cursos"].nav__link--active i,
+.nav__link[href$="cotizador.html"].nav__link--active i,
+.nav__link[href$="verificar.html"].nav__link--active i {
+  color: var(--bg-primary);
+}
+
+/* =========================================================
+   8. MODO CLARO (LIGHT THEME)
+   ========================================================= */
+[data-theme="light"] .nav__link[href$="herramientas.html"] {
+  --nav-color: #7c3aed; --nav-glow: rgba(124,58,237,0.3);
+  background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(124,58,237,0.04));
+}
+[data-theme="light"] .nav__link[href*="cursos"] {
+  --nav-color: #059669; --nav-glow: rgba(5,150,105,0.3);
+  background: linear-gradient(135deg, rgba(5,150,105,0.1), rgba(5,150,105,0.04));
+}
+[data-theme="light"] .nav__link[href$="cotizador.html"],
+[data-theme="light"] .nav__link--quote {
+  --nav-color: #d97706; --nav-glow: rgba(217,119,6,0.3);
+  background: linear-gradient(135deg, rgba(217,119,6,0.1), rgba(217,119,6,0.04));
+}
+[data-theme="light"] .nav__link[href$="verificar.html"] {
+  --nav-color: #d6006e; --nav-glow: rgba(214,0,110,0.3);
+  background: linear-gradient(135deg, rgba(214,0,110,0.1), rgba(214,0,110,0.04));
+}
+[data-theme="light"] .nav__link--cta {
+  --nav-color: #0088cc; --nav-glow: rgba(0,136,204,0.3);
+  background: linear-gradient(135deg, rgba(0,136,204,0.1), rgba(0,136,204,0.04));
+}
+
+[data-theme="light"] .nav__link[href$="herramientas.html"].nav__link--active,
+[data-theme="light"] .nav__link[href*="cursos"].nav__link--active,
+[data-theme="light"] .nav__link[href$="cotizador.html"].nav__link--active,
+[data-theme="light"] .nav__link[href$="verificar.html"].nav__link--active,
+[data-theme="light"] .nav__link--cta.nav__link--active {
+  color: #ffffff; 
+}
+
+[data-theme="light"] .nav__link[href$="herramientas.html"].nav__link--active::before,
+[data-theme="light"] .nav__link--cta.nav__link--active::before,
+[data-theme="light"] .nav__link[href*="cursos"].nav__link--active i,
+[data-theme="light"] .nav__link[href$="cotizador.html"].nav__link--active i,
+[data-theme="light"] .nav__link[href$="verificar.html"].nav__link--active i {
+  color: #ffffff;
+}
+
+/* 9. Móvil: animación más lenta */
+@media (max-width: 768px) {
+  .nav__link[href$="herramientas.html"],
+  .nav__link[href*="cursos"],
+  .nav__link[href$="cotizador.html"],
+  .nav__link[href$="verificar.html"],
+  .nav__link--cta {
+    animation-duration: 4.5s;
+  }
 }
